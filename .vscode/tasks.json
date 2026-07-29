@@ -20,6 +20,26 @@
         "isDefault": true
       },
       "problemMatcher": "$gcc"
+    },
+    {
+      "label": "Bench: Serial Console",
+      "type": "process",
+      "command": "python",
+      "args": ["tools/bench_console.py", "--port", "${input:benchPort}"],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "benchPort",
+      "type": "promptString",
+      "description": "NUCLEO ST-Link VCP port (for example COM5)",
+      "default": "COM3"
     }
   ]
 }

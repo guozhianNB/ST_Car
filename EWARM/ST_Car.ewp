@@ -1133,6 +1133,9 @@
           <name>$PROJ_DIR$/../Core/Src/telemetry.c</name>
         </file>
         <file>
+          <name>$PROJ_DIR$/../Core/Src/bench_debug.c</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$/../Core/Src/app.c</name>
         </file>
         <file>

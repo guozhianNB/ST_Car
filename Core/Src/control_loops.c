@@ -15,6 +15,7 @@ static ControlStatus status;
 static float requested_base_speed;
 static float line_previous_error;
 static bool line_initialized;
+static uint32_t beam_last_sample_ms;
 
 static float Clamp(float value, float low, float high)
 {
@@ -50,6 +51,7 @@ void ControlLoops_Reset(void)
   requested_base_speed = 0.0f;
   line_previous_error = 0.0f;
   line_initialized = false;
+  beam_last_sample_ms = 0U;
   status.left_target_mm_s = 0.0f;
   status.right_target_mm_s = 0.0f;
   status.left_ramped_mm_s = 0.0f;
@@ -89,6 +91,7 @@ void ControlLoops_EnableBeam(bool enable)
   Motor_EnableBeam(enable);
   if (!enable) {
     status.beam_pwm = 0;
+    beam_last_sample_ms = 0U;
     PID_Reset(&beam_angle_pid);
     Motor_Brake(MOTOR_BEAM);
   }
@@ -150,9 +153,10 @@ void ControlLoops_FastUpdate(uint32_t dt_ms)
   const EncoderSample *left = Encoder_Get(ENCODER_LEFT);
   const EncoderSample *right = Encoder_Get(ENCODER_RIGHT);
   const EncoderSample *beam_encoder = Encoder_Get(ENCODER_BEAM);
-  const Sa100Sample *angle = SA100_Get();
+  Sa100Sample angle;
   VisionBallSample vision;
   float dt_s;
+  uint32_t now_ms = HAL_GetTick();
 
   if (dt_ms == 0U) return;
   dt_s = (float)dt_ms * 0.001f;
@@ -179,9 +183,19 @@ void ControlLoops_FastUpdate(uint32_t dt_ms)
                                    APP_BALL_ANGLE_LIMIT_DEG);
   }
 
-  if (status.beam_enabled && (beam_encoder != 0) && angle->valid) {
-    int16_t command = (int16_t)PID_Update(&beam_angle_pid,
-      status.beam_target_deg - angle->beam_angle_deg, dt_s);
+  (void)SA100_GetSnapshot(&angle);
+  if (status.beam_enabled && (beam_encoder != 0) && angle.valid &&
+      SA100_IsFresh(now_ms)) {
+    int16_t command = status.beam_pwm;
+    if (angle.timestamp_ms != beam_last_sample_ms) {
+      float angle_dt_s = dt_s;
+      if (beam_last_sample_ms != 0U) {
+        angle_dt_s = (float)(angle.timestamp_ms - beam_last_sample_ms) * 0.001f;
+      }
+      beam_last_sample_ms = angle.timestamp_ms;
+      command = (int16_t)PID_Update(&beam_angle_pid,
+        status.beam_target_deg - angle.beam_angle_deg, angle_dt_s);
+    }
     if ((beam_encoder->total_count <= APP_BEAM_ENCODER_MIN_COUNT && command < 0) ||
         (beam_encoder->total_count >= APP_BEAM_ENCODER_MAX_COUNT && command > 0)) {
       command = 0;
@@ -191,6 +205,8 @@ void ControlLoops_FastUpdate(uint32_t dt_ms)
     Motor_Set(MOTOR_BEAM, command);
   } else if (status.beam_enabled) {
     status.beam_pwm = 0;
+    beam_last_sample_ms = 0U;
+    PID_Reset(&beam_angle_pid);
     Motor_Brake(MOTOR_BEAM);
   }
 }

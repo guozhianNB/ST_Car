@@ -17,6 +17,7 @@ typedef struct {
 void VisionUART_Init(void);
 void VisionUART_Service(void);
 const VisionBallSample *VisionUART_Get(void);
+bool VisionUART_GetSnapshot(VisionBallSample *copy);
 bool VisionUART_IsFresh(uint32_t now_ms);
 bool VisionUART_ConsumeNewFrame(VisionBallSample *copy);
 void VisionUART_RxEventCallback(uint16_t dma_position);

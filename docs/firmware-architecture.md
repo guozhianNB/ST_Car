@@ -29,6 +29,7 @@
 | `safety_monitor` | 超时、角度/计数越界、P60 堵转、丢线 | 不隐式清除故障 |
 | `app` | 按键、模式、A 点门控、阶段计时、故障降级 | 不实现 HAL 外设初始化 |
 | `telemetry` | 通过 ST-Link VCP 输出单行快照 | 不在控制周期阻塞等待串口 |
+| `bench_debug` | 可编译移除的平衡台架命令、P60 限时脉冲、运行时标定和扩展遥测 | 不控制底盘；未显式开启时不得使能电机 |
 
 旧的 `pid_control.*`、`i2c_soft.*`、`oled.*` 和空的 `road_1.c` 没有加入 IAR 或 CMake 工程；它们只作为早期实验遗留，不应被新代码引用。MPU6050 已改为硬件 I2C3，但当前 H 题主控制不依赖 MPU/Yaw。
 
@@ -43,7 +44,7 @@
 5. `APP_MODE_MOVING_TARGET`：球目标由 `App_SetMovingTarget()` 设置，整圈逻辑同上。
 6. `APP_MODE_ANGLE_TEST`：空管依次跟踪 `0,+1,-1,+2,-2,0°`。
 
-启动前状态机会检查：循迹模式必须看到线；摆杆模式必须收到新鲜 SA100 且水管在水平 ±0.5°；滚球模式还必须有新鲜的真实视觉测量，并且球距该项目初始位置不超过 15 mm（静态/中心模式为 0，任意位置模式为预设目标）。检查不通过时不会拉高 TB6612 STBY。
+启动前状态机会检查：循迹模式必须看到线；摆杆模式必须已经把 `APP_BEAM_RANGE_VERIFIED` 和 `APP_SA100_CALIBRATION_VERIFIED` 置为 1、收到新鲜 SA100 且水管在水平 ±0.5°；滚球模式还必须有新鲜的真实视觉测量，并且球距该项目初始位置不超过 15 mm（静态/中心模式为 0，任意位置模式为预设目标）。检查不通过时不会拉高 TB6612 STBY。
 
 A 点门控同时要求“已经离开起始横线”和“平均里程至少 300 mm”，再次检测到至少 6 路黑线并保持 30 ms 才确认一圈。上述阈值都在 `app_config.h`。
 
@@ -91,3 +92,9 @@ A 点门控同时要求“已经离开起始横线”和“平均里程至少 30
 5. 重新做 `-Wall -Wextra -Werror` 编译和完整链接验证。
 
 仓库保留 IAR 工程，同时提供顶层 `CMakeLists.txt`、`CMakePresets.json` 和 GCC 链接脚本供 VS Code/STM32CubeCLT 构建与 ST-Link 调试。两套工程必须保持相同的活跃源码清单；旧实验模块不得加入任一正式构建。VS Code 的 Debug 预设输出为 `build/debug/ST_Car.elf`，仅构建不会构成硬件验证。
+
+## 独立平衡台架调试
+
+`APP_ENABLE_BENCH_DEBUG=1` 时，LPUART1 RX 接受台架命令。只有明确执行 `bench on` 且正常应用仍在待机时才进入台架状态；此后正常比赛状态机暂停、底盘强制关闭、PC13 作为急停。P60 开环只允许受 `APP_BENCH_OPEN_LOOP_PWM_LIMIT` 和 `APP_BENCH_PULSE_MAX_MS` 限制的脉冲；`APP_BEAM_RANGE_VERIFIED=0` 或 SA100 标定未确认时拒绝角度/滚球闭环，闭环运行时继续执行传感器超时、角度、编码器、堵转和视觉保护。
+
+调试完成后将 `APP_ENABLE_BENCH_DEBUG` 改成 `0`；模块编译为惰性空桩，不再启动 LPUART1 RX，也不能使能电机。完整命令和阶段门禁见 `docs/balance-bench-debug.md`。

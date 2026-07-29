@@ -8,6 +8,24 @@
 #define APP_STATE_UPDATE_MS                10U
 #define APP_TELEMETRY_MS                   100U
 
+/*
+ * Removable balancing-bench console over ST-Link VCP (LPUART1, 115200 8N1).
+ * Set APP_ENABLE_BENCH_DEBUG to 0 after calibration; the module then compiles
+ * to inert stubs and cannot enable a motor.
+ */
+#define APP_ENABLE_BENCH_DEBUG              1
+#define APP_BENCH_OPEN_LOOP_PWM_LIMIT       250
+#define APP_BENCH_PULSE_MAX_MS              500U
+#define APP_BENCH_CLOSED_LOOP_PWM_LIMIT     300.0f
+#define APP_BENCH_ANGLE_LIMIT_DEG            2.0f
+#define APP_BENCH_CLOSED_LOOP_MAX_MS      30000U
+#define APP_BENCH_TELEMETRY_MS              100U
+#define APP_BENCH_INITIAL_ANGLE_KP           30.0f
+#define APP_BENCH_INITIAL_ANGLE_KI            0.0f
+#define APP_BENCH_INITIAL_ANGLE_KD            0.0f
+#define APP_BENCH_INITIAL_BALL_KP             0.005f
+#define APP_BENCH_INITIAL_BALL_KD             0.0f
+
 /* Encoder counts are OUTPUT-shaft counts after the timer's TI12 decoding. */
 #define APP_ENCODER_LEFT_CPR               390.0f
 #define APP_ENCODER_RIGHT_CPR              390.0f
@@ -28,6 +46,7 @@
 #define APP_MOTOR_BEAM_MAX_PWM             700
 
 /* Safe P60 range relative to the mechanically centered startup/home count. */
+#define APP_BEAM_RANGE_VERIFIED              0
 #define APP_BEAM_ENCODER_MIN_COUNT          (-260)
 #define APP_BEAM_ENCODER_MAX_COUNT          260
 #define APP_BEAM_STALL_PWM                  350
@@ -35,6 +54,7 @@
 #define APP_BEAM_STALL_TIMEOUT_MS           300U
 
 /* SA100 PWM conversion. Calibrate offset and sign on the assembled mechanism. */
+#define APP_SA100_CALIBRATION_VERIFIED        0
 #define APP_SA100_DUTY_TO_DEG               360.0f
 #define APP_SA100_HORIZONTAL_RAW_DEG        180.0f
 #define APP_SA100_ANGLE_SIGN                1.0f
@@ -46,7 +66,6 @@
 
 /* Vision protocol: "$B,<x_mm>,<status>\n", 1=measured, 2=held, 0=invalid. */
 #define APP_VISION_TIMEOUT_MS               200U
-#define APP_VISION_STARTUP_GRACE_MS         1200U
 #define APP_BALL_POSITION_LIMIT_MM          105.0f
 #define APP_BALL_TARGET_LIMIT_MM            80.0f
 #define APP_BALL_SPEED_FILTER_ALPHA         0.25f

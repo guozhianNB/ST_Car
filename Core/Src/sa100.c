@@ -7,6 +7,9 @@ static volatile Sa100Sample sample;
 static float previous_raw_deg;
 static float continuous_raw_deg;
 static bool angle_initialized;
+static volatile float calibration_duty_to_deg = APP_SA100_DUTY_TO_DEG;
+static volatile float calibration_horizontal_raw_deg = APP_SA100_HORIZONTAL_RAW_DEG;
+static volatile float calibration_angle_sign = APP_SA100_ANGLE_SIGN;
 
 void SA100_Init(void)
 {
@@ -22,9 +25,47 @@ const Sa100Sample *SA100_Get(void)
   return (const Sa100Sample *)&sample;
 }
 
+bool SA100_GetSnapshot(Sa100Sample *copy)
+{
+  uint32_t primask;
+  if (copy == 0) return false;
+  primask = __get_PRIMASK();
+  __disable_irq();
+  *copy = sample;
+  if (primask == 0U) __enable_irq();
+  return copy->valid;
+}
+
 bool SA100_IsFresh(uint32_t now_ms)
 {
   return sample.valid && ((now_ms - sample.timestamp_ms) <= APP_SA100_TIMEOUT_MS);
+}
+
+void SA100_SetCalibration(float duty_to_deg, float horizontal_raw_deg,
+                          float angle_sign)
+{
+  uint32_t primask;
+  if ((duty_to_deg <= 0.0f) ||
+      ((angle_sign != 1.0f) && (angle_sign != -1.0f))) return;
+  primask = __get_PRIMASK();
+  __disable_irq();
+  calibration_duty_to_deg = duty_to_deg;
+  calibration_horizontal_raw_deg = horizontal_raw_deg;
+  calibration_angle_sign = angle_sign;
+  angle_initialized = false;
+  sample.valid = false;
+  if (primask == 0U) __enable_irq();
+}
+
+void SA100_GetCalibration(float *duty_to_deg, float *horizontal_raw_deg,
+                          float *angle_sign)
+{
+  uint32_t primask = __get_PRIMASK();
+  __disable_irq();
+  if (duty_to_deg != 0) *duty_to_deg = calibration_duty_to_deg;
+  if (horizontal_raw_deg != 0) *horizontal_raw_deg = calibration_horizontal_raw_deg;
+  if (angle_sign != 0) *angle_sign = calibration_angle_sign;
+  if (primask == 0U) __enable_irq();
 }
 
 void SA100_CaptureCallback(void)
@@ -39,7 +80,7 @@ void SA100_CaptureCallback(void)
     sample.valid = false;
     return;
   }
-  raw = ((float)high / (float)period) * APP_SA100_DUTY_TO_DEG;
+  raw = ((float)high / (float)period) * calibration_duty_to_deg;
   if (!angle_initialized) {
     continuous_raw_deg = raw;
     angle_initialized = true;
@@ -51,8 +92,8 @@ void SA100_CaptureCallback(void)
   }
   previous_raw_deg = raw;
   sample.raw_angle_deg = continuous_raw_deg;
-  sample.beam_angle_deg = (continuous_raw_deg - APP_SA100_HORIZONTAL_RAW_DEG) *
-                          APP_SA100_ANGLE_SIGN;
+  sample.beam_angle_deg = (continuous_raw_deg - calibration_horizontal_raw_deg) *
+                          calibration_angle_sign;
   sample.period_us = period;
   sample.high_us = high;
   sample.timestamp_ms = HAL_GetTick();

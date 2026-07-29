@@ -153,6 +153,17 @@ const VisionBallSample *VisionUART_Get(void)
   return (const VisionBallSample *)&sample;
 }
 
+bool VisionUART_GetSnapshot(VisionBallSample *copy)
+{
+  uint32_t primask;
+  if (copy == 0) return false;
+  primask = __get_PRIMASK();
+  __disable_irq();
+  *copy = sample;
+  if (primask == 0U) __enable_irq();
+  return copy->valid;
+}
+
 bool VisionUART_IsFresh(uint32_t now_ms)
 {
   return (sample.timestamp_ms != 0U) &&
