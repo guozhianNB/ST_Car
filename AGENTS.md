@@ -1,6 +1,126 @@
 # Repository agent instructions
 
-Before changing firmware, vision code, CubeMX configuration, wiring assumptions, or control algorithms, read [AGENT.md](./AGENT.md) completely. It is the canonical project context for this repository.
+本文件规定所有 agent 在本仓库中的强制工作方式。它不是项目参数表；项目事实、硬件状态和比赛要求以 [AGENT.md](./AGENT.md) 为入口。
 
-Treat the competition PDF as the authority for scoring constraints, measured hardware/calibration records as the authority for physical parameters, and the current source tree only as an early prototype. Do not infer that a planned module already exists.
+## 1. 开始工作前必须阅读
 
+凡涉及固件、视觉、CubeMX、接线、电源、机械结构、控制算法或调参，必须按顺序完整阅读：
+
+1. [AGENT.md](./AGENT.md)；
+2. [docs/stm32-pinout.md](./docs/stm32-pinout.md)；
+3. [docs/firmware-architecture.md](./docs/firmware-architecture.md)；
+4. 与任务直接相关的 `.ioc`、头文件、源码和硬件手册。
+
+不得只根据聊天记录、旧源码注释、文件名或经验猜测硬件。若文档与源码冲突，先查明原因并报告，不得静默选择其中一方。
+
+## 2. 事实优先级与真实性
+
+发生冲突时，依次采用：
+
+1. 题目 PDF 的比赛硬约束；
+2. 带日期、方法和单位的实物测量/标定记录；
+3. 芯片、开发板和模块的官方手册；
+4. `AGENT.md` 与接线/架构文档中标为已确认的约定；
+5. 当前 `ST_Car.ioc` 与正式构建源码；
+6. 尚未实测的设计值和经验估计。
+
+必须明确区分：
+
+- `VERIFIED`：已由官方资料、编译检查或可复现实测确认；
+- `UNVERIFIED`：代码中已有暂定值，但尚未在最终实物上验证；
+- `TODO`：尚未实现或尚未决定。
+
+禁止把“能编译”“代码已写”“理论可行”描述成“硬件已验证”或“参数已调好”。任何新的实测值都要记录测试条件、单位、测量方法和日期。
+
+## 3. 不得破坏的系统约束
+
+- NUCLEO-G491RE 是唯一实时控制器；MaixCAM2 只负责钢球视觉定位，比赛图传是独立要求。
+- 正式滚球控制必须以 SA100 测得的水管真实角度作为内环反馈；P60 增量编码器只做安全工作区、方向、堵转和调试。
+- 三个电机复位、待机和故障时必须零输出；两路 TB6612 `STBY` 默认保持低。
+- P60 未建立可信中点、SA100 数据无效或机构可能接近死点时，不得使能摆杆电机。
+- 左右轮必须保留两个独立轮速 PI；循迹只产生左右轮目标速度，不得退化成开环 PWM 或“左右差值校正”。
+- `status=2` 是视觉保持值，不是真实测量；不得刷新测量时间、位置滤波或球速微分。
+- 长度、速度、时间、角度统一使用 mm、mm/s、ms、degree；禁止在控制链中混入 cm、m 或未标明的弧度。
+- 所有方向反相、零点、每圈计数、限位和 PID 必须集中在 `Core/Inc/app_config.h` 或明确的参数模块，不得在算法中散落临时负号和魔数。
+
+## 4. 硬件操作安全门禁
+
+Agent 不能假设执行者已经做好安全措施。任何会让电机产生输出的建议、代码或测试步骤，都必须先写明：
+
+1. 车轮悬空，钢球移除；
+2. 首次摆杆测试时连杆脱开，或确保曲柄不可能进入死点；
+3. 首次烧录/测波形时两路 `STBY` 与 MCU 控制线隔离，并在驱动侧可靠下拉到 GND；
+4. 电机电源、逻辑电源和 NUCLEO/MaixCAM2/TB6612 共地已确认；
+5. 电源极性、稳压输出和信号电平已用万用表确认；
+6. 操作者可以立即切断电机主电源。
+
+以下操作禁止直接执行或建议一步完成：
+
+- 三个电机同时首次上电；
+- 未验证编码器方向就闭合速度环；
+- 未标定 SA100 就闭合摆杆角度环；
+- 未验证 P60 安全计数范围就放宽角度/PWM 限制；
+- 带球直接调角度内环；
+- 尚未完成静态球控制就进行高速组合循迹；
+- 通过注释或临时宏绕过超时、限位、堵转、启动检查或 `STBY` 安全逻辑。
+
+若用户要求的操作可能造成失控、短路、过流、机构夹伤或曲柄撞死点，先停止并明确风险及所需确认。
+
+## 5. 分阶段调试，不得跳级
+
+每一级只有在保存数据并通过验收后才能进入下一级：
+
+1. 将两路 STBY 在驱动侧硬件保持低，检查供电、GPIO 静态电平和三路约 20 kHz PWM；
+2. 单电机低 PWM，确认方向、制动/滑行和最低有效 PWM；
+3. 单编码器手动转一圈，确认方向、回绕和最终 TI12 模式 counts/rev；
+4. P60 脱球/低 PWM，确定机械中点、两侧安全边界和堵转特征；
+5. 只接 SA100，确认周期、占空比公式、零点、方向和超时；
+6. 空管闭合角度环，依次测试 `0,+1,-1,+2,-2,0°`；
+7. 固定小车完成视觉 `-100,0,+100 mm`、延迟和丢球测试；
+8. 小车静止完成球位置外环；
+9. 分别完成两轮速度环，再完成低速循迹和 A 点识别；
+10. 最后低速组合，逐步提高速度；加速度前馈最后启用。
+
+调参必须一次只改变一个层级，保留目标、反馈、输出、周期、电池电压和机械状态。出现振荡时先降低输出上限和增益，不得先关闭安全保护。
+
+## 6. CubeMX、引脚和生成代码规则
+
+- [docs/stm32-pinout.md](./docs/stm32-pinout.md)、`ST_Car.ioc`、`Core/Inc/main.h` 和 HAL 初始化必须一致。
+- 修改引脚前先检查复用功能、板载焊桥/外设占用、3.3 V/5 V 容限、连接器是否实际引出以及中断/DMA 冲突。
+- PA13/PA14 保留 SWD；PA2/PA3 保留 ST-Link VCP；PC13 是板载用户键，默认接法不可凭经验更改极性。
+- 重新生成 CubeMX 代码前先保存当前变更；生成后必须审查 `main.c`、`gpio.c`、`tim.c`、`usart.c`、`i2c.c`、MSP、IRQ 和 IAR 工程 diff。
+- 不得让 CubeMX 恢复旧的 TIM4 双 PWM、删除 UART4 RX DMA、改变 TIM15 PWM Input、把 STBY 默认拉高或重新占用 SWD。
+- 手工业务逻辑不得重新堆回 `main.c` 或中断函数。ISR 只做捕获、快照、时间戳和事件标志。
+
+## 7. 代码边界与并发规则
+
+- `motor` 只负责 TB6612；`encoder` 只负责计数与速度；`sa100`、`vision_uart`、`line_sensor` 只生产传感器数据。
+- `control_loops` 负责控制器，`app` 负责比赛流程，`safety_monitor` 负责故障判断；不得跨层直接写 GPIO/PWM。
+- UART 接收使用 DMA/中断；遥测不得阻塞控制周期。运行状态禁止长 `HAL_Delay()`、忙等串口和在 ISR 内格式化字符串。
+- 中断与主循环共享的多字段数据必须使用有效标志、临界区或一致性快照，不能假设结构体整体原子更新。
+- 新控制功能必须有输出限幅、超时、复位、模式切换和故障路径；只写正常路径视为未完成。
+- 旧 `pid_control.*`、`i2c_soft.*`、`oled.*`、`road_1.c` 不属于正式控制链，除非先完成明确的迁移方案和构建验证，否则不得重新加入工程。
+
+## 8. 修改后的强制检查
+
+提交前至少完成与改动相称的检查：
+
+- `git diff --check`；
+- IAR 工程中的文件引用存在且没有误纳入旧模块；
+- 活跃固件用 STM32 交叉编译器执行 `-Wall -Wextra -Werror`；
+- 改动外设时核对 IOC 引脚/IP 数量、DMA 和 NVIC；
+- 改动协议时同时检查 `Vision/cv.py` 与 `vision_uart.c`；
+- 改动安全参数时给出实测依据和恢复方案。
+
+没有真实硬件时只能报告“静态/编译验证通过”，不能报告“上车验证通过”。测试无法执行时要说明原因和下一步实测方法。
+
+## 9. 文档同步要求
+
+发生以下变化时必须在同一提交中更新文档：
+
+- 引脚、定时器、DMA、IRQ、UART/I2C：更新 `docs/stm32-pinout.md`；
+- 调度、模块边界、状态机、故障行为：更新 `docs/firmware-architecture.md`；
+- 硬件方案、实测参数、已实现/未实现状态：更新 `AGENT.md`；
+- 视觉帧格式或坐标：同时更新 `AGENT.md` 和两端源码注释。
+
+不要只把关键事实留在聊天记录。若新信息来自用户口述且尚无实测记录，应标为 `UNVERIFIED` 并列出确认方法。

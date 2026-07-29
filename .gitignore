@@ -1,0 +1,5 @@
+/build/
+/.cache/
+/.cmake/
+gdbClient_log.txt
+gdbServer_log.txt

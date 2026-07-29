@@ -1,5 +1,5 @@
 #include "mpu.h"
-#include "i2c_soft.h"
+#include "i2c.h"
 #include "main.h"
 #include <stdint.h>
 #include <math.h>
@@ -20,33 +20,38 @@ bool MPU6050_Init(void)
     uint8_t data;
 
   /* MPU6050 wiring: PC8=SCL, PC9=SDA. */
-  I2C_Soft_Init(GPIOC, GPIO_PIN_8, GPIOC, GPIO_PIN_9);
+  /* I2C3 is initialized by main: PC8=SCL, PC9=SDA. */
 
     // 检查设备ID WHO_AM_I
-  if (I2C_Soft_ReadBytes(MPU6050_ADDR, WHO_AM_I_REG, &check, 1) != 0U ||
+  if (HAL_I2C_Mem_Read(&hi2c3, MPU6050_ADDR << 1, WHO_AM_I_REG,
+                       I2C_MEMADD_SIZE_8BIT, &check, 1, 20U) != HAL_OK ||
       check != MPU6050_ADDR)
   {
     return false;
   }
         // Power management register 0X6B we should write all 0's to wake the sensor up
         data = 0;
-        I2C_Soft_WriteBytes(MPU6050_ADDR, PWR_MGMT_1_REG, &data, 1);
+        (void)HAL_I2C_Mem_Write(&hi2c3, MPU6050_ADDR << 1, PWR_MGMT_1_REG,
+                                I2C_MEMADD_SIZE_8BIT, &data, 1, 20U);
 
         // Set DATA RATE of 1KHz by writing SMPLRT_DIV register
         data = 0x07;
-        I2C_Soft_WriteBytes(MPU6050_ADDR, SMPLRT_DIV_REG, &data, 1);
+        (void)HAL_I2C_Mem_Write(&hi2c3, MPU6050_ADDR << 1, SMPLRT_DIV_REG,
+                                I2C_MEMADD_SIZE_8BIT, &data, 1, 20U);
 
         // Set accelerometer configuration in ACCEL_CONFIG Register
         // XA_ST=0,YA_ST=0,ZA_ST=0 => No self test
         // AFS_SEL=0 => ±2g
         data = 0x00;
-        I2C_Soft_WriteBytes(MPU6050_ADDR, ACCEL_CONFIG_REG, &data, 1);
+        (void)HAL_I2C_Mem_Write(&hi2c3, MPU6050_ADDR << 1, ACCEL_CONFIG_REG,
+                                I2C_MEMADD_SIZE_8BIT, &data, 1, 20U);
 
         // Set Gyroscopic configuration in GYRO_CONFIG Register
         // XG_ST=0,YG_ST=0,ZG_ST=0 => No self test
         // FS_SEL=0 => ±250 °/s
         data = 0x00;
-        I2C_Soft_WriteBytes(MPU6050_ADDR, GYRO_CONFIG_REG, &data, 1);
+        (void)HAL_I2C_Mem_Write(&hi2c3, MPU6050_ADDR << 1, GYRO_CONFIG_REG,
+                                I2C_MEMADD_SIZE_8BIT, &data, 1, 20U);
 
         //设置采样率
         MPU_Set_Rate(50);
@@ -91,7 +96,8 @@ void MPU_Set_Rate(uint16_t rate)
 
 void MPU_Write_Byte(uint8_t reg, uint8_t data)
 {
-  I2C_Soft_WriteBytes(MPU6050_ADDR, reg, &data, 1);
+  (void)HAL_I2C_Mem_Write(&hi2c3, MPU6050_ADDR << 1, reg,
+                          I2C_MEMADD_SIZE_8BIT, &data, 1, 20U);
 }
 
 void MPU6050_ReadRawData(int16_t* AccelData, int16_t* GyroData)
@@ -100,8 +106,9 @@ void MPU6050_ReadRawData(int16_t* AccelData, int16_t* GyroData)
   uint8_t status;
 
     // Read 14 bytes of data starting from ACCEL_XOUT_H register
-  status = I2C_Soft_ReadBytes(MPU6050_ADDR, 0x3B, Rec_Data, 14);
-  if (status != 0)
+  status = (uint8_t)HAL_I2C_Mem_Read(&hi2c3, MPU6050_ADDR << 1, 0x3B,
+                                     I2C_MEMADD_SIZE_8BIT, Rec_Data, 14, 20U);
+  if (status != (uint8_t)HAL_OK)
   {
     if (AccelData != NULL)
     {

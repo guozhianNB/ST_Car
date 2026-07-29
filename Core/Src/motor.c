@@ -1,164 +1,128 @@
-/*
- * 电机控制模块
- * 输入范围[-1000, 1000], 正数表示前进，负数表示后退
- */
-
-#include "stm32g4xx_hal.h"
-#include "tim.h"
-#include "gpio.h"
-#include <math.h>
 #include "motor.h"
+#include "app_config.h"
+#include "tim.h"
 
-#define FW_L_GPIO_Port GPIOC
-#define BW_L_GPIO_Port GPIOC
+typedef struct {
+  GPIO_TypeDef *in1_port;
+  uint16_t in1_pin;
+  GPIO_TypeDef *in2_port;
+  uint16_t in2_pin;
+  uint32_t channel;
+  int8_t sign;
+  int16_t min_pwm;
+  int16_t max_pwm;
+} MotorHardware;
 
-#define HTIM_PWM_L htim4 // 左电机使用定时器4
-#define HTIM_PWM_R htim4 // 右电机使用定时器4
-#define TIM_CHANNEL_L TIM_CHANNEL_1 // 左电机使用定时器4的通道1
-#define TIM_CHANNEL_R TIM_CHANNEL_2 // 右电机使用定时器4的通道2
+static const MotorHardware motor_hw[MOTOR_COUNT] = {
+  {MOTOR_L_IN1_GPIO_Port, MOTOR_L_IN1_Pin, MOTOR_L_IN2_GPIO_Port,
+   MOTOR_L_IN2_Pin, TIM_CHANNEL_1, APP_MOTOR_LEFT_SIGN,
+   APP_MOTOR_LEFT_MIN_PWM, APP_MOTOR_CHASSIS_MAX_PWM},
+  {MOTOR_R_IN1_GPIO_Port, MOTOR_R_IN1_Pin, MOTOR_R_IN2_GPIO_Port,
+   MOTOR_R_IN2_Pin, TIM_CHANNEL_2, APP_MOTOR_RIGHT_SIGN,
+   APP_MOTOR_RIGHT_MIN_PWM, APP_MOTOR_CHASSIS_MAX_PWM},
+  {MOTOR_BEAM_IN1_GPIO_Port, MOTOR_BEAM_IN1_Pin, MOTOR_BEAM_IN2_GPIO_Port,
+   MOTOR_BEAM_IN2_Pin, TIM_CHANNEL_3, APP_MOTOR_BEAM_SIGN,
+   APP_MOTOR_BEAM_MIN_PWM, APP_MOTOR_BEAM_MAX_PWM}
+};
 
-/* -------- 电机方向控制引脚 -------- */
-#define FW_L_Port GPIOC          // 左电机前进引脚端口
-#define FW_L_Pin  GPIO_PIN_0     // 左电机前进引脚
-#define FW_R_GPIO_Port GPIOC     // 右电机前进引脚端口
-#define FW_R_Pin  GPIO_PIN_1     // 右电机前进引脚
-#define BW_L_Port GPIOC          // 左电机后退引脚端口
-#define BW_L_Pin  GPIO_PIN_2     // 左电机后退引脚
-#define BW_R_GPIO_Port GPIOC     // 右电机后退引脚端口
-#define BW_R_Pin  GPIO_PIN_3     // 右电机后退引脚
+static int16_t motor_command[MOTOR_COUNT];
 
-/* -------- 编码器定时器配置 -------- */
-#define HTIM_Encoder_L htim2     // 左电机编码器使用定时器2
-#define HTIM_Encoder_R htim3     // 右电机编码器使用定时器3
-
-/* -------- 电机参数 -------- */
-#define MOTOR_OUTPUT_LIMIT   1000  // 电机输出的最大值，单位为千分数
-#define MOTOR_OUTPUT_DEADBAND 60   // 电机输出死区，小于该值直接按0处理，减少抖动
-#define CIRCLE_COUNT 780          // 轮子每转一圈编码器计数的次数（需根据实际编码器调整）
-
-
+static int16_t LimitCommand(int32_t command, int16_t limit)
+{
+  if (command > limit) return limit;
+  if (command < -limit) return (int16_t)-limit;
+  return (int16_t)command;
+}
 
 void Motor_Init(void)
 {
-    // 初始化电机
-    HAL_TIM_PWM_Start(&HTIM_PWM_L, TIM_CHANNEL_L); // 启动定时器4的通道1
-    HAL_TIM_PWM_Start(&HTIM_PWM_R, TIM_CHANNEL_R); // 启动定时器4的通道2
-    HAL_TIM_Encoder_Start(&HTIM_Encoder_L, TIM_CHANNEL_ALL); // 启动定时器2的编码器模式
-    HAL_TIM_Encoder_Start(&HTIM_Encoder_R, TIM_CHANNEL_ALL); // 启动定时器3的编码器模式
+  if (HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1) != HAL_OK) Error_Handler();
+  if (HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2) != HAL_OK) Error_Handler();
+  if (HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3) != HAL_OK) Error_Handler();
+  Motor_EmergencyStop();
 }
 
-//============================编码器操作===========================
-int Motor_GetEncoderCount(void)
+void Motor_EnableChassis(bool enable)
 {
-    // 获取电机编码器计数值
-    int countL = (int)__HAL_TIM_GET_COUNTER(&HTIM_Encoder_L); // 获取定时器2的计数值
-    int countR = (int)__HAL_TIM_GET_COUNTER(&HTIM_Encoder_R); // 获取定时器3的计数值
-    return (countL + countR) / 2; // 返回左右电机编码器计数值的平均值
-}
-int Motor_GetEncoderCountL(void)
-{
-    // 获取左电机编码器计数值
-    return (int)__HAL_TIM_GET_COUNTER(&HTIM_Encoder_L); // 获取定时器2的计数值
-}
-int Motor_GetEncoderCountR(void)
-{
-    // 获取右电机编码器计数值
-    return (int)__HAL_TIM_GET_COUNTER(&HTIM_Encoder_R); // 获取定时器3的计数值
-}
-//=================================================================
-
-void Motor_SetSpeed(int speedL, int speedR) //-1000~+1000
-{
-    /*
-     * 设置电机速度
-     * speedL: 左电机速度，范围[-1000, 1000]，正数表示前进，负数表示后退
-     * speedR: 右电机速度，范围[-1000, 1000], 正数表示前进，负数表示后退
-     */
-    if(speedL > MOTOR_OUTPUT_LIMIT) speedL = MOTOR_OUTPUT_LIMIT;
-    if(speedL < -MOTOR_OUTPUT_LIMIT) speedL = -MOTOR_OUTPUT_LIMIT;
-    if(speedR > MOTOR_OUTPUT_LIMIT) speedR = MOTOR_OUTPUT_LIMIT;
-    if(speedR < -MOTOR_OUTPUT_LIMIT) speedR = -MOTOR_OUTPUT_LIMIT;
-
-    //死区处理
-    if (speedL < MOTOR_OUTPUT_DEADBAND && speedL > -MOTOR_OUTPUT_DEADBAND)
-    {
-        speedL = 0;
-    }
-    if (speedR < MOTOR_OUTPUT_DEADBAND && speedR > -MOTOR_OUTPUT_DEADBAND)
-    {
-        speedR = 0;
-    }
-    
-    // 控制左电机
-    if (speedL > 0)
-    {
-        // 前进
-        HAL_GPIO_WritePin(FW_L_GPIO_Port, FW_L_Pin, GPIO_PIN_SET); // 左电机正转
-        HAL_GPIO_WritePin(BW_L_GPIO_Port, BW_L_Pin, GPIO_PIN_RESET); // 左电机反转
-        __HAL_TIM_SET_COMPARE(&HTIM_PWM_L, TIM_CHANNEL_L, speedL); // 设置PWM占空比
-    }
-    else if (speedL < 0)
-    {
-        // 后退
-        HAL_GPIO_WritePin(FW_L_GPIO_Port, FW_L_Pin, GPIO_PIN_RESET); // 左电机正转
-        HAL_GPIO_WritePin(BW_L_GPIO_Port, BW_L_Pin, GPIO_PIN_SET); // 左电机反转
-        __HAL_TIM_SET_COMPARE(&HTIM_PWM_L, TIM_CHANNEL_L, -speedL); // 设置PWM占空比
-    }
-    else
-    {
-        // 刹车
-        HAL_GPIO_WritePin(FW_L_GPIO_Port, FW_L_Pin, GPIO_PIN_SET);
-        HAL_GPIO_WritePin(BW_L_GPIO_Port, BW_L_Pin, GPIO_PIN_SET);
-        __HAL_TIM_SET_COMPARE(&HTIM_PWM_L, TIM_CHANNEL_L, 0);
-    }
-    // 控制右电机
-    if (speedR > 0)
-    {
-        // 前进
-        HAL_GPIO_WritePin(FW_R_GPIO_Port, FW_R_Pin, GPIO_PIN_SET); // 右电机正转
-        HAL_GPIO_WritePin(BW_R_GPIO_Port, BW_R_Pin, GPIO_PIN_RESET); // 右电机反转
-        __HAL_TIM_SET_COMPARE(&HTIM_PWM_R, TIM_CHANNEL_R, speedR); // 设置PWM占空比
-    }
-    else if (speedR < 0)
-    {
-        // 后退
-        HAL_GPIO_WritePin(FW_R_GPIO_Port, FW_R_Pin, GPIO_PIN_RESET); // 右电机正转
-        HAL_GPIO_WritePin(BW_R_GPIO_Port, BW_R_Pin, GPIO_PIN_SET); // 右电机反转
-        __HAL_TIM_SET_COMPARE(&HTIM_PWM_R, TIM_CHANNEL_R, -speedR); // 设置PWM占空比
-    }
-    else
-    {
-        // 刹车
-        HAL_GPIO_WritePin(FW_R_GPIO_Port, FW_R_Pin, GPIO_PIN_SET);
-        HAL_GPIO_WritePin(BW_R_GPIO_Port, BW_R_Pin, GPIO_PIN_SET);
-        __HAL_TIM_SET_COMPARE(&HTIM_PWM_R, TIM_CHANNEL_R, 0);
-    }
+  if (!enable) {
+    Motor_Coast(MOTOR_LEFT);
+    Motor_Coast(MOTOR_RIGHT);
+  }
+  HAL_GPIO_WritePin(CHASSIS_STBY_GPIO_Port, CHASSIS_STBY_Pin,
+                    enable ? GPIO_PIN_SET : GPIO_PIN_RESET);
 }
 
-double Get_SpeedL(int dt_ms)
+void Motor_EnableBeam(bool enable)
 {
-    static int lastCounterL = 0;
-    int currentCounterL = (int)__HAL_TIM_GET_COUNTER(&HTIM_Encoder_L);
-    int deltaCountL = currentCounterL - lastCounterL;
-    lastCounterL = currentCounterL;
-
-    if (dt_ms <= 0) return 0.0;
-
-    // 计算速度（归一化值，单位：编码器圈数/毫秒）
-    double speedL = (double)deltaCountL / CIRCLE_COUNT / dt_ms;
-    return speedL;
+  if (!enable) Motor_Coast(MOTOR_BEAM);
+  HAL_GPIO_WritePin(BEAM_STBY_GPIO_Port, BEAM_STBY_Pin,
+                    enable ? GPIO_PIN_SET : GPIO_PIN_RESET);
 }
 
-double Get_SpeedR(int dt_ms)
+void Motor_Set(MotorId id, int16_t command)
 {
-    static int lastCounterR = 0;
-    int currentCounterR = (int)__HAL_TIM_GET_COUNTER(&HTIM_Encoder_R);
-    int deltaCountR = currentCounterR - lastCounterR;
-    lastCounterR = currentCounterR;
+  const MotorHardware *hw;
+  int16_t magnitude;
+  if ((unsigned)id >= MOTOR_COUNT) return;
+  hw = &motor_hw[id];
+  command = LimitCommand((int32_t)command * hw->sign, hw->max_pwm);
+  motor_command[id] = command;
+  if (command == 0) {
+    Motor_Brake(id);
+    return;
+  }
+  magnitude = (command < 0) ? (int16_t)-command : command;
+  if (magnitude < hw->min_pwm) magnitude = hw->min_pwm;
+  if (command > 0) {
+    HAL_GPIO_WritePin(hw->in1_port, hw->in1_pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(hw->in2_port, hw->in2_pin, GPIO_PIN_RESET);
+  } else {
+    HAL_GPIO_WritePin(hw->in1_port, hw->in1_pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(hw->in2_port, hw->in2_pin, GPIO_PIN_SET);
+  }
+  __HAL_TIM_SET_COMPARE(&htim1, hw->channel,
+                        ((uint32_t)magnitude * (htim1.Init.Period + 1U)) /
+                        APP_PWM_FULL_SCALE);
+}
 
-    if (dt_ms <= 0) return 0.0;
+int16_t Motor_GetCommand(MotorId id)
+{
+  return ((unsigned)id < MOTOR_COUNT) ? motor_command[id] : 0;
+}
 
-    // 计算速度（归一化值，单位：编码器圈数/毫秒）
-    double speedR = (double)deltaCountR / CIRCLE_COUNT / dt_ms;
-    return speedR;
+void Motor_Brake(MotorId id)
+{
+  const MotorHardware *hw;
+  if ((unsigned)id >= MOTOR_COUNT) return;
+  hw = &motor_hw[id];
+  __HAL_TIM_SET_COMPARE(&htim1, hw->channel, 0);
+  HAL_GPIO_WritePin(hw->in1_port, hw->in1_pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(hw->in2_port, hw->in2_pin, GPIO_PIN_SET);
+  motor_command[id] = 0;
+}
+
+void Motor_Coast(MotorId id)
+{
+  const MotorHardware *hw;
+  if ((unsigned)id >= MOTOR_COUNT) return;
+  hw = &motor_hw[id];
+  __HAL_TIM_SET_COMPARE(&htim1, hw->channel, 0);
+  HAL_GPIO_WritePin(hw->in1_port, hw->in1_pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(hw->in2_port, hw->in2_pin, GPIO_PIN_RESET);
+  motor_command[id] = 0;
+}
+
+void Motor_EmergencyStop(void)
+{
+  Motor_Coast(MOTOR_LEFT);
+  Motor_Coast(MOTOR_RIGHT);
+  Motor_Coast(MOTOR_BEAM);
+  HAL_GPIO_WritePin(CHASSIS_STBY_GPIO_Port, CHASSIS_STBY_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(BEAM_STBY_GPIO_Port, BEAM_STBY_Pin, GPIO_PIN_RESET);
+}
+
+void Motor_SetSpeed(int speed_left, int speed_right)
+{
+  Motor_Set(MOTOR_LEFT, LimitCommand(speed_left, APP_PWM_FULL_SCALE));
+  Motor_Set(MOTOR_RIGHT, LimitCommand(speed_right, APP_PWM_FULL_SCALE));
 }
