@@ -362,7 +362,10 @@ void App_Run(void)
   }
   if ((now - telemetry_tick_ms) >= APP_TELEMETRY_MS) {
     telemetry_tick_ms = now;
-    Telemetry_Update(now);
+    /* Keep the bench command line quiet while the normal app is in standby. */
+    if (!APP_ENABLE_BENCH_DEBUG || (app.state != APP_STATE_STANDBY)) {
+      Telemetry_Update(now);
+    }
   }
 }
 

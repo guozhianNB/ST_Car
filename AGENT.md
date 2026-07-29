@@ -205,7 +205,7 @@ STM32 解析器必须按换行组帧、限制长度、校验字段和数值范�
 - `line_sensor` 已实现 8 路有序采样、加权误差、丢线保持和 A 点横线判断。
 - `pid`/`control_loops` 已实现左右轮独立 PI、目标速度斜坡、循迹 PD/弯道降速、球位置 PD 和 SA100 水管角度 PID，并强制 P60 方向限位。
 - `app`/`safety_monitor` 已实现待机、单独循迹、静态滚球、AB 中心平衡、整圈中心平衡、任意位置平衡、角度测试、完成和故障状态。
-- `telemetry` 每 100 ms 通过 ST-Link VCP 非阻塞输出控制快照。
+- `telemetry` 在正常运行态每 100 ms 通过 ST-Link VCP 非阻塞输出控制快照；启用台架调试时，待机态保持安静，台架连续遥测由 `stream on [ms]` 显式开启。
 - `bench_debug` 提供编译期开关控制的独立平衡台架控制台：P60 限时低 PWM 脉冲、编码器清零、SA100 运行时标定、角度/球目标和 PID 运行时调节；台架激活时底盘强制关闭，PC13 为急停。P60 范围与 SA100 标定门禁未确认时固件拒绝闭环。完整步骤见 `docs/balance-bench-debug.md`。
 - `EWARM/ST_Car.ewp` 已纳入当前模块和必要 HAL 驱动；核心源文件已通过 GCC `-Wall -Wextra -Werror` 语法检查及完整 Cortex-M4 链接。
 - `Vision/cv.py` 保留 640×480、30 FPS 的钢球检测和毫米位置发送实现。

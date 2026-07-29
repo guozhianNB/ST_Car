@@ -41,13 +41,13 @@ Get-CimInstance Win32_SerialPort | Select-Object DeviceID,Name
 python -m pip install pyserial
 ```
 
-6. VS Code 选择“终端 → 运行任务 → Bench: Serial Console”，输入例如 `COM5`；也可直接运行：
+6. 只打开一个串口程序：在 VS Code 的集成终端直接运行下面的命令。不要再同时打开串口助手、Arduino 串口监视器或另一个 Python 控制台；同一个 COM 口通常只能被一个程序占用。
 
 ```powershell
 python tools/bench_console.py --port COM5
 ```
 
-串口为 115200 8N1。连接后输入：
+串口为 115200 8N1。程序持续运行、等待命令是正常现象，并不是卡死；退出使用 `Ctrl+C`。连接后应看到 `bench> ` 提示符，在这个提示符后直接输入：
 
 ```text
 help
@@ -64,6 +64,8 @@ bench off
 
 控制台退出时也会尝试发送这两条命令，但改线前仍须物理断开 VM。
 
+台架模式默认不连续输出数据，`status` 只返回一帧。需要观察动态过程时输入 `stream on 200`，表示每 200 ms 输出一帧；结束观察输入 `stream off`。如果出现“无法打开 COM 口/Access denied”，说明另一个串口程序仍占用了同一个端口，关闭它后重试。
+
 ## 4. 命令表
 
 | 命令 | 作用 | 前置条件 |
@@ -71,6 +73,8 @@ bench off
 | `bench on` | 进入台架模式并关闭全部输出 | 正常应用为 standby |
 | `bench off` | 关闭输出并退出台架模式 | 任意台架状态 |
 | `status` | 立即输出完整快照 | 台架已开启 |
+| `stream on [ms]` | 连续输出快照，默认 100 ms，可设 50～2000 ms | 台架已开启 |
+| `stream off` | 停止连续输出，恢复安静命令行 | 台架已开启 |
 | `stop` | 关闭两块 STBY，故障后回到 idle | 台架已开启 |
 | `zero` | 人工确认安全机械中点后将 P60 编码器清零 | 输出已停止 |
 | `pulse <pwm> <ms>` | P60 开环限时脉冲，如 `pulse 100 200` | 当前计数未触边界 |
@@ -83,10 +87,10 @@ bench off
 | `sa cal <scale> <zero> <sign>` | 设置 `raw=duty*scale`、`angle=(raw-zero)*sign` | 输出已停止 |
 | `config` | 输出当前参数汇总 | 台架已开启 |
 
-遥测以 `BENCH` 开头，主要字段为：
+`status` 或已开启的连续遥测以 `BENCH` 开头，主要字段为：
 
 ```text
-mode/fault/pwm/count/delta
+mode/fault/stream/rate/pwm/count/delta
 sa/fresh/sacal/rangeok/per/high/raw/ang/aref
 vision/vfresh/ball/vel/bref
 akp/aki/akd/bkp/bkd/bsign/plim/alim

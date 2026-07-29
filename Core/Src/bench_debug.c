@@ -168,12 +168,13 @@ static void QueueStatus(uint32_t now_ms)
   (void)VisionUART_GetSnapshot(&ball);
   SA100_GetCalibration(&scale, &zero, &sign);
   QueueMessage(
-    "BENCH t=%lu mode=%s fault=%s pwm=%d count=%lld delta=%ld "
+    "BENCH t=%lu mode=%s fault=%s stream=%u rate=%lu pwm=%d count=%lld delta=%ld "
     "sa=%u fresh=%u sacal=%u rangeok=%u per=%lu high=%lu raw=%.3f ang=%.3f aref=%.3f "
     "vision=%u vfresh=%u ball=%.2f vel=%.2f bref=%.2f "
     "akp=%.3f aki=%.3f akd=%.3f bkp=%.5f bkd=%.5f bsign=%.0f "
     "plim=%.0f alim=%.2f scale=%.3f zero=%.3f sasign=%.0f\r\n",
     (unsigned long)now_ms, ModeName(bench.mode), FaultName(bench.fault),
+    bench.stream_enabled ? 1U : 0U, (unsigned long)bench.stream_period_ms,
     Motor_GetCommand(MOTOR_BEAM), (long long)encoder->total_count,
     (long)encoder->delta_count, angle.valid ? 1U : 0U,
     SA100_IsFresh(now_ms) ? 1U : 0U,
@@ -213,7 +214,7 @@ static void HandleCommand(char *line, uint32_t now_ms)
 
   if (count == 0U) return;
   if (strcmp(token[0], "help") == 0) {
-    QueueMessage("OK commands: bench on|off; status; stop; zero; pulse <signed_pwm> <ms>; "
+    QueueMessage("OK commands: bench on|off; status; stream on [ms]|off; stop; zero; pulse <signed_pwm> <ms>; "
                  "angle <deg>; ball <mm>; gain angle <kp> <ki> <kd>; "
                  "gain ball <kp> <kd> <sign>; limit pwm <value>; "
                  "limit angle <deg>; sa cal <scale> <zero> <sign>; config\r\n");
@@ -228,6 +229,7 @@ static void HandleCommand(char *line, uint32_t now_ms)
     StopOutputs();
     bench.mode = BENCH_MODE_IDLE;
     bench.fault = BENCH_FAULT_NONE;
+    bench.stream_enabled = false;
     fast_tick_ms = now_ms;
     telemetry_tick_ms = now_ms;
     QueueMessage("OK bench active; chassis disabled; PC13 is emergency stop\r\n");
@@ -238,12 +240,34 @@ static void HandleCommand(char *line, uint32_t now_ms)
     StopOutputs();
     bench.mode = BENCH_MODE_OFF;
     bench.fault = BENCH_FAULT_NONE;
+    bench.stream_enabled = false;
     QueueMessage("OK bench disabled\r\n");
     return;
   }
   if (!EnsureActive()) return;
   if (strcmp(token[0], "status") == 0) {
     QueueStatus(now_ms);
+  } else if (((count == 2U) || (count == 3U)) &&
+             (strcmp(token[0], "stream") == 0) &&
+             (strcmp(token[1], "on") == 0)) {
+    uint32_t period_ms = APP_BENCH_TELEMETRY_MS;
+    if (count == 3U) {
+      if (!ParseLongValue(token[2], &integer_a) ||
+          (integer_a < 50L) || (integer_a > 2000L)) {
+        QueueMessage("ERR stream period must be 50..2000 ms\r\n");
+        return;
+      }
+      period_ms = (uint32_t)integer_a;
+    }
+    bench.stream_period_ms = period_ms;
+    bench.stream_enabled = true;
+    telemetry_tick_ms = now_ms;
+    QueueMessage("OK stream enabled period=%lu ms; use 'stream off' to stop\r\n",
+                 (unsigned long)period_ms);
+  } else if ((count == 2U) && (strcmp(token[0], "stream") == 0) &&
+             (strcmp(token[1], "off") == 0)) {
+    bench.stream_enabled = false;
+    QueueMessage("OK stream disabled\r\n");
   } else if (strcmp(token[0], "stop") == 0) {
     StopOutputs();
     bench.mode = BENCH_MODE_IDLE;
@@ -503,6 +527,8 @@ void BenchDebug_Init(uint32_t now_ms)
   bench.pwm_limit = APP_BENCH_CLOSED_LOOP_PWM_LIMIT;
   bench.angle_limit_deg = APP_BENCH_ANGLE_LIMIT_DEG;
   bench.sa_calibration_confirmed = APP_SA100_CALIBRATION_VERIFIED != 0;
+  bench.stream_enabled = false;
+  bench.stream_period_ms = APP_BENCH_TELEMETRY_MS;
   ReinitializeAnglePid();
   rx_head = 0U;
   rx_tail = 0U;
@@ -558,8 +584,8 @@ bool BenchDebug_Run(uint32_t now_ms)
     }
   }
 
-  if ((bench.mode != BENCH_MODE_OFF) &&
-      ((now_ms - telemetry_tick_ms) >= APP_BENCH_TELEMETRY_MS)) {
+  if ((bench.mode != BENCH_MODE_OFF) && bench.stream_enabled &&
+      ((now_ms - telemetry_tick_ms) >= bench.stream_period_ms)) {
     telemetry_tick_ms = now_ms;
     QueueStatus(now_ms);
   }

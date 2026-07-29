@@ -38,6 +38,8 @@ typedef struct {
   float pwm_limit;
   float angle_limit_deg;
   bool sa_calibration_confirmed;
+  bool stream_enabled;
+  uint32_t stream_period_ms;
 } BenchDebugStatus;
 
 void BenchDebug_Init(uint32_t now_ms);

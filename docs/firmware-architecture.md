@@ -95,6 +95,6 @@ A 点门控同时要求“已经离开起始横线”和“平均里程至少 30
 
 ## 独立平衡台架调试
 
-`APP_ENABLE_BENCH_DEBUG=1` 时，LPUART1 RX 接受台架命令。只有明确执行 `bench on` 且正常应用仍在待机时才进入台架状态；此后正常比赛状态机暂停、底盘强制关闭、PC13 作为急停。P60 开环只允许受 `APP_BENCH_OPEN_LOOP_PWM_LIMIT` 和 `APP_BENCH_PULSE_MAX_MS` 限制的脉冲；`APP_BEAM_RANGE_VERIFIED=0` 或 SA100 标定未确认时拒绝角度/滚球闭环，闭环运行时继续执行传感器超时、角度、编码器、堵转和视觉保护。
+`APP_ENABLE_BENCH_DEBUG=1` 时，LPUART1 RX 接受台架命令。为保证命令可输入，正常应用待机时不自动发送普通遥测，进入台架后连续遥测也默认关闭；`status` 输出单帧，`stream on [ms]`/`stream off` 显式控制连续输出。只有明确执行 `bench on` 且正常应用仍在待机时才进入台架状态；此后正常比赛状态机暂停、底盘强制关闭、PC13 作为急停。P60 开环只允许受 `APP_BENCH_OPEN_LOOP_PWM_LIMIT` 和 `APP_BENCH_PULSE_MAX_MS` 限制的脉冲；`APP_BEAM_RANGE_VERIFIED=0` 或 SA100 标定未确认时拒绝角度/滚球闭环，闭环运行时继续执行传感器超时、角度、编码器、堵转和视觉保护。
 
 调试完成后将 `APP_ENABLE_BENCH_DEBUG` 改成 `0`；模块编译为惰性空桩，不再启动 LPUART1 RX，也不能使能电机。完整命令和阶段门禁见 `docs/balance-bench-debug.md`。

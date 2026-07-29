@@ -50,13 +50,16 @@ def main() -> int:
     stopped = threading.Event()
 
     with serial.Serial(port_name, args.baud, timeout=0.1) as port:
+        port.reset_input_buffer()
         print(f"Connected to {port_name} at {args.baud} 8N1.")
-        print("Type 'help'. Ctrl+C or Ctrl+Z then Enter exits. PC13 is bench emergency stop.")
+        print("This is the only serial terminal you need; do not open the same COM port elsewhere.")
+        print("Type 'help'. Telemetry is quiet by default; use 'status' or 'stream on 200'.")
+        print("Ctrl+C or Ctrl+Z then Enter exits. PC13 is bench emergency stop.")
         thread = threading.Thread(target=reader, args=(port, stopped), daemon=True)
         thread.start()
         try:
             while not stopped.is_set():
-                line = input()
+                line = input("bench> ")
                 port.write((line + "\n").encode("ascii"))
                 port.flush()
         except (EOFError, KeyboardInterrupt):
