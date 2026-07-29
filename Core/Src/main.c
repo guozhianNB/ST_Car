@@ -25,6 +25,7 @@
 /* USER CODE BEGIN Includes */
 #include "motor.h"
 #include "pid_control.h"
+#include "yaw.h"
 #include <stdio.h>
 /* USER CODE END Includes */
 
@@ -40,7 +41,15 @@
 #define CONTROL_INTERVAL_MS  20
 
 /* 默认目标速度 */
-#define TARGET_SPEED_DEFAULT 800
+#define STRAIGHT_SPEED                500
+#define TARGET_DISTANCE_CM             100.0f
+#define ENCODER_COUNTS_PER_REV         780.0f
+#define WHEEL_CIRCUMFERENCE_CM         20.73f
+#define DISTANCE_TOLERANCE_CM          1.0f
+#define DISTANCE_CONFIRM_COUNT         5U
+#define YAW_KP                         18.0f
+#define YAW_OUTPUT_LIMIT               200
+#define DRIVE_TIMEOUT_MS               15000U
 
 /* USER CODE END PD */
 
@@ -56,9 +65,12 @@ COM_InitTypeDef BspCOMInit;
 /* USER CODE BEGIN PV */
 
 /* 调试用变量（可在调试器中查看） */
-static volatile int g_motorL = 0;
-static volatile int g_motorR = 0;
-static volatile float g_track_error = 0.0f;
+static int g_motorL = 0;
+static int g_motorR = 0;
+static float g_track_error = 0.0f;
+static float g_distance_cm = 0.0f;
+static float g_yaw_deg = 0.0f;
+static uint8_t g_drive_finished = 0U;
 
 /* USER CODE END PV */
 
@@ -70,6 +82,67 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+static int ClampMotorCommand(int value)
+{
+  if (value > 1000) return 1000;
+  if (value < -1000) return -1000;
+  return value;
+}
+
+static int ClampYawCorrection(float value)
+{
+  if (value > (float)YAW_OUTPUT_LIMIT) return YAW_OUTPUT_LIMIT;
+  if (value < -(float)YAW_OUTPUT_LIMIT) return -YAW_OUTPUT_LIMIT;
+  return (int)value;
+}
+
+static void Car_DriveStraightCm(float target_cm)
+{
+  uint16_t last_count_l = (uint16_t)Motor_GetEncoderCountL();
+  uint16_t last_count_r = (uint16_t)Motor_GetEncoderCountR();
+  uint32_t last_control_tick = HAL_GetTick();
+  uint32_t start_tick = last_control_tick;
+  uint8_t reached_count = 0U;
+
+  g_distance_cm = 0.0f;
+  while (reached_count < DISTANCE_CONFIRM_COUNT)
+  {
+    uint32_t now_tick = HAL_GetTick();
+    if ((now_tick - start_tick) >= DRIVE_TIMEOUT_MS) break;
+    if ((now_tick - last_control_tick) < CONTROL_INTERVAL_MS) continue;
+    last_control_tick = now_tick;
+
+    {
+      uint16_t count_l = (uint16_t)Motor_GetEncoderCountL();
+      uint16_t count_r = (uint16_t)Motor_GetEncoderCountR();
+      int16_t delta_l = (int16_t)(count_l - last_count_l);
+      int16_t delta_r = (int16_t)(count_r - last_count_r);
+      int yaw_correction;
+
+      last_count_l = count_l;
+      last_count_r = count_r;
+      g_distance_cm += ((float)(delta_l + delta_r) * 0.5f)
+                       * WHEEL_CIRCUMFERENCE_CM / ENCODER_COUNTS_PER_REV;
+      g_yaw_deg = GetYaw();
+      yaw_correction = ClampYawCorrection(YAW_KP * g_yaw_deg);
+
+      g_track_error = 0.0f;
+      PID_Control_SetTarget(STRAIGHT_SPEED, g_track_error, &g_motorL, &g_motorR);
+      Motor_SetSpeed(ClampMotorCommand(g_motorL - yaw_correction),
+                     ClampMotorCommand(g_motorR + yaw_correction));
+
+      if ((target_cm - g_distance_cm) <= DISTANCE_TOLERANCE_CM)
+        ++reached_count;
+      else
+        reached_count = 0U;
+    }
+  }
+
+  Motor_SetSpeed(0, 0);
+  PID_Control_Reset();
+  g_drive_finished = 1U;
+}
 
 /*
  * 注：PID 控制器实现在 pid_control.c 中。
@@ -119,7 +192,14 @@ int main(void)
   /* 初始化 PID 控制器 */
   PID_Control_Init();
 
+  if (!Yaw_Init())
+  {
+    Motor_SetSpeed(0, 0);
+    Error_Handler();
+  }
+
   /* 指示系统就绪（LED亮） */
+  BSP_LED_Init(LED_GREEN);
   BSP_LED_On(LED_GREEN);
   /* USER CODE END 2 */
 
@@ -142,10 +222,17 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  Car_DriveStraightCm(TARGET_DISTANCE_CM);
   uint32_t last_tick = HAL_GetTick();
 
   while (1)
   {
+    if (g_drive_finished != 0U)
+    {
+      Motor_SetSpeed(0, 0);
+      HAL_Delay(100U);
+      continue;
+    }
     uint32_t now_tick = HAL_GetTick();
     int dt_ms = now_tick - last_tick;
 
@@ -161,7 +248,7 @@ int main(void)
       g_track_error = 0.0f;
 
       /* 调用 PID 控制器，计算左右轮速度 */
-      PID_Control_SetTarget(TARGET_SPEED_DEFAULT, g_track_error,
+      PID_Control_SetTarget(STRAIGHT_SPEED, g_track_error,
                             &g_motorL, &g_motorR);
 
       /* 驱动电机 */

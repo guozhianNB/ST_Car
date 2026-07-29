@@ -1096,6 +1096,21 @@
         <file>
           <name>$PROJ_DIR$/../Core/Src/stm32g4xx_hal_msp.c</name>
         </file>
+        <file>
+          <name>$PROJ_DIR$/../Core/Src/motor.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../Core/Src/pid_control.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../Core/Src/i2c_soft.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../Core/Src/mpu.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../Core/Src/yaw.c</name>
+        </file>
       </group>
     </group>
   </group>

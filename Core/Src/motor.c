@@ -9,6 +9,9 @@
 #include <math.h>
 #include "motor.h"
 
+#define FW_L_GPIO_Port GPIOC
+#define BW_L_GPIO_Port GPIOC
+
 #define HTIM_PWM_L htim4 // 左电机使用定时器4
 #define HTIM_PWM_R htim4 // 右电机使用定时器4
 #define TIM_CHANNEL_L TIM_CHANNEL_1 // 左电机使用定时器4的通道1
