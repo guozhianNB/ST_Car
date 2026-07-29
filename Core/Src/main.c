@@ -24,7 +24,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "motor.h"
-#include "pid_control.h"
 #include "yaw.h"
 #include <stdio.h>
 /* USER CODE END Includes */
@@ -67,7 +66,6 @@ COM_InitTypeDef BspCOMInit;
 /* 调试用变量（可在调试器中查看） */
 static int g_motorL = 0;
 static int g_motorR = 0;
-static float g_track_error = 0.0f;
 static float g_distance_cm = 0.0f;
 static float g_yaw_deg = 0.0f;
 static uint8_t g_drive_finished = 0U;
@@ -127,8 +125,8 @@ static void Car_DriveStraightCm(float target_cm)
       g_yaw_deg = GetYaw();
       yaw_correction = ClampYawCorrection(YAW_KP * g_yaw_deg);
 
-      g_track_error = 0.0f;
-      PID_Control_SetTarget(STRAIGHT_SPEED, g_track_error, &g_motorL, &g_motorR);
+      g_motorL = STRAIGHT_SPEED;
+      g_motorR = STRAIGHT_SPEED;
       Motor_SetSpeed(ClampMotorCommand(g_motorL - yaw_correction),
                      ClampMotorCommand(g_motorR + yaw_correction));
 
@@ -140,7 +138,6 @@ static void Car_DriveStraightCm(float target_cm)
   }
 
   Motor_SetSpeed(0, 0);
-  PID_Control_Reset();
   g_drive_finished = 1U;
 }
 
@@ -190,7 +187,6 @@ int main(void)
   Motor_Init();
 
   /* 初始化 PID 控制器 */
-  PID_Control_Init();
 
   if (!Yaw_Init())
   {
@@ -245,11 +241,10 @@ int main(void)
        * 获取寻迹误差（后续接入红外传感器接口）
        * 目前填 0，表示"没有偏离"，车按编码器直线修正走直
        */
-      g_track_error = 0.0f;
 
       /* 调用 PID 控制器，计算左右轮速度 */
-      PID_Control_SetTarget(STRAIGHT_SPEED, g_track_error,
-                            &g_motorL, &g_motorR);
+      g_motorL = STRAIGHT_SPEED;
+      g_motorR = STRAIGHT_SPEED;
 
       /* 驱动电机 */
       Motor_SetSpeed(g_motorL, g_motorR);

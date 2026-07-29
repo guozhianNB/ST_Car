@@ -1100,9 +1100,6 @@
           <name>$PROJ_DIR$/../Core/Src/motor.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$/../Core/Src/pid_control.c</name>
-        </file>
-        <file>
           <name>$PROJ_DIR$/../Core/Src/i2c_soft.c</name>
         </file>
         <file>
