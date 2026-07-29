@@ -30,7 +30,7 @@
 | `app` | 按键、模式、A 点门控、阶段计时、故障降级 | 不实现 HAL 外设初始化 |
 | `telemetry` | 通过 ST-Link VCP 输出单行快照 | 不在控制周期阻塞等待串口 |
 
-旧的 `pid_control.*`、`i2c_soft.*`、`oled.*` 和空的 `road_1.c` 没有加入 IAR 工程；它们只作为早期实验遗留，不应被新代码引用。MPU6050 已改为硬件 I2C3，但当前 H 题主控制不依赖 MPU/Yaw。
+旧的 `pid_control.*`、`i2c_soft.*`、`oled.*` 和空的 `road_1.c` 没有加入 IAR 或 CMake 工程；它们只作为早期实验遗留，不应被新代码引用。MPU6050 已改为硬件 I2C3，但当前 H 题主控制不依赖 MPU/Yaw。
 
 ## 运行模式
 
@@ -90,4 +90,4 @@ A 点门控同时要求“已经离开起始横线”和“平均里程至少 30
 4. 不允许让 CubeMX 恢复成旧的 TIM4 双 PWM、删除 UART4 DMA，或把电机 STBY 默认拉高；
 5. 重新做 `-Wall -Wextra -Werror` 编译和完整链接验证。
 
-仓库当前由 IAR 工程承载烧录；也可用 STM32CubeCLT 的 `arm-none-eabi-gcc` 做交叉验证。验证过的核心固件占用约 73 KiB Flash、4 KiB BSS（不同工具链会略有差异）。
+仓库保留 IAR 工程，同时提供顶层 `CMakeLists.txt`、`CMakePresets.json` 和 GCC 链接脚本供 VS Code/STM32CubeCLT 构建与 ST-Link 调试。两套工程必须保持相同的活跃源码清单；旧实验模块不得加入任一正式构建。VS Code 的 Debug 预设输出为 `build/debug/ST_Car.elf`，仅构建不会构成硬件验证。
