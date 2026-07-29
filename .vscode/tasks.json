@@ -1,0 +1,45 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "STM32: Configure Debug",
+      "type": "process",
+      "command": "D:/Program/STM32CubeCLT_1.22.0/CMake/bin/cmake.exe",
+      "args": ["--preset", "debug"],
+      "problemMatcher": []
+    },
+    {
+      "label": "STM32: Build Debug",
+      "type": "process",
+      "command": "D:/Program/STM32CubeCLT_1.22.0/CMake/bin/cmake.exe",
+      "args": ["--build", "--preset", "debug"],
+      "dependsOn": "STM32: Configure Debug",
+      "dependsOrder": "sequence",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": "$gcc"
+    },
+    {
+      "label": "Bench: Serial Console",
+      "type": "process",
+      "command": "python",
+      "args": ["tools/bench_console.py", "--port", "${input:benchPort}"],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "benchPort",
+      "type": "promptString",
+      "description": "NUCLEO ST-Link VCP port (for example COM5)",
+      "default": "COM3"
+    }
+  ]
+}

@@ -23,13 +23,13 @@ FaultCode SafetyMonitor_Update(uint32_t now_ms, bool need_line,
                                bool need_vision, bool need_beam)
 {
   const EncoderSample *beam_encoder = Encoder_Get(ENCODER_BEAM);
-  const Sa100Sample *angle = SA100_Get();
+  Sa100Sample angle;
   const LineSensorSample *line = LineSensor_Get();
 
+  (void)SA100_GetSnapshot(&angle);
   if (need_beam) {
-    if ((now_ms - begin_ms) > APP_VISION_STARTUP_GRACE_MS &&
-        !SA100_IsFresh(now_ms)) return FAULT_SA100_TIMEOUT;
-    if (angle->valid && fabsf(angle->beam_angle_deg) > APP_BEAM_ANGLE_SOFT_LIMIT_DEG)
+    if (!SA100_IsFresh(now_ms)) return FAULT_SA100_TIMEOUT;
+    if (angle.valid && fabsf(angle.beam_angle_deg) > APP_BEAM_ANGLE_SOFT_LIMIT_DEG)
       return FAULT_BEAM_ANGLE_LIMIT;
     if ((beam_encoder->total_count < APP_BEAM_ENCODER_MIN_COUNT) ||
         (beam_encoder->total_count > APP_BEAM_ENCODER_MAX_COUNT))
@@ -44,8 +44,7 @@ FaultCode SafetyMonitor_Update(uint32_t now_ms, bool need_line,
     }
   }
 
-  if (need_vision && ((now_ms - begin_ms) > APP_VISION_STARTUP_GRACE_MS) &&
-      !VisionUART_IsFresh(now_ms)) return FAULT_VISION_TIMEOUT;
+  if (need_vision && !VisionUART_IsFresh(now_ms)) return FAULT_VISION_TIMEOUT;
 
   if (need_line && ((now_ms - begin_ms) > APP_LINE_STARTUP_GRACE_MS)) {
     if (!line->line_found) {

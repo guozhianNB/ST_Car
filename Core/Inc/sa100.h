@@ -15,7 +15,12 @@ typedef struct {
 
 void SA100_Init(void);
 const Sa100Sample *SA100_Get(void);
+bool SA100_GetSnapshot(Sa100Sample *copy);
 bool SA100_IsFresh(uint32_t now_ms);
+void SA100_SetCalibration(float duty_to_deg, float horizontal_raw_deg,
+                          float angle_sign);
+void SA100_GetCalibration(float *duty_to_deg, float *horizontal_raw_deg,
+                          float *angle_sign);
 void SA100_CaptureCallback(void);
 
 #endif /* SA100_H */

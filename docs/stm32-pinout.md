@@ -14,7 +14,7 @@
 | P60 编码器 A/B | TIM4_CH1/CH2 | PB6/PB7 | TI12，16 位计数，输入滤波 4 |
 | SA100 PWM | TIM15_CH1 | PB14 | PWM Input；1 us 计数；CH1 周期、CH2 高电平 |
 | MaixCAM2 | UART4 TX/RX | PC10/PC11 | 115200 8N1；RX 为 DMA1_CH1 环形 DMA + IDLE |
-| ST-Link VCP 调试 | LPUART1 TX/RX | PA2/PA3 | 115200 8N1；非阻塞中断发送遥测 |
+| ST-Link VCP 调试 | LPUART1 TX/RX | PA2/PA3 | 115200 8N1；非阻塞遥测；台架调试开启时 RX 单字节中断接收命令 |
 | OLED 预留 | I2C1 SCL/SDA | PB8/PB9 | 400 kHz；显示屏型号确定后补适配层 |
 | MPU6050（可选） | I2C3 SCL/SDA | PC8/PC9 | 400 kHz；不参与当前 H 题闭环 |
 
@@ -70,7 +70,7 @@ I2C1/I2C3 为 400 kHz，必须确认模块自带或外接合适的 3.3 V 上拉�
 | DMA1_Channel1 | 2 | UART4 RX DMA |
 | UART4 | 2 | 视觉 IDLE/错误事件 |
 | EXTI4、EXTI15_10 | 5 | 模式、启动、中点参考开关 |
-| LPUART1 | 6 | 调试遥测发送完成 |
+| LPUART1 | 6 | 调试遥测发送完成及台架命令接收；接收 ISR 只入队，不解析命令 |
 | SysTick | 15 | 1 ms HAL 时基和主循环调度 |
 
 编码器不使用更新中断；通过固定位宽的回绕安全差分读取。循迹不使用 GPIO 中断。中断回调只更新时间戳、数据快照或事件标志，不在 ISR 中运行 PID、字符串输出或阻塞 I/O。

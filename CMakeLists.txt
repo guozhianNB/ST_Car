@@ -25,6 +25,7 @@ add_executable(ST_Car
     Core/Src/control_loops.c
     Core/Src/safety_monitor.c
     Core/Src/telemetry.c
+    Core/Src/bench_debug.c
     Core/Src/app.c
     Core/Src/mpu.c
     Core/Src/yaw.c
@@ -92,6 +93,7 @@ target_link_options(ST_Car PRIVATE
     --specs=nano.specs
     --specs=nosys.specs
     -Wl,--gc-sections
+    -Wl,-u,_printf_float
     -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/ST_Car.map
     -Wl,--print-memory-usage
 )

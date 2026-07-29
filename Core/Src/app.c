@@ -1,5 +1,6 @@
 #include "app.h"
 #include "app_config.h"
+#include "bench_debug.h"
 #include "control_loops.h"
 #include "encoder.h"
 #include "line_sensor.h"
@@ -112,17 +113,20 @@ static void App_Start(uint32_t now_ms)
 {
   const EncoderSample *left = Encoder_Get(ENCODER_LEFT);
   const EncoderSample *right = Encoder_Get(ENCODER_RIGHT);
-  const Sa100Sample *angle = SA100_Get();
-  const VisionBallSample *ball = VisionUART_Get();
+  Sa100Sample angle = {0};
+  VisionBallSample ball = {0};
   float expected_start_mm = (app.selected_mode == APP_MODE_MOVING_TARGET)
                             ? moving_target_mm : 0.0f;
+  (void)SA100_GetSnapshot(&angle);
+  (void)VisionUART_GetSnapshot(&ball);
   LineSensor_Update();
   if ((ModeNeedsLine(app.selected_mode) && !LineSensor_Get()->line_found) ||
       (ModeNeedsBeam(app.selected_mode) &&
-       (!SA100_IsFresh(now_ms) || fabsf(angle->beam_angle_deg) > 0.5f)) ||
+       ((!APP_BEAM_RANGE_VERIFIED) || (!APP_SA100_CALIBRATION_VERIFIED) ||
+        !SA100_IsFresh(now_ms) || fabsf(angle.beam_angle_deg) > 0.5f)) ||
       (ModeNeedsBall(app.selected_mode) &&
        (!VisionUART_IsFresh(now_ms) ||
-        fabsf(ball->position_mm - expected_start_mm) > APP_BALL_START_TOLERANCE_MM))) {
+        fabsf(ball.position_mm - expected_start_mm) > APP_BALL_START_TOLERANCE_MM))) {
     App_EnterFault(FAULT_STARTUP_CHECK, now_ms);
     return;
   }
@@ -163,10 +167,11 @@ static void App_Start(uint32_t now_ms)
 
 static bool BallSettled(uint32_t now_ms)
 {
-  const VisionBallSample *ball = VisionUART_Get();
+  VisionBallSample ball = {0};
+  (void)VisionUART_GetSnapshot(&ball);
   if (!VisionUART_IsFresh(now_ms) ||
-      fabsf(ball->position_mm - app.commanded_ball_target_mm) > APP_BALL_SETTLE_ERROR_MM ||
-      fabsf(ball->speed_mm_s) > APP_BALL_SETTLE_SPEED_MM_S) {
+      fabsf(ball.position_mm - app.commanded_ball_target_mm) > APP_BALL_SETTLE_ERROR_MM ||
+      fabsf(ball.speed_mm_s) > APP_BALL_SETTLE_SPEED_MM_S) {
     settle_start_ms = 0;
     return false;
   }
@@ -254,9 +259,10 @@ static void UpdateAB(void)
 
 static void UpdateFault(uint32_t now_ms)
 {
-  const Sa100Sample *angle = SA100_Get();
+  Sa100Sample angle = {0};
+  (void)SA100_GetSnapshot(&angle);
   if (!fault_leveling) return;
-  if (!SA100_IsFresh(now_ms) || fabsf(angle->beam_angle_deg) < 0.3f ||
+  if (!SA100_IsFresh(now_ms) || fabsf(angle.beam_angle_deg) < 0.3f ||
       (now_ms - fault_start_ms) >= 1000U) {
     ControlLoops_EnableBeam(false);
     fault_leveling = false;
@@ -288,7 +294,11 @@ static void ProcessEvents(uint32_t now_ms)
 {
   if (home_event) {
     home_event = 0;
-    Encoder_Reset(ENCODER_BEAM);
+    /* Never move the safety origin while a task is running. */
+    if ((app.state == APP_STATE_STANDBY) &&
+        (HAL_GPIO_ReadPin(BEAM_HOME_GPIO_Port, BEAM_HOME_Pin) == GPIO_PIN_RESET)) {
+      Encoder_Reset(ENCODER_BEAM);
+    }
   }
   if ((now_ms - last_button_ms) < 60U) return;
   if (mode_event) {
@@ -324,12 +334,14 @@ void App_Init(void)
   telemetry_tick_ms = now;
   last_button_ms = now - 100U;
   App_Standby();
+  BenchDebug_Init(now);
 }
 
 void App_Run(void)
 {
   uint32_t now = HAL_GetTick();
   VisionUART_Service();
+  if (BenchDebug_Run(now)) return;
   ProcessEvents(now);
 
   if ((now - fast_tick_ms) >= APP_CONTROL_FAST_MS) {
@@ -375,7 +387,10 @@ const AppStatus *App_GetStatus(void)
 
 void HAL_GPIO_EXTI_Callback(uint16_t pin)
 {
-  if (pin == START_BUTTON_Pin) start_event = 1;
+  if (pin == START_BUTTON_Pin) {
+    if (BenchDebug_IsActive()) BenchDebug_RequestEmergencyStop();
+    else start_event = 1;
+  }
   else if (pin == MODE_BUTTON_Pin) mode_event = 1;
   else if (pin == BEAM_HOME_Pin) home_event = 1;
 }
@@ -395,4 +410,15 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t size)
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
   if (huart->Instance == UART4) VisionUART_ErrorCallback();
+  else if (huart->Instance == LPUART1) BenchDebug_UartErrorCallback();
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+  if (huart->Instance == LPUART1) BenchDebug_UartRxCpltCallback();
+}
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+  if (huart->Instance == LPUART1) BenchDebug_UartTxCpltCallback();
 }
