@@ -1,37 +1,19 @@
-# ST_Car — 接口文档
+# ST_Car — 2026 电赛 H 题固件与视觉
 
-## motor (`Core/Inc/motor.h`)
+本仓库实现 NUCLEO-G491RE 车载平衡滚球系统：双轮差速循迹、P60 曲柄连杆水管角度控制、SA100 真实角度反馈，以及 MaixCAM2 钢球位置视觉。
 
-```c
-void Motor_Init(void);
-// 初始化 PWM + 编码器，使用前必须调用一次
+开始开发前先阅读：
 
-void Motor_SetSpeed(int speedL, int speedR);
-// speedL/speedR: -1000~1000, 正数前进负数后退
+- [AGENT.md](AGENT.md)：题目事实、已确认方案、当前真实状态和调试约束；
+- [docs/stm32-pinout.md](docs/stm32-pinout.md)：完整接线、定时器、DMA 和中断分配；
+- [docs/firmware-architecture.md](docs/firmware-architecture.md)：代码分层、调度、状态机、安全行为和调试顺序。
 
-int Motor_GetEncoderCount(void);   // 返回: 左右编码器平均值
-int Motor_GetEncoderCountL(void);  // 返回: 左轮编码器计数值
-int Motor_GetEncoderCountR(void);  // 返回: 右轮编码器计数值
+核心入口是 `Core/Src/main.c` 与 `Core/Src/app.c`，所有暂定参数集中在 `Core/Inc/app_config.h`。视觉端位于 `Vision/cv.py`，当前串口协议为：
 
-double Get_SpeedL(int dt_ms);      // dt_ms: 时间间隔(ms)
-double Get_SpeedR(int dt_ms);      // 返回: 归一化速度
+```text
+$B,<x_mm>,<status>\n
 ```
 
-## pid_control (`Core/Inc/pid_control.h`)
+其中只有 `status=1` 是真实新测量；`status=2` 是短时保持，不能用于刷新球速或视觉超时。
 
-```c
-void PID_Control_Init(void);
-// 清零 PID 内部状态，启动时调用一次
-
-void PID_Control_SetTarget(int target_speed, float track_error,
-                           int *out_speedL, int *out_speedR);
-// target_speed: 0~1000, track_error: 寻迹偏离(0=正中)
-// out_speedL/R: [输出] 左右轮速度 -1000~1000
-
-void PID_Control_Reset(void);
-// 重置 PID 积分和上一拍误差
-
-void PID_Control_TuneEncoderPID(float kp, float ki, float kd);
-void PID_Control_TuneTrackingPID(float kp, float ki, float kd);
-// 在线改参，传负数表示不修改该项
-```
+当前状态：软件框架、IOC 和 IAR 工程已经完成并通过 Cortex-M4 交叉编译/链接；电机方向、编码器分辨率、SA100 标定、安全边界和 PID 仍必须在实物上按文档顺序验证。首次烧录必须架空车轮、脱开连杆并物理断开 TB6612 STBY。

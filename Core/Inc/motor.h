@@ -1,29 +1,27 @@
-#ifndef __MOTOR_H__
-#define __MOTOR_H__
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef MOTOR_H
+#define MOTOR_H
 
 #include "main.h"
+#include <stdbool.h>
+#include <stdint.h>
 
-/* 电机初始化 */
+typedef enum {
+  MOTOR_LEFT = 0,
+  MOTOR_RIGHT,
+  MOTOR_BEAM,
+  MOTOR_COUNT
+} MotorId;
+
 void Motor_Init(void);
+void Motor_EnableChassis(bool enable);
+void Motor_EnableBeam(bool enable);
+void Motor_Set(MotorId id, int16_t command);
+int16_t Motor_GetCommand(MotorId id);
+void Motor_Brake(MotorId id);
+void Motor_Coast(MotorId id);
+void Motor_EmergencyStop(void);
 
-/* 设置电机速度，范围[-1000, 1000]，正数前进，负数后退 */
-void Motor_SetSpeed(int speedL, int speedR);
+/* Compatibility API for early two-wheel tests. */
+void Motor_SetSpeed(int speed_left, int speed_right);
 
-/* 获取编码器计数值 */
-int Motor_GetEncoderCount(void);
-int Motor_GetEncoderCountL(void);
-int Motor_GetEncoderCountR(void);
-
-/* 获取左右轮速度（单位：编码器计数/毫秒归一化值） */
-double Get_SpeedL(int dt_ms);
-double Get_SpeedR(int dt_ms);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* __MOTOR_H__ */
+#endif /* MOTOR_H */

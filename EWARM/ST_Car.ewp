@@ -1088,6 +1088,15 @@
           <name>$PROJ_DIR$/../Core/Src/gpio.c</name>
         </file>
         <file>
+          <name>$PROJ_DIR$/../Core/Src/dma.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../Core/Src/i2c.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../Core/Src/usart.c</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$/../Core/Src/tim.c</name>
         </file>
         <file>
@@ -1100,10 +1109,31 @@
           <name>$PROJ_DIR$/../Core/Src/motor.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$/../Core/Src/pid_control.c</name>
+          <name>$PROJ_DIR$/../Core/Src/encoder.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$/../Core/Src/i2c_soft.c</name>
+          <name>$PROJ_DIR$/../Core/Src/pid.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../Core/Src/sa100.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../Core/Src/vision_uart.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../Core/Src/line_sensor.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../Core/Src/control_loops.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../Core/Src/safety_monitor.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../Core/Src/telemetry.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../Core/Src/app.c</name>
         </file>
         <file>
           <name>$PROJ_DIR$/../Core/Src/mpu.c</name>
@@ -1171,6 +1201,12 @@
       </file>
       <file>
         <name>$PROJ_DIR$/../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_tim_ex.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_i2c.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_i2c_ex.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$/../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_usart.c</name>
