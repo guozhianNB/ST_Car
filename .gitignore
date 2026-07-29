@@ -1,12 +1,21 @@
 /build/
 /.cache/
 /.cmake/
-.vscode/
-.settings/
-CMakeUserPresets.json
 CMakeCache.txt
 compile_commands.json
 gdbClient_log.txt
 gdbServer_log.txt
 debug.log
-.clangd
+
+# Machine-local CMake/IDE configuration. Keep portable build definitions
+# (CMakeLists.txt and cmake/*.cmake) tracked; paths and editor state stay local.
+/CMakePresets.json
+/CMakeUserPresets.json
+/.vscode/
+/.settings/
+/.clangd
+/.mxproject
+
+# Local generated Python state.
+__pycache__/
+*.py[cod]

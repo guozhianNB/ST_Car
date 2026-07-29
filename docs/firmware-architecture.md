@@ -91,7 +91,7 @@ A 点门控同时要求“已经离开起始横线”和“平均里程至少 30
 4. 不允许让 CubeMX 恢复成旧的 TIM4 双 PWM、删除 UART4 DMA，或把电机 STBY 默认拉高；
 5. 重新做 `-Wall -Wextra -Werror` 编译和完整链接验证。
 
-仓库保留 IAR 工程，同时提供顶层 `CMakeLists.txt`、`CMakePresets.json` 和 GCC 链接脚本供 VS Code/STM32CubeCLT 构建与 ST-Link 调试。两套工程必须保持相同的活跃源码清单；旧实验模块不得加入任一正式构建。VS Code 的 Debug 预设输出为 `build/debug/ST_Car.elf`，仅构建不会构成硬件验证。
+仓库保留 IAR 工程，同时只提交不含本机绝对路径的顶层 `CMakeLists.txt`、`cmake/*.cmake` 和 GCC 链接脚本。`CMakePresets.json`、`CMakeUserPresets.json`、`.vscode/`、`.settings/`、`.clangd` 与 `.mxproject` 均为本机配置，由各开发者在本地维护且不得提交；尤其不得把工具链安装目录、调试器路径或串口号写入受 Git 跟踪的文件。IAR 与 CMake 两套正式构建必须保持相同的活跃源码清单；旧实验模块不得加入任一正式构建。当前本机 VS Code Debug 预设输出为 `build/debug/ST_Car.elf`，仅构建不会构成硬件验证。
 
 ## 独立平衡台架调试
 
