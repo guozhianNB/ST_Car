@@ -16,6 +16,8 @@ void Motor_Init(void);
 void Motor_EnableChassis(bool enable);
 void Motor_EnableBeam(bool enable);
 void Motor_Set(MotorId id, int16_t command);
+/* Characterization-only output without the configured minimum-PWM boost. */
+void Motor_SetRaw(MotorId id, int16_t command);
 int16_t Motor_GetCommand(MotorId id);
 void Motor_Brake(MotorId id);
 void Motor_Coast(MotorId id);

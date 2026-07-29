@@ -26,6 +26,7 @@ int main(void)
   MX_UART4_Init();
 
   App_Init();
+  //__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 4250);
   while (1) {
     App_Run();
   }

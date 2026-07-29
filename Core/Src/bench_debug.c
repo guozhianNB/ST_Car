@@ -168,14 +168,14 @@ static void QueueStatus(uint32_t now_ms)
   (void)VisionUART_GetSnapshot(&ball);
   SA100_GetCalibration(&scale, &zero, &sign);
   QueueMessage(
-    "BENCH t=%lu mode=%s fault=%s stream=%u rate=%lu pwm=%d count=%lld delta=%ld "
+    "BENCH t=%lu mode=%s fault=%s stream=%u rate=%lu pwm=%d count=%ld delta=%ld "
     "sa=%u fresh=%u sacal=%u rangeok=%u per=%lu high=%lu raw=%.3f ang=%.3f aref=%.3f "
     "vision=%u vfresh=%u ball=%.2f vel=%.2f bref=%.2f "
     "akp=%.3f aki=%.3f akd=%.3f bkp=%.5f bkd=%.5f bsign=%.0f "
     "plim=%.0f alim=%.2f scale=%.3f zero=%.3f sasign=%.0f\r\n",
     (unsigned long)now_ms, ModeName(bench.mode), FaultName(bench.fault),
     bench.stream_enabled ? 1U : 0U, (unsigned long)bench.stream_period_ms,
-    Motor_GetCommand(MOTOR_BEAM), (long long)encoder->total_count,
+    Motor_GetCommand(MOTOR_BEAM), (long)encoder->total_count,
     (long)encoder->delta_count, angle.valid ? 1U : 0U,
     SA100_IsFresh(now_ms) ? 1U : 0U,
     bench.sa_calibration_confirmed ? 1U : 0U,
@@ -302,8 +302,8 @@ static void HandleCommand(char *line, uint32_t now_ms)
     bench.pulse_pwm = (int16_t)integer_a;
     pulse_end_ms = now_ms + (uint32_t)integer_b;
     Motor_EnableBeam(true);
-    Motor_Set(MOTOR_BEAM, bench.pulse_pwm);
-    QueueMessage("OK pulse pwm=%d ms=%ld; PC13 stops immediately\r\n",
+    Motor_SetRaw(MOTOR_BEAM, bench.pulse_pwm);
+    QueueMessage("OK raw pulse pwm=%d ms=%ld; PC13 stops immediately\r\n",
                  bench.pulse_pwm, integer_b);
   } else if ((count == 2U) && (strcmp(token[0], "angle") == 0) &&
              ParseFloatValue(token[1], &a)) {

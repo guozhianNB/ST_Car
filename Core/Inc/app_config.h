@@ -29,7 +29,7 @@
 /* Encoder counts are OUTPUT-shaft counts after the timer's TI12 decoding. */
 #define APP_ENCODER_LEFT_CPR               390.0f
 #define APP_ENCODER_RIGHT_CPR              390.0f
-#define APP_ENCODER_BEAM_CPR               780.0f
+#define APP_ENCODER_BEAM_CPR               3200.0f
 #define APP_ENCODER_LEFT_SIGN              1.0f
 #define APP_ENCODER_RIGHT_SIGN             1.0f
 #define APP_ENCODER_BEAM_SIGN              1.0f
@@ -41,7 +41,7 @@
 #define APP_MOTOR_BEAM_SIGN                1
 #define APP_MOTOR_LEFT_MIN_PWM             80
 #define APP_MOTOR_RIGHT_MIN_PWM            80
-#define APP_MOTOR_BEAM_MIN_PWM             100
+#define APP_MOTOR_BEAM_MIN_PWM             80
 #define APP_MOTOR_CHASSIS_MAX_PWM          900
 #define APP_MOTOR_BEAM_MAX_PWM             700
 
