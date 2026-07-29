@@ -8,3 +8,5 @@ CMakeCache.txt
 compile_commands.json
 gdbClient_log.txt
 gdbServer_log.txt
+debug.log
+.clangd
