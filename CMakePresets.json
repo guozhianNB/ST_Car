@@ -10,9 +10,6 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
-      },
-      "environment": {
-        "PATH": "D:/Program/STM32CubeCLT_1.22.0/GNU-tools-for-STM32/bin;D:/Program/STM32CubeCLT_1.22.0/Ninja/bin;$penv{PATH}"
       }
     }
   ],
