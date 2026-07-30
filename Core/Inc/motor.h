@@ -16,8 +16,12 @@ void Motor_Init(void);
 void Motor_EnableChassis(bool enable);
 void Motor_EnableBeam(bool enable);
 void Motor_Set(MotorId id, int16_t command);
+/* Apply minimum-PWM compensation without exceeding a runtime safety limit. */
+void Motor_SetLimited(MotorId id, int16_t command, int16_t limit);
 /* Characterization-only output without the configured minimum-PWM boost. */
 void Motor_SetRaw(MotorId id, int16_t command);
+/* Raw output with an additional runtime safety limit. */
+void Motor_SetRawLimited(MotorId id, int16_t command, int16_t limit);
 int16_t Motor_GetCommand(MotorId id);
 void Motor_Brake(MotorId id);
 void Motor_Coast(MotorId id);

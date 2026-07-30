@@ -44,6 +44,7 @@ static uint32_t last_angle_sample_ms;
 static uint32_t stall_since_ms;
 static uint32_t sequence_start_ms;
 static uint32_t sequence_settle_start_ms;
+static uint32_t angle_brake_until_ms;
 
 static float Clamp(float value, float low, float high)
 {
@@ -112,6 +113,22 @@ static void StopOutputs(void)
   closed_loop_end_ms = 0U;
   last_angle_sample_ms = 0U;
   stall_since_ms = 0U;
+  angle_brake_until_ms = 0U;
+}
+
+static int16_t ApplyAngleReversalBrake(int16_t requested, uint32_t now_ms)
+{
+  int16_t applied = Motor_GetCommand(MOTOR_BEAM);
+  if (requested == 0) {
+    if (applied != 0) angle_brake_until_ms = now_ms + APP_BEAM_REVERSAL_BRAKE_MS;
+    return 0;
+  }
+  if ((int32_t)(now_ms - angle_brake_until_ms) < 0) return 0;
+  if ((applied != 0) && ((requested > 0) != (applied > 0))) {
+    angle_brake_until_ms = now_ms + APP_BEAM_REVERSAL_BRAKE_MS;
+    return 0;
+  }
+  return requested;
 }
 
 static void EnterFault(BenchFault fault)
@@ -166,15 +183,11 @@ static void QueueStatus(uint32_t now_ms)
   float scale;
   float zero;
   float sign;
-  float duty = 0.0f;
   long sa_age_ms = -1L;
   long vision_age_ms = -1L;
   (void)SA100_GetSnapshot(&angle);
   (void)VisionUART_GetSnapshot(&ball);
   SA100_GetCalibration(&scale, &zero, &sign);
-  if (angle.period_us != 0U) {
-    duty = (float)angle.high_us / (float)angle.period_us;
-  }
   if (angle.valid) sa_age_ms = (long)(now_ms - angle.timestamp_ms);
   if (ball.timestamp_ms != 0U) vision_age_ms = (long)(now_ms - ball.timestamp_ms);
   QueueMessage(
@@ -192,7 +205,8 @@ static void QueueStatus(uint32_t now_ms)
     SA100_IsFresh(now_ms) ? 1U : 0U, sa_age_ms,
     bench.sa_calibration_confirmed ? 1U : 0U,
     APP_BEAM_RANGE_VERIFIED ? 1U : 0U, (unsigned long)angle.period_us,
-    (unsigned long)angle.high_us, duty, angle.raw_angle_deg, angle.beam_angle_deg,
+    (unsigned long)angle.high_us, angle.duty_cycle, angle.raw_angle_deg,
+    angle.beam_angle_deg,
     bench.angle_target_deg, ball.status, VisionUART_IsFresh(now_ms) ? 1U : 0U,
     vision_age_ms, (unsigned long)ball.frame_number, ball.position_mm,
     ball.speed_mm_s, bench.ball_target_mm,
@@ -570,14 +584,22 @@ static void ClosedLoopUpdate(uint32_t now_ms, uint32_t elapsed_ms)
     dt_s = (float)(angle.timestamp_ms - last_angle_sample_ms) * 0.001f;
   }
   last_angle_sample_ms = angle.timestamp_ms;
-  command = (int16_t)PID_Update(&angle_pid,
-    bench.angle_target_deg - angle.beam_angle_deg, dt_s);
+  {
+    float error = bench.angle_target_deg - angle.beam_angle_deg;
+    if (fabsf(error) <= APP_BEAM_ANGLE_DEADBAND_DEG) {
+      command = 0;
+      PID_Reset(&angle_pid);
+    } else {
+      command = (int16_t)PID_Update(&angle_pid, error, dt_s);
+    }
+  }
   if ((encoder->total_count <= APP_BEAM_ENCODER_MIN_COUNT && command < 0) ||
       (encoder->total_count >= APP_BEAM_ENCODER_MAX_COUNT && command > 0)) {
     command = 0;
     PID_Reset(&angle_pid);
   }
-  Motor_Set(MOTOR_BEAM, command);
+  command = ApplyAngleReversalBrake(command, now_ms);
+  Motor_SetRawLimited(MOTOR_BEAM, command, (int16_t)bench.pwm_limit);
 }
 
 static void UpdateBallSequence(uint32_t now_ms)

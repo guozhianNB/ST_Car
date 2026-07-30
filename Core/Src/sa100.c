@@ -6,6 +6,7 @@
 static volatile Sa100Sample sample;
 static float previous_raw_deg;
 static float continuous_raw_deg;
+static float filtered_raw_deg;
 static bool angle_initialized;
 static uint8_t stabilization_count;
 static volatile float calibration_duty_to_deg = APP_SA100_DUTY_TO_DEG;
@@ -73,17 +74,20 @@ void SA100_GetCalibration(float *duty_to_deg, float *horizontal_raw_deg,
 
 void SA100_CaptureCallback(void)
 {
-  uint32_t period = HAL_TIM_ReadCapturedValue(&htim15, TIM_CHANNEL_1);
-  uint32_t high = HAL_TIM_ReadCapturedValue(&htim15, TIM_CHANNEL_2);
+  uint32_t period_ticks = HAL_TIM_ReadCapturedValue(&htim15, TIM_CHANNEL_1);
+  uint32_t high_ticks = HAL_TIM_ReadCapturedValue(&htim15, TIM_CHANNEL_2);
+  const uint32_t ticks_per_us = APP_SA100_CAPTURE_TICKS_PER_US;
   float raw;
   float delta;
 
-  if ((period < APP_SA100_PERIOD_MIN_US) ||
-      (period > APP_SA100_PERIOD_MAX_US) || (high > period)) {
+  if ((period_ticks < (APP_SA100_PERIOD_MIN_US * ticks_per_us)) ||
+      (period_ticks > (APP_SA100_PERIOD_MAX_US * ticks_per_us)) ||
+      (high_ticks > period_ticks)) {
     sample.valid = false;
     return;
   }
-  raw = ((float)high / (float)period) * calibration_duty_to_deg;
+  sample.duty_cycle = (float)high_ticks / (float)period_ticks;
+  raw = sample.duty_cycle * calibration_duty_to_deg;
   if (!angle_initialized) {
     if (stabilization_count < 2U) {
       stabilization_count++;
@@ -92,19 +96,22 @@ void SA100_CaptureCallback(void)
       return;
     }
     continuous_raw_deg = raw;
+    filtered_raw_deg = raw;
     angle_initialized = true;
   } else {
     delta = raw - previous_raw_deg;
     if (delta > 180.0f) delta -= 360.0f;
     if (delta < -180.0f) delta += 360.0f;
     continuous_raw_deg += delta;
+    filtered_raw_deg += APP_SA100_ANGLE_FILTER_ALPHA *
+                        (continuous_raw_deg - filtered_raw_deg);
   }
   previous_raw_deg = raw;
   sample.raw_angle_deg = continuous_raw_deg;
-  sample.beam_angle_deg = (continuous_raw_deg - calibration_horizontal_raw_deg) *
+  sample.beam_angle_deg = (filtered_raw_deg - calibration_horizontal_raw_deg) *
                           calibration_angle_sign;
-  sample.period_us = period;
-  sample.high_us = high;
+  sample.period_us = (period_ticks + (ticks_per_us / 2U)) / ticks_per_us;
+  sample.high_us = (high_ticks + (ticks_per_us / 2U)) / ticks_per_us;
   sample.timestamp_ms = HAL_GetTick();
   sample.valid = true;
 }

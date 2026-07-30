@@ -49,7 +49,7 @@ PA15 当前在 IOC 和固件中未分配。P60 使用增量编码器，每次上
 | P60 IN1 / IN2 | PC4 / PC5 | TB6612 方向控制 |
 | P60 STBY | PB1 | 低时禁用驱动，高时允许 P60 动作 |
 | P60 编码器 A / B | PB6 / PB7 / TIM4 | TI12 编码器模式，最终 counts/rev 必须以实测为准 |
-| SA100 PWM | PB14 / TIM15_CH1 | 1 us 输入捕获，CH1 测周期、CH2 测高电平 |
+| SA100 PWM | PB14 / TIM15_CH1 | 0.1 us 输入捕获，CH1 测周期、CH2 测高电平；遥测仍为 us |
 | MaixCAM2 到 STM32 | Maix A21 TX → PC11 RX | UART4，115200 8N1 |
 | 调试控制台 | ST-Link VCP，PA2/PA3 | LPUART1，115200 8N1 |
 | 软件急停 | NUCLEO 板载 PC13 蓝色键 | 台架激活后按下请求急停 |
@@ -63,14 +63,14 @@ PA15 当前在 IOC 和固件中未分配。P60 使用增量编码器，每次上
 ```c
 #define APP_ENABLE_BENCH_DEBUG              1
 #define APP_ENCODER_BEAM_CPR             3200.0f
-#define APP_MOTOR_BEAM_MIN_PWM              80
-#define APP_BEAM_RANGE_VERIFIED              0
-#define APP_SA100_CALIBRATION_VERIFIED        0
+#define APP_MOTOR_BEAM_MIN_PWM             130
+#define APP_BEAM_RANGE_VERIFIED              1
+#define APP_SA100_CALIBRATION_VERIFIED        1
 ```
 
-`APP_ENCODER_BEAM_CPR=3200` 和 `APP_MOTOR_BEAM_MIN_PWM=80` 来自此前“阶段 A/B”调试提交，但仓库中没有包含供电、电流、重复次数的完整原始记录。硬件和编码器版本没有变化时可以把它们作为当前工作值；进入闭环前仍应按本文快速复核并补充记录。
+`APP_ENCODER_BEAM_CPR=3200` 和 `APP_MOTOR_BEAM_MIN_PWM=130` 来自此前阶段调试，但仓库中仍没有包含供电、电流、重复次数的完整原始记录。硬件和编码器版本没有变化时可以把它们作为当前工作值；进入闭环前仍应按本文快速复核并补充记录。
 
-两个 `VERIFIED` 标志目前为 `0`，因此代码会拒绝 `angle`、`ball` 和 `ball sequence` 闭环。这是正常安全门禁，不是程序故障：
+两个 `VERIFIED` 标志当前已写为 `1`，对应阶段 C/D 的既有实测提交。若机构、传感器、接线或标定条件发生变化，必须恢复为 `0` 并重新验收：
 
 - 测完 P60 机械安全范围并写回后，将 `APP_BEAM_RANGE_VERIFIED` 改成 `1`；
 - 标定 SA100 并写回后，将 `APP_SA100_CALIBRATION_VERIFIED` 改成 `1`；
@@ -208,7 +208,7 @@ bench off
 | `stream off` | 关闭连续输出 | 否 |
 | `stop` | 两路 STBY 拉低、PID 清零、故障回到 idle | 否 |
 | `zero` | 在人工确认安全中点后，把 TIM4 和 P60 累计计数清零 | 否，复位后必须重新确认 |
-| `pulse <pwm> <ms>` | 原始 P60 开环脉冲；绝对值最大 250，最长 500 ms，不应用最低 PWM 补偿 | 否 |
+| `pulse <pwm> <ms>` | 原始 P60 开环脉冲；阶段 E 写回后绝对值最大 120，最长 500 ms，不应用最低 PWM 补偿 | 否 |
 | `sa cal <scale> <zero> <sign>` | 修改 RAM 中 SA100 换算并使 `sacal=1` | 否 |
 | `limit pwm <value>` | 修改台架角度闭环输出上限，最大不超过 `APP_MOTOR_BEAM_MAX_PWM` | 否 |
 | `limit angle <deg>` | 修改台架球外环/角度命令限幅，不能超过软件软限位 | 否 |
@@ -222,7 +222,7 @@ bench off
 重要区别：
 
 - `pulse` 使用 `Motor_SetRaw()`，例如 `pulse 50 200` 就是约 5%，不会被最低有效 PWM 提升；
-- `angle` 和 `ball` 使用正式 `Motor_Set()`，非零命令低于 `APP_MOTOR_BEAM_MIN_PWM` 时会补偿到该值；
+- `angle` 和 `ball` 使用受 `limit pwm` 约束的连续原始 PWM，不强制最低 PWM 补偿；`APP_MOTOR_BEAM_MIN_PWM` 只用于记录开环启动特性；
 - `gain`、`limit`、`sa cal` 都只改 RAM，复位、重烧或断电后恢复源码值；
 - `APP_BEAM_RANGE_VERIFIED` 只能修改源码并重烧，不能用命令临时绕过。
 - 进入任何 `fault` 后故障会锁存，`pulse`、`angle`、`ball` 都会被拒绝；先断 VM、检查原因，再执行 `stop` 清除台架故障。`zero` 和 `sa cal` 也要求先回到 `idle`。
@@ -324,7 +324,7 @@ pulse 100 500
 
 ### 9.2 快速复核最低有效原始 PWM
 
-当前源码工作值是 80。不要直接从较高 PWM 开始，依次测试：
+当前源码工作值是 130。若硬件未变化可先保留；需要复核时不要直接从较高 PWM 开始，依次测试：
 
 ```text
 zero
@@ -353,7 +353,7 @@ status
 
 “最低有效 PWM”不是偶尔动一次的值，而是正反方向均能可靠启动的最小值。若正反方向不同，配置值取两者中较大的值，并留少量可靠裕量。
 
-不要在本阶段测所谓“最大 PWM”：`pulse` 被代码限制为 250，本阶段只为确认启动区、方向和编码器。`APP_MOTOR_BEAM_MAX_PWM=700` 仍是闭环安全上限候选，必须等连杆、角度环和电流数据齐全后再决定是否收紧。
+不要在本阶段测所谓“最大 PWM”：阶段 E 实测后，`pulse` 与 `APP_MOTOR_BEAM_MAX_PWM` 都已收紧为 120，本阶段只为确认启动区、方向和编码器。若今后确需提高上限，必须重新取得连杆、角度环和电流数据，不能只改宏。
 
 ### 9.3 统一电机和编码器正方向
 
@@ -492,7 +492,7 @@ status
 持续 APP_BEAM_STALL_TIMEOUT_MS（当前 300 ms）
 ```
 
-台架默认闭环 PWM 上限是 300，原始 `pulse` 最大是 250，所以前述阶段不会触发 350 的堵转判断。不要为了“验证堵转”故意卡住机构或提高输出。等角度环稳定并确实需要超过 350 时，再根据正常运动日志确定阈值，并用安全、可立即断电的受控方法验证。此前必须把这组参数标为 `UNVERIFIED`，但不影响继续进行低 PWM 角度调试。
+阶段 E 写回后的台架闭环与原始 `pulse` 上限均为 120，所以前述阶段不会触发 350 的堵转 PWM 阈值。不要为了“验证堵转”故意卡住机构或提高输出。若后续确实需要超过 350，必须先根据正常运动日志确定阈值，并用安全、可立即断电的受控方法验证。当前堵转参数仍标为 `UNVERIFIED`，但不影响已完成的低 PWM 角度环验收。
 
 ## 11. 阶段 D：SA100 原始 PWM、零点和方向标定
 
@@ -679,7 +679,9 @@ gain angle <Kp> <Ki> <Kd>
 angle 0.5
 ```
 
-注意：正式闭环使用最低 PWM 补偿。若计算输出只有 1，只要非零，电机实际命令就会提升到 `APP_MOTOR_BEAM_MIN_PWM`。低幅来回抖动可能是最低 PWM 过大、机械回差或 Kp/Kd 不合适，不应盲目增加积分。
+注意：摆杆角度闭环不再把任意非零输出强制提升到 `APP_MOTOR_BEAM_MIN_PWM`。应通过 Kp 让目标误差较大时的连续输出跨过实测静摩擦区，接近目标时自然降到不能驱动机构的范围并由制动保持。若重新启用固定最低 PWM 补偿，必须证明它不会在目标附近形成正反极限环。
+
+阶段 E 的当前实现还会对 SA100 角度应用 `APP_SA100_ANGLE_FILTER_ALPHA` 一阶低通，并在 `|aref-ang| <= APP_BEAM_ANGLE_DEADBAND_DEG` 时清零 PID、输出制动。停止或换向后还会保持 `APP_BEAM_REVERSAL_BRAKE_MS`，避免机构尚有惯性时立即反打。`raw` 字段保留未滤波角度，`ang` 是供闭环使用的滤波角度；调试时应同时观察两者，禁止用过大的死区掩盖机械振荡或错误方向。
 
 ### 12.4 空管角度环验收表
 

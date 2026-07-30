@@ -14,13 +14,13 @@
  * to inert stubs and cannot enable a motor.
  */
 #define APP_ENABLE_BENCH_DEBUG              1
-#define APP_BENCH_OPEN_LOOP_PWM_LIMIT       250
+#define APP_BENCH_OPEN_LOOP_PWM_LIMIT       120
 #define APP_BENCH_PULSE_MAX_MS              500U
-#define APP_BENCH_CLOSED_LOOP_PWM_LIMIT     300.0f
+#define APP_BENCH_CLOSED_LOOP_PWM_LIMIT     120.0f
 #define APP_BENCH_ANGLE_LIMIT_DEG            2.0f
 #define APP_BENCH_CLOSED_LOOP_MAX_MS      30000U
 #define APP_BENCH_TELEMETRY_MS              100U
-#define APP_BENCH_INITIAL_ANGLE_KP           30.0f
+#define APP_BENCH_INITIAL_ANGLE_KP          300.0f
 #define APP_BENCH_INITIAL_ANGLE_KI            0.0f
 #define APP_BENCH_INITIAL_ANGLE_KD            0.0f
 #define APP_BENCH_INITIAL_BALL_KP             0.005f
@@ -43,7 +43,7 @@
 #define APP_MOTOR_RIGHT_MIN_PWM            80
 #define APP_MOTOR_BEAM_MIN_PWM             130
 #define APP_MOTOR_CHASSIS_MAX_PWM          900
-#define APP_MOTOR_BEAM_MAX_PWM             700
+#define APP_MOTOR_BEAM_MAX_PWM             120
 
 /* Safe P60 range relative to the manually aligned and zeroed center count. */
 #define APP_BEAM_RANGE_VERIFIED              1
@@ -55,14 +55,18 @@
 
 /* SA100 PWM conversion. Calibrate offset and sign on the assembled mechanism. */
 #define APP_SA100_CALIBRATION_VERIFIED        1
+#define APP_SA100_CAPTURE_TICKS_PER_US       10U
+#define APP_SA100_ANGLE_FILTER_ALPHA          0.20f
 #define APP_SA100_DUTY_TO_DEG               360.0f
-#define APP_SA100_HORIZONTAL_RAW_DEG        190.347f
+#define APP_SA100_HORIZONTAL_RAW_DEG        189.085f
 #define APP_SA100_ANGLE_SIGN                1.0f
 #define APP_SA100_PERIOD_MIN_US             1000U
 #define APP_SA100_PERIOD_MAX_US             1300U
 #define APP_SA100_TIMEOUT_MS                100U
 #define APP_BEAM_ANGLE_SOFT_LIMIT_DEG       3.0f
 #define APP_BEAM_INITIAL_CMD_LIMIT_DEG      2.0f
+#define APP_BEAM_ANGLE_DEADBAND_DEG          0.08f
+#define APP_BEAM_REVERSAL_BRAKE_MS          40U
 
 /* Vision protocol: "$B,<x_mm>,<status>\n", 1=measured, 2=held, 0=invalid. */
 #define APP_VISION_TIMEOUT_MS               200U
@@ -91,9 +95,9 @@
 #define APP_CHASSIS_BASE_SPEED_MM_S         300.0f
 #define APP_CHASSIS_CURVE_SPEED_MM_S        180.0f
 
-#define APP_BEAM_ANGLE_KP                   180.0f
-#define APP_BEAM_ANGLE_KI                   5.0f
-#define APP_BEAM_ANGLE_KD                   15.0f
+#define APP_BEAM_ANGLE_KP                   300.0f
+#define APP_BEAM_ANGLE_KI                     0.0f
+#define APP_BEAM_ANGLE_KD                     0.0f
 #define APP_BALL_KP                         0.035f
 #define APP_BALL_KD                         0.012f
 #define APP_BALL_CONTROL_SIGN               1.0f

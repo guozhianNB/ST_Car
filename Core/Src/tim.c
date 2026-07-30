@@ -110,7 +110,7 @@ void MX_TIM15_Init(void)
   TIM_MasterConfigTypeDef master = {0};
 
   htim15.Instance = TIM15;
-  htim15.Init.Prescaler = 169; /* 1 us capture tick at 170 MHz. */
+  htim15.Init.Prescaler = 16; /* 0.1 us capture tick at 170 MHz. */
   htim15.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim15.Init.Period = 0xFFFFU;
   htim15.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;

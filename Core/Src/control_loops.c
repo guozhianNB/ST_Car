@@ -16,6 +16,7 @@ static float requested_base_speed;
 static float line_previous_error;
 static bool line_initialized;
 static uint32_t beam_last_sample_ms;
+static uint32_t beam_brake_until_ms;
 
 static float Clamp(float value, float low, float high)
 {
@@ -30,6 +31,21 @@ static float Ramp(float current, float target, float maximum_step)
   if (delta > maximum_step) delta = maximum_step;
   if (delta < -maximum_step) delta = -maximum_step;
   return current + delta;
+}
+
+static int16_t ApplyBeamReversalBrake(int16_t requested, uint32_t now_ms)
+{
+  int16_t applied = Motor_GetCommand(MOTOR_BEAM);
+  if (requested == 0) {
+    if (applied != 0) beam_brake_until_ms = now_ms + APP_BEAM_REVERSAL_BRAKE_MS;
+    return 0;
+  }
+  if ((int32_t)(now_ms - beam_brake_until_ms) < 0) return 0;
+  if ((applied != 0) && ((requested > 0) != (applied > 0))) {
+    beam_brake_until_ms = now_ms + APP_BEAM_REVERSAL_BRAKE_MS;
+    return 0;
+  }
+  return requested;
 }
 
 void ControlLoops_Init(void)
@@ -52,6 +68,7 @@ void ControlLoops_Reset(void)
   line_previous_error = 0.0f;
   line_initialized = false;
   beam_last_sample_ms = 0U;
+  beam_brake_until_ms = 0U;
   status.left_target_mm_s = 0.0f;
   status.right_target_mm_s = 0.0f;
   status.left_ramped_mm_s = 0.0f;
@@ -193,16 +210,24 @@ void ControlLoops_FastUpdate(uint32_t dt_ms)
         angle_dt_s = (float)(angle.timestamp_ms - beam_last_sample_ms) * 0.001f;
       }
       beam_last_sample_ms = angle.timestamp_ms;
-      command = (int16_t)PID_Update(&beam_angle_pid,
-        status.beam_target_deg - angle.beam_angle_deg, angle_dt_s);
+      {
+        float error = status.beam_target_deg - angle.beam_angle_deg;
+        if (fabsf(error) <= APP_BEAM_ANGLE_DEADBAND_DEG) {
+          command = 0;
+          PID_Reset(&beam_angle_pid);
+        } else {
+          command = (int16_t)PID_Update(&beam_angle_pid, error, angle_dt_s);
+        }
+      }
     }
     if ((beam_encoder->total_count <= APP_BEAM_ENCODER_MIN_COUNT && command < 0) ||
         (beam_encoder->total_count >= APP_BEAM_ENCODER_MAX_COUNT && command > 0)) {
       command = 0;
       PID_Reset(&beam_angle_pid);
     }
+    command = ApplyBeamReversalBrake(command, now_ms);
     status.beam_pwm = command;
-    Motor_Set(MOTOR_BEAM, command);
+    Motor_SetRaw(MOTOR_BEAM, command);
   } else if (status.beam_enabled) {
     status.beam_pwm = 0;
     beam_last_sample_ms = 0U;

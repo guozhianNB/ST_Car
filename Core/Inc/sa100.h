@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 typedef struct {
+  float duty_cycle;
   float raw_angle_deg;
   float beam_angle_deg;
   uint32_t period_us;

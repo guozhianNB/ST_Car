@@ -12,7 +12,7 @@
 | 左轮编码器 A/B | TIM2_CH1/CH2 | PA0/PA1 | TI12，32 位计数，输入滤波 4 |
 | 右轮编码器 A/B | TIM3_CH1/CH2 | PA6/PA7 | TI12，16 位计数，输入滤波 4 |
 | P60 编码器 A/B | TIM4_CH1/CH2 | PB6/PB7 | TI12，16 位计数，输入滤波 4 |
-| SA100 PWM | TIM15_CH1 | PB14 | PWM Input；1 us 计数；CH1 周期、CH2 高电平 |
+| SA100 PWM | TIM15_CH1 | PB14 | PWM Input；0.1 us 计数；CH1 周期、CH2 高电平，遥测仍输出 us |
 | MaixCAM2 | UART4 TX/RX | PC10/PC11 | 115200 8N1；RX 为 DMA1_CH1 环形 DMA + IDLE |
 | ST-Link VCP 调试 | LPUART1 TX/RX | PA2/PA3 | 115200 8N1；非阻塞遥测；台架调试开启时 RX 单字节中断接收命令 |
 | OLED 预留 | I2C1 SCL/SDA | PB8/PB9 | 400 kHz；显示屏型号确定后补适配层 |

@@ -59,19 +59,25 @@ void Motor_EnableBeam(bool enable)
                     enable ? GPIO_PIN_SET : GPIO_PIN_RESET);
 }
 
-static void ApplyCommand(MotorId id, int16_t command, bool apply_min_pwm)
+static void ApplyCommand(MotorId id, int16_t command, bool apply_min_pwm,
+                         int16_t runtime_limit)
 {
   const MotorHardware *hw;
   int16_t magnitude;
   if ((unsigned)id >= MOTOR_COUNT) return;
   hw = &motor_hw[id];
-  command = LimitCommand((int32_t)command * hw->sign, hw->max_pwm);
+  if ((runtime_limit < 0) || (runtime_limit > hw->max_pwm)) {
+    runtime_limit = hw->max_pwm;
+  }
+  command = LimitCommand((int32_t)command * hw->sign, runtime_limit);
   if (command == 0) {
     Motor_Brake(id);
     return;
   }
   magnitude = (command < 0) ? (int16_t)-command : command;
-  if (apply_min_pwm && (magnitude < hw->min_pwm)) magnitude = hw->min_pwm;
+  if (apply_min_pwm && (magnitude < hw->min_pwm)) {
+    magnitude = (hw->min_pwm < runtime_limit) ? hw->min_pwm : runtime_limit;
+  }
   motor_command[id] = (command > 0) ? magnitude : (int16_t)-magnitude;
   if (command > 0) {
     HAL_GPIO_WritePin(hw->in1_port, hw->in1_pin, GPIO_PIN_SET);
@@ -87,12 +93,22 @@ static void ApplyCommand(MotorId id, int16_t command, bool apply_min_pwm)
 
 void Motor_Set(MotorId id, int16_t command)
 {
-  ApplyCommand(id, command, true);
+  ApplyCommand(id, command, true, -1);
+}
+
+void Motor_SetLimited(MotorId id, int16_t command, int16_t limit)
+{
+  ApplyCommand(id, command, true, limit);
 }
 
 void Motor_SetRaw(MotorId id, int16_t command)
 {
-  ApplyCommand(id, command, false);
+  ApplyCommand(id, command, false, -1);
+}
+
+void Motor_SetRawLimited(MotorId id, int16_t command, int16_t limit)
+{
+  ApplyCommand(id, command, false, limit);
 }
 
 int16_t Motor_GetCommand(MotorId id)
