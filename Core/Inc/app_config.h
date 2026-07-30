@@ -41,13 +41,13 @@
 #define APP_MOTOR_BEAM_SIGN                1
 #define APP_MOTOR_LEFT_MIN_PWM             80
 #define APP_MOTOR_RIGHT_MIN_PWM            80
-#define APP_MOTOR_BEAM_MIN_PWM             80
+#define APP_MOTOR_BEAM_MIN_PWM             130
 #define APP_MOTOR_CHASSIS_MAX_PWM          900
 #define APP_MOTOR_BEAM_MAX_PWM             700
 
 /* Safe P60 range relative to the manually aligned and zeroed center count. */
-#define APP_BEAM_RANGE_VERIFIED              0
-#define APP_BEAM_ENCODER_MIN_COUNT          (-260)
+#define APP_BEAM_RANGE_VERIFIED              1
+#define APP_BEAM_ENCODER_MIN_COUNT          -200
 #define APP_BEAM_ENCODER_MAX_COUNT          260
 #define APP_BEAM_STALL_PWM                  350
 #define APP_BEAM_STALL_DELTA_COUNT          1
