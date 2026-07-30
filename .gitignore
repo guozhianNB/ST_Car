@@ -19,3 +19,4 @@ debug.log
 # Local generated Python state.
 __pycache__/
 *.py[cod]
+out/*
