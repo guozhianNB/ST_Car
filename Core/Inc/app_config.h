@@ -45,7 +45,7 @@
 #define APP_MOTOR_CHASSIS_MAX_PWM          900
 #define APP_MOTOR_BEAM_MAX_PWM             700
 
-/* Safe P60 range relative to the mechanically centered startup/home count. */
+/* Safe P60 range relative to the manually aligned and zeroed center count. */
 #define APP_BEAM_RANGE_VERIFIED              0
 #define APP_BEAM_ENCODER_MIN_COUNT          (-260)
 #define APP_BEAM_ENCODER_MAX_COUNT          260
