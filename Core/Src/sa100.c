@@ -7,6 +7,7 @@ static volatile Sa100Sample sample;
 static float previous_raw_deg;
 static float continuous_raw_deg;
 static bool angle_initialized;
+static uint8_t stabilization_count;
 static volatile float calibration_duty_to_deg = APP_SA100_DUTY_TO_DEG;
 static volatile float calibration_horizontal_raw_deg = APP_SA100_HORIZONTAL_RAW_DEG;
 static volatile float calibration_angle_sign = APP_SA100_ANGLE_SIGN;
@@ -16,6 +17,7 @@ void SA100_Init(void)
   sample.valid = false;
   sample.timestamp_ms = 0;
   angle_initialized = false;
+  stabilization_count = 0U;
   if (HAL_TIM_IC_Start(&htim15, TIM_CHANNEL_2) != HAL_OK) Error_Handler();
   if (HAL_TIM_IC_Start_IT(&htim15, TIM_CHANNEL_1) != HAL_OK) Error_Handler();
 }
@@ -53,6 +55,7 @@ void SA100_SetCalibration(float duty_to_deg, float horizontal_raw_deg,
   calibration_horizontal_raw_deg = horizontal_raw_deg;
   calibration_angle_sign = angle_sign;
   angle_initialized = false;
+  stabilization_count = 0U;
   sample.valid = false;
   if (primask == 0U) __enable_irq();
 }
@@ -82,6 +85,12 @@ void SA100_CaptureCallback(void)
   }
   raw = ((float)high / (float)period) * calibration_duty_to_deg;
   if (!angle_initialized) {
+    if (stabilization_count < 2U) {
+      stabilization_count++;
+      previous_raw_deg = raw;
+      sample.valid = false;
+      return;
+    }
     continuous_raw_deg = raw;
     angle_initialized = true;
   } else {

@@ -54,12 +54,12 @@
 #define APP_BEAM_STALL_TIMEOUT_MS           300U
 
 /* SA100 PWM conversion. Calibrate offset and sign on the assembled mechanism. */
-#define APP_SA100_CALIBRATION_VERIFIED        0
+#define APP_SA100_CALIBRATION_VERIFIED        1
 #define APP_SA100_DUTY_TO_DEG               360.0f
-#define APP_SA100_HORIZONTAL_RAW_DEG        180.0f
+#define APP_SA100_HORIZONTAL_RAW_DEG        190.347f
 #define APP_SA100_ANGLE_SIGN                1.0f
-#define APP_SA100_PERIOD_MIN_US             100U
-#define APP_SA100_PERIOD_MAX_US             60000U
+#define APP_SA100_PERIOD_MIN_US             1000U
+#define APP_SA100_PERIOD_MAX_US             1300U
 #define APP_SA100_TIMEOUT_MS                100U
 #define APP_BEAM_ANGLE_SOFT_LIMIT_DEG       3.0f
 #define APP_BEAM_INITIAL_CMD_LIMIT_DEG      2.0f

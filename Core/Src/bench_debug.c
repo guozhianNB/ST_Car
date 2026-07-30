@@ -242,8 +242,9 @@ static void HandleCommand(char *line, uint32_t now_ms)
   }
   if ((count == 2U) && (strcmp(token[0], "bench") == 0) &&
       (strcmp(token[1], "on") == 0)) {
-    if (bench.mode != BENCH_MODE_OFF) {
-      QueueMessage("ERR bench already active; use 'stop' to clear a fault\r\n");
+    if (bench.mode != BENCH_MODE_OFF && bench.mode != BENCH_MODE_IDLE) {
+      QueueMessage("ERR bench is busy (%s); use 'stop' first\r\n",
+                   ModeName(bench.mode));
       return;
     }
     if (App_GetStatus()->state != APP_STATE_STANDBY) {
