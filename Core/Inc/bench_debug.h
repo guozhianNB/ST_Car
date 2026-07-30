@@ -10,6 +10,7 @@ typedef enum {
   BENCH_MODE_PULSE,
   BENCH_MODE_ANGLE,
   BENCH_MODE_BALL,
+  BENCH_MODE_BALL_SEQUENCE,
   BENCH_MODE_FAULT
 } BenchMode;
 
@@ -20,7 +21,8 @@ typedef enum {
   BENCH_FAULT_ANGLE_LIMIT,
   BENCH_FAULT_ENCODER_LIMIT,
   BENCH_FAULT_STALL,
-  BENCH_FAULT_VISION_TIMEOUT
+  BENCH_FAULT_VISION_TIMEOUT,
+  BENCH_FAULT_SEQUENCE_TIMEOUT
 } BenchFault;
 
 typedef struct {
@@ -40,6 +42,8 @@ typedef struct {
   bool sa_calibration_confirmed;
   bool stream_enabled;
   uint32_t stream_period_ms;
+  uint8_t sequence_stage;
+  uint32_t sequence_elapsed_ms;
 } BenchDebugStatus;
 
 void BenchDebug_Init(uint32_t now_ms);

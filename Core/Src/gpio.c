@@ -49,11 +49,6 @@ void MX_GPIO_Init(void)
   gpio.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(START_BUTTON_GPIO_Port, &gpio);
 
-  gpio.Pin = BEAM_HOME_Pin;
-  gpio.Mode = GPIO_MODE_IT_FALLING;
-  gpio.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(BEAM_HOME_GPIO_Port, &gpio);
-
   HAL_NVIC_SetPriority(EXTI4_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(EXTI4_IRQn);
   HAL_NVIC_SetPriority(EXTI15_10_IRQn, 5, 0);

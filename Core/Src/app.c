@@ -15,7 +15,6 @@
 static AppStatus app;
 static volatile uint8_t start_event;
 static volatile uint8_t mode_event;
-static volatile uint8_t home_event;
 static uint32_t last_button_ms;
 static uint32_t run_start_ms;
 static uint32_t stage_start_ms;
@@ -292,14 +291,6 @@ static void UpdateState(uint32_t now_ms)
 
 static void ProcessEvents(uint32_t now_ms)
 {
-  if (home_event) {
-    home_event = 0;
-    /* Never move the safety origin while a task is running. */
-    if ((app.state == APP_STATE_STANDBY) &&
-        (HAL_GPIO_ReadPin(BEAM_HOME_GPIO_Port, BEAM_HOME_Pin) == GPIO_PIN_RESET)) {
-      Encoder_Reset(ENCODER_BEAM);
-    }
-  }
   if ((now_ms - last_button_ms) < 60U) return;
   if (mode_event) {
     mode_event = 0;
@@ -395,7 +386,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t pin)
     else start_event = 1;
   }
   else if (pin == MODE_BUTTON_Pin) mode_event = 1;
-  else if (pin == BEAM_HOME_Pin) home_event = 1;
 }
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)

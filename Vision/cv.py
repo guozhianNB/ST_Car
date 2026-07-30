@@ -178,21 +178,32 @@ def reference_line_y(x):
     )
 
 
-def pixel_x_to_cm(x):
+def project_to_reference_axis(x, y):
     """
-    左标记 = -10 cm
-    右标记 = +10 cm
+    把球心正交投影到左右标记定义的水管轴线。
 
-    返回单位：cm
+    返回：
+        ratio：左标记为 0，右标记为 1 的轴向比例
+        projected_x / projected_y：投影点像素坐标
     """
+    axis_x = RIGHT_REF_X - LEFT_REF_X
+    axis_y = RIGHT_REF_Y - LEFT_REF_Y
+    denominator = axis_x * axis_x + axis_y * axis_y
+    if denominator < 0.001:
+        return 0.5, LEFT_REF_X, LEFT_REF_Y
+    ratio = (
+        (x - LEFT_REF_X) * axis_x
+        + (y - LEFT_REF_Y) * axis_y
+    ) / denominator
+    return (
+        ratio,
+        LEFT_REF_X + ratio * axis_x,
+        LEFT_REF_Y + ratio * axis_y
+    )
 
-    denominator = RIGHT_REF_X - LEFT_REF_X
 
-    if abs(denominator) < 0.001:
-        return 0.0
-
-    ratio = (x - LEFT_REF_X) / denominator
-
+def axis_ratio_to_cm(ratio):
+    """左标记 = -10 cm，右标记 = +10 cm。"""
     return -10.0 + ratio * 20.0
 
 
@@ -388,6 +399,8 @@ lost_count = 0
 
 filtered_x = None
 raw_x_history = []
+filtered_axis_ratio = None
+raw_axis_history = []
 
 last_ball_blob = None
 
@@ -470,34 +483,48 @@ while not app.need_exit():
 
     if ball_blob is not None:
         raw_x = raw_center[0]
+        raw_y = raw_center[1]
+        raw_axis_ratio, _, _ = project_to_reference_axis(raw_x, raw_y)
 
         # 长时间丢失后重新找到，清空旧滤波历史
         if filtered_x is None or lost_count >= GLOBAL_REACQUIRE_FRAMES:
             raw_x_history = []
+            raw_axis_history = []
             filtered_x = raw_x
+            filtered_axis_ratio = raw_axis_ratio
 
         raw_x_history.append(raw_x)
+        raw_axis_history.append(raw_axis_ratio)
 
         if len(raw_x_history) > 3:
             raw_x_history.pop(0)
+        if len(raw_axis_history) > 3:
+            raw_axis_history.pop(0)
 
         median_x = median_value(raw_x_history)
+        median_axis_ratio = median_value(raw_axis_history)
 
         filtered_x = (
             POSITION_ALPHA * median_x
             + (1.0 - POSITION_ALPHA) * filtered_x
         )
+        filtered_axis_ratio = (
+            POSITION_ALPHA * median_axis_ratio
+            + (1.0 - POSITION_ALPHA) * filtered_axis_ratio
+        )
 
         lost_count = 0
         status = 1
 
-        x_cm = pixel_x_to_cm(filtered_x)
-
-        display_x = filtered_x
-
-        # 红点纵坐标由正确的固定轴线给出，
-        # 避免球面反光导致上下跳动。
-        display_y = reference_line_y(filtered_x)
+        x_cm = axis_ratio_to_cm(filtered_axis_ratio)
+        display_x = (
+            LEFT_REF_X
+            + filtered_axis_ratio * (RIGHT_REF_X - LEFT_REF_X)
+        )
+        display_y = (
+            LEFT_REF_Y
+            + filtered_axis_ratio * (RIGHT_REF_Y - LEFT_REF_Y)
+        )
 
         last_ball_blob = ball_blob
 
@@ -514,10 +541,15 @@ while not app.need_exit():
         ):
             # 丢失一两帧时保持最后位置，不进行乱猜
             status = 2
-            x_cm = pixel_x_to_cm(filtered_x)
-
-            display_x = filtered_x
-            display_y = reference_line_y(filtered_x)
+            x_cm = axis_ratio_to_cm(filtered_axis_ratio)
+            display_x = (
+                LEFT_REF_X
+                + filtered_axis_ratio * (RIGHT_REF_X - LEFT_REF_X)
+            )
+            display_y = (
+                LEFT_REF_Y
+                + filtered_axis_ratio * (RIGHT_REF_Y - LEFT_REF_Y)
+            )
 
         else:
             status = 0
@@ -525,6 +557,8 @@ while not app.need_exit():
             if lost_count >= 6:
                 filtered_x = None
                 raw_x_history = []
+                filtered_axis_ratio = None
+                raw_axis_history = []
                 last_ball_blob = None
 
     # --------------------------------------------------------

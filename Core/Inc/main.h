@@ -47,17 +47,13 @@ void Error_Handler(void);
 #define LINE_7_Pin                   GPIO_PIN_12
 #define LINE_7_GPIO_Port             GPIOC
 
-/* NUCLEO PC13 button is active high; MODE and BEAM_HOME are active low. */
+/* NUCLEO PC13 button is active high; MODE is active low. */
 #define START_BUTTON_Pin             GPIO_PIN_13
 #define START_BUTTON_GPIO_Port       GPIOC
 #define START_BUTTON_EXTI_IRQn       EXTI15_10_IRQn
 #define MODE_BUTTON_Pin              GPIO_PIN_4
 #define MODE_BUTTON_GPIO_Port        GPIOA
 #define MODE_BUTTON_EXTI_IRQn        EXTI4_IRQn
-#define BEAM_HOME_Pin                GPIO_PIN_15
-#define BEAM_HOME_GPIO_Port          GPIOA
-#define BEAM_HOME_EXTI_IRQn          EXTI15_10_IRQn
-
 /* NUCLEO LD2, active high. */
 #define STATUS_LED_Pin               GPIO_PIN_5
 #define STATUS_LED_GPIO_Port         GPIOA

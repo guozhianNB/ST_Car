@@ -42,6 +42,8 @@ static uint32_t pulse_end_ms;
 static uint32_t closed_loop_end_ms;
 static uint32_t last_angle_sample_ms;
 static uint32_t stall_since_ms;
+static uint32_t sequence_start_ms;
+static uint32_t sequence_settle_start_ms;
 
 static float Clamp(float value, float low, float high)
 {
@@ -53,7 +55,7 @@ static float Clamp(float value, float low, float high)
 static const char *ModeName(BenchMode mode)
 {
   static const char *const names[] = {
-    "off", "idle", "pulse", "angle", "ball", "fault"
+    "off", "idle", "pulse", "angle", "ball", "ball_sequence", "fault"
   };
   return ((unsigned)mode < (sizeof(names) / sizeof(names[0]))) ? names[mode] : "?";
 }
@@ -62,7 +64,7 @@ static const char *FaultName(BenchFault fault)
 {
   static const char *const names[] = {
     "none", "estop", "sa100_timeout", "angle_limit", "encoder_limit",
-    "stall", "vision_timeout"
+    "stall", "vision_timeout", "sequence_timeout"
   };
   return ((unsigned)fault < (sizeof(names) / sizeof(names[0]))) ? names[fault] : "?";
 }
@@ -164,25 +166,36 @@ static void QueueStatus(uint32_t now_ms)
   float scale;
   float zero;
   float sign;
+  float duty = 0.0f;
+  long sa_age_ms = -1L;
+  long vision_age_ms = -1L;
   (void)SA100_GetSnapshot(&angle);
   (void)VisionUART_GetSnapshot(&ball);
   SA100_GetCalibration(&scale, &zero, &sign);
+  if (angle.period_us != 0U) {
+    duty = (float)angle.high_us / (float)angle.period_us;
+  }
+  if (angle.valid) sa_age_ms = (long)(now_ms - angle.timestamp_ms);
+  if (ball.timestamp_ms != 0U) vision_age_ms = (long)(now_ms - ball.timestamp_ms);
   QueueMessage(
-    "BENCH t=%lu mode=%s fault=%s stream=%u rate=%lu pwm=%d count=%lld delta=%ld "
-    "sa=%u fresh=%u sacal=%u rangeok=%u per=%lu high=%lu raw=%.3f ang=%.3f aref=%.3f "
-    "vision=%u vfresh=%u ball=%.2f vel=%.2f bref=%.2f "
+    "BENCH t=%lu mode=%s fault=%s stream=%u rate=%lu seq=%u seqms=%lu "
+    "pwm=%d count=%ld delta=%ld sa=%u fresh=%u sage=%ld sacal=%u rangeok=%u "
+    "per=%lu high=%lu duty=%.6f raw=%.3f ang=%.3f aref=%.3f "
+    "vision=%u vfresh=%u vage=%ld vframe=%lu ball=%.2f vel=%.2f bref=%.2f "
     "akp=%.3f aki=%.3f akd=%.3f bkp=%.5f bkd=%.5f bsign=%.0f "
     "plim=%.0f alim=%.2f scale=%.3f zero=%.3f sasign=%.0f\r\n",
     (unsigned long)now_ms, ModeName(bench.mode), FaultName(bench.fault),
     bench.stream_enabled ? 1U : 0U, (unsigned long)bench.stream_period_ms,
-    Motor_GetCommand(MOTOR_BEAM), (long long)encoder->total_count,
+    bench.sequence_stage, (unsigned long)bench.sequence_elapsed_ms,
+    Motor_GetCommand(MOTOR_BEAM), (long)encoder->total_count,
     (long)encoder->delta_count, angle.valid ? 1U : 0U,
-    SA100_IsFresh(now_ms) ? 1U : 0U,
+    SA100_IsFresh(now_ms) ? 1U : 0U, sa_age_ms,
     bench.sa_calibration_confirmed ? 1U : 0U,
     APP_BEAM_RANGE_VERIFIED ? 1U : 0U, (unsigned long)angle.period_us,
-    (unsigned long)angle.high_us, angle.raw_angle_deg, angle.beam_angle_deg,
+    (unsigned long)angle.high_us, duty, angle.raw_angle_deg, angle.beam_angle_deg,
     bench.angle_target_deg, ball.status, VisionUART_IsFresh(now_ms) ? 1U : 0U,
-    ball.position_mm, ball.speed_mm_s, bench.ball_target_mm,
+    vision_age_ms, (unsigned long)ball.frame_number, ball.position_mm,
+    ball.speed_mm_s, bench.ball_target_mm,
     bench.angle_kp, bench.angle_ki, bench.angle_kd, bench.ball_kp,
     bench.ball_kd, bench.ball_sign, bench.pwm_limit, bench.angle_limit_deg,
     scale, zero, sign);
@@ -192,6 +205,13 @@ static bool EnsureActive(void)
 {
   if (bench.mode != BENCH_MODE_OFF) return true;
   QueueMessage("ERR run 'bench on' first\r\n");
+  return false;
+}
+
+static bool EnsureNoFault(void)
+{
+  if (bench.mode != BENCH_MODE_FAULT) return true;
+  QueueMessage("ERR fault is latched; inspect hardware, then use 'stop'\r\n");
   return false;
 }
 
@@ -215,13 +235,17 @@ static void HandleCommand(char *line, uint32_t now_ms)
   if (count == 0U) return;
   if (strcmp(token[0], "help") == 0) {
     QueueMessage("OK commands: bench on|off; status; stream on [ms]|off; stop; zero; pulse <signed_pwm> <ms>; "
-                 "angle <deg>; ball <mm>; gain angle <kp> <ki> <kd>; "
+                 "angle <deg>; ball <mm>|sequence; gain angle <kp> <ki> <kd>; "
                  "gain ball <kp> <kd> <sign>; limit pwm <value>; "
                  "limit angle <deg>; sa cal <scale> <zero> <sign>; config\r\n");
     return;
   }
   if ((count == 2U) && (strcmp(token[0], "bench") == 0) &&
       (strcmp(token[1], "on") == 0)) {
+    if (bench.mode != BENCH_MODE_OFF) {
+      QueueMessage("ERR bench already active; use 'stop' to clear a fault\r\n");
+      return;
+    }
     if (App_GetStatus()->state != APP_STATE_STANDBY) {
       QueueMessage("ERR normal app must be in standby before bench on\r\n");
       return;
@@ -274,7 +298,7 @@ static void HandleCommand(char *line, uint32_t now_ms)
     bench.fault = BENCH_FAULT_NONE;
     QueueMessage("OK outputs stopped\r\n");
   } else if (strcmp(token[0], "zero") == 0) {
-    if ((bench.mode != BENCH_MODE_IDLE) && (bench.mode != BENCH_MODE_FAULT)) {
+    if (bench.mode != BENCH_MODE_IDLE) {
       QueueMessage("ERR stop outputs before zero\r\n");
       return;
     }
@@ -286,6 +310,7 @@ static void HandleCommand(char *line, uint32_t now_ms)
   } else if ((count == 3U) && (strcmp(token[0], "pulse") == 0) &&
              ParseLongValue(token[1], &integer_a) &&
              ParseLongValue(token[2], &integer_b)) {
+    if (!EnsureNoFault()) return;
     if ((integer_a == 0L) ||
         (labs(integer_a) > APP_BENCH_OPEN_LOOP_PWM_LIMIT) ||
         (integer_b <= 0L) ||
@@ -302,11 +327,12 @@ static void HandleCommand(char *line, uint32_t now_ms)
     bench.pulse_pwm = (int16_t)integer_a;
     pulse_end_ms = now_ms + (uint32_t)integer_b;
     Motor_EnableBeam(true);
-    Motor_Set(MOTOR_BEAM, bench.pulse_pwm);
-    QueueMessage("OK pulse pwm=%d ms=%ld; PC13 stops immediately\r\n",
+    Motor_SetRaw(MOTOR_BEAM, bench.pulse_pwm);
+    QueueMessage("OK raw pulse pwm=%d ms=%ld; PC13 stops immediately\r\n",
                  bench.pulse_pwm, integer_b);
   } else if ((count == 2U) && (strcmp(token[0], "angle") == 0) &&
              ParseFloatValue(token[1], &a)) {
+    if (!EnsureNoFault()) return;
     if (!APP_BEAM_RANGE_VERIFIED) {
       QueueMessage("ERR set verified P60 limits and APP_BEAM_RANGE_VERIFIED=1 first\r\n");
       return;
@@ -334,7 +360,39 @@ static void HandleCommand(char *line, uint32_t now_ms)
     QueueMessage("OK angle loop target=%.3f deg; auto-stop=%lu ms\r\n", a,
                  (unsigned long)APP_BENCH_CLOSED_LOOP_MAX_MS);
   } else if ((count == 2U) && (strcmp(token[0], "ball") == 0) &&
+             (strcmp(token[1], "sequence") == 0)) {
+    VisionBallSample ball = {0};
+    if (!EnsureNoFault()) return;
+    (void)VisionUART_GetSnapshot(&ball);
+    if (!APP_BEAM_RANGE_VERIFIED || !bench.sa_calibration_confirmed) {
+      QueueMessage("ERR verified P60 range and SA100 calibration are required\r\n");
+      return;
+    }
+    if (!SA100_IsFresh(now_ms) || !VisionUART_IsFresh(now_ms)) {
+      QueueMessage("ERR fresh SA100 and real vision measurement are required\r\n");
+      return;
+    }
+    if (fabsf(ball.position_mm) > APP_BALL_START_TOLERANCE_MM) {
+      QueueMessage("ERR place ball at 0 mm within +/-%.1f mm before sequence\r\n",
+                   APP_BALL_START_TOLERANCE_MM);
+      return;
+    }
+    StopOutputs();
+    ReinitializeAnglePid();
+    bench.ball_target_mm = 50.0f;
+    bench.angle_target_deg = 0.0f;
+    bench.sequence_stage = 0U;
+    bench.sequence_elapsed_ms = 0U;
+    sequence_start_ms = now_ms;
+    sequence_settle_start_ms = 0U;
+    bench.mode = BENCH_MODE_BALL_SEQUENCE;
+    bench.fault = BENCH_FAULT_NONE;
+    Motor_EnableBeam(true);
+    QueueMessage("OK ball sequence started: 0 -> +50 -> -50 mm, timeout=%lu ms\r\n",
+                 (unsigned long)APP_STATIC_STAGE_TIMEOUT_MS);
+  } else if ((count == 2U) && (strcmp(token[0], "ball") == 0) &&
              ParseFloatValue(token[1], &a)) {
+    if (!EnsureNoFault()) return;
     if (!APP_BEAM_RANGE_VERIFIED || !bench.sa_calibration_confirmed) {
       QueueMessage("ERR verified P60 range and SA100 calibration are required\r\n");
       return;
@@ -393,7 +451,7 @@ static void HandleCommand(char *line, uint32_t now_ms)
              ParseFloatValue(token[2], &a) && ParseFloatValue(token[3], &b) &&
              ParseFloatValue(token[4], &c) && (a > 0.0f) &&
              ((c == 1.0f) || (c == -1.0f))) {
-    if ((bench.mode != BENCH_MODE_IDLE) && (bench.mode != BENCH_MODE_FAULT)) {
+    if (bench.mode != BENCH_MODE_IDLE) {
       QueueMessage("ERR stop outputs before changing SA100 calibration\r\n");
       return;
     }
@@ -414,7 +472,9 @@ static void HandleCommand(char *line, uint32_t now_ms)
       "ENC_MIN=%ld ENC_MAX=%ld STALL_PWM=%d STALL_DELTA=%ld STALL_MS=%lu "
       "SA_SCALE=%.3f SA_ZERO=%.3f SA_SIGN=%.0f ANG_KP=%.3f ANG_KI=%.3f "
       "ANG_KD=%.3f BALL_KP=%.5f BALL_KD=%.5f BALL_SIGN=%.0f "
-      "PWM_LIMIT=%.0f ANGLE_LIMIT=%.2f RANGE_OK=%u SA_CAL_OK=%u\r\n",
+      "PWM_LIMIT=%.0f ANGLE_LIMIT=%.2f RANGE_OK=%u SA_CAL_OK=%u "
+      "MAX_PWM=%d SA_PER_MIN=%lu SA_PER_MAX=%lu SA_TIMEOUT=%lu "
+      "SOFT_ANGLE=%.2f VISION_TIMEOUT=%lu BALL_ANGLE=%.2f\r\n",
       APP_ENCODER_BEAM_CPR, APP_MOTOR_BEAM_SIGN, APP_ENCODER_BEAM_SIGN,
       APP_MOTOR_BEAM_MIN_PWM, (long)APP_BEAM_ENCODER_MIN_COUNT,
       (long)APP_BEAM_ENCODER_MAX_COUNT, APP_BEAM_STALL_PWM,
@@ -423,7 +483,11 @@ static void HandleCommand(char *line, uint32_t now_ms)
       bench.angle_kp, bench.angle_ki, bench.angle_kd, bench.ball_kp,
       bench.ball_kd, bench.ball_sign, bench.pwm_limit,
       bench.angle_limit_deg, APP_BEAM_RANGE_VERIFIED ? 1U : 0U,
-      bench.sa_calibration_confirmed ? 1U : 0U);
+      bench.sa_calibration_confirmed ? 1U : 0U, APP_MOTOR_BEAM_MAX_PWM,
+      (unsigned long)APP_SA100_PERIOD_MIN_US,
+      (unsigned long)APP_SA100_PERIOD_MAX_US,
+      (unsigned long)APP_SA100_TIMEOUT_MS, APP_BEAM_ANGLE_SOFT_LIMIT_DEG,
+      (unsigned long)APP_VISION_TIMEOUT_MS, APP_BALL_ANGLE_LIMIT_DEG);
   } else {
     QueueMessage("ERR invalid command; type help\r\n");
   }
@@ -487,7 +551,8 @@ static void ClosedLoopUpdate(uint32_t now_ms, uint32_t elapsed_ms)
   int16_t command;
   float dt_s;
 
-  if (bench.mode == BENCH_MODE_BALL &&
+  if (((bench.mode == BENCH_MODE_BALL) ||
+       (bench.mode == BENCH_MODE_BALL_SEQUENCE)) &&
       VisionUART_ConsumeNewFrame(&vision) && vision.valid) {
     float error = bench.ball_target_mm - vision.position_mm;
     bench.angle_target_deg = bench.ball_sign *
@@ -514,6 +579,40 @@ static void ClosedLoopUpdate(uint32_t now_ms, uint32_t elapsed_ms)
   Motor_Set(MOTOR_BEAM, command);
 }
 
+static void UpdateBallSequence(uint32_t now_ms)
+{
+  VisionBallSample ball = {0};
+  bool inside;
+  bench.sequence_elapsed_ms = now_ms - sequence_start_ms;
+  if (bench.sequence_elapsed_ms > APP_STATIC_STAGE_TIMEOUT_MS) {
+    EnterFault(BENCH_FAULT_SEQUENCE_TIMEOUT);
+    return;
+  }
+  (void)VisionUART_GetSnapshot(&ball);
+  inside = VisionUART_IsFresh(now_ms) &&
+           (fabsf(ball.position_mm - bench.ball_target_mm) <=
+            APP_BALL_SETTLE_ERROR_MM) &&
+           (fabsf(ball.speed_mm_s) <= APP_BALL_SETTLE_SPEED_MM_S);
+  if (!inside) {
+    sequence_settle_start_ms = 0U;
+    return;
+  }
+  if (sequence_settle_start_ms == 0U) sequence_settle_start_ms = now_ms;
+  if ((now_ms - sequence_settle_start_ms) < APP_BALL_SETTLE_TIME_MS) return;
+  sequence_settle_start_ms = 0U;
+  if (bench.sequence_stage == 0U) {
+    bench.sequence_stage = 1U;
+    bench.ball_target_mm = -50.0f;
+  } else {
+    uint32_t elapsed = bench.sequence_elapsed_ms;
+    bench.sequence_stage = 2U;
+    StopOutputs();
+    bench.mode = BENCH_MODE_IDLE;
+    QueueMessage("OK ball sequence complete elapsed=%lu ms\r\n",
+                 (unsigned long)elapsed);
+  }
+}
+
 void BenchDebug_Init(uint32_t now_ms)
 {
   memset(&bench, 0, sizeof(bench));
@@ -529,6 +628,8 @@ void BenchDebug_Init(uint32_t now_ms)
   bench.sa_calibration_confirmed = APP_SA100_CALIBRATION_VERIFIED != 0;
   bench.stream_enabled = false;
   bench.stream_period_ms = APP_BENCH_TELEMETRY_MS;
+  bench.sequence_stage = 0U;
+  bench.sequence_elapsed_ms = 0U;
   ReinitializeAnglePid();
   rx_head = 0U;
   rx_tail = 0U;
@@ -571,14 +672,20 @@ bool BenchDebug_Run(uint32_t now_ms)
     QueueMessage("OK closed-loop time limit reached; outputs stopped\r\n");
   }
 
+  if (bench.mode == BENCH_MODE_BALL_SEQUENCE) {
+    UpdateBallSequence(now_ms);
+  }
+
   if ((bench.mode != BENCH_MODE_OFF) &&
       ((now_ms - fast_tick_ms) >= APP_CONTROL_FAST_MS)) {
     uint32_t elapsed = now_ms - fast_tick_ms;
     fast_tick_ms = now_ms;
     Encoder_Update(elapsed);
-    if ((bench.mode == BENCH_MODE_ANGLE) || (bench.mode == BENCH_MODE_BALL)) {
-      CheckClosedLoopSafety(now_ms, bench.mode == BENCH_MODE_BALL);
-      if ((bench.mode == BENCH_MODE_ANGLE) || (bench.mode == BENCH_MODE_BALL)) {
+    if ((bench.mode == BENCH_MODE_ANGLE) || (bench.mode == BENCH_MODE_BALL) ||
+        (bench.mode == BENCH_MODE_BALL_SEQUENCE)) {
+      CheckClosedLoopSafety(now_ms, bench.mode != BENCH_MODE_ANGLE);
+      if ((bench.mode == BENCH_MODE_ANGLE) || (bench.mode == BENCH_MODE_BALL) ||
+          (bench.mode == BENCH_MODE_BALL_SEQUENCE)) {
         ClosedLoopUpdate(now_ms, elapsed);
       }
     }

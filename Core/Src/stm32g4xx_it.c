@@ -30,7 +30,6 @@ void EXTI4_IRQHandler(void)
 void EXTI15_10_IRQHandler(void)
 {
   HAL_GPIO_EXTI_IRQHandler(START_BUTTON_Pin);
-  HAL_GPIO_EXTI_IRQHandler(BEAM_HOME_Pin);
 }
 
 void TIM1_BRK_TIM15_IRQHandler(void)
