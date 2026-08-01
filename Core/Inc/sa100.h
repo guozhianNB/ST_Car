@@ -22,6 +22,7 @@ void SA100_SetCalibration(float duty_to_deg, float horizontal_raw_deg,
                           float angle_sign);
 void SA100_GetCalibration(float *duty_to_deg, float *horizontal_raw_deg,
                           float *angle_sign);
+float SA100_AdjustHorizontalRaw(float delta_deg, float maximum_offset_deg);
 void SA100_CaptureCallback(void);
 
 #endif /* SA100_H */

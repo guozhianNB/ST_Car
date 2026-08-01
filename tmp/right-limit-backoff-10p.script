@@ -1,0 +1,4 @@
+run 100 100
+wait 500
+status
+wait 500

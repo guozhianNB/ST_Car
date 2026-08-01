@@ -1,0 +1,11 @@
+bench on
+stop
+gain ball 1.2 0.0 1.7 -1
+gain accel 0.8
+limit pwm 140
+stream on 20
+ball -60
+wait 8000
+stop
+status
+stream off

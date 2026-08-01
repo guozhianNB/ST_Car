@@ -1,0 +1,9 @@
+[      0] >>> app req3
+[      0] OK normal app requirement 3 requested
+[     47] t=70981,state=1,mode=1,fault=0,seq=0,vl=0,vr=0,pwl=0,pwr=0,actenc=-1,dactenc=-1,srate=-120,starget=-120,pidrate=-119,pref=-15,ppos=-3,bi=0,ball=-100,vball=-5,bref=0,line=0,mask=00,bu=0,bd=0,oled=3C
+[    141] t=71081,state=1,mode=1,fault=0,seq=0,vl=0,vr=0,pwl=0,pwr=0,actenc=-9,dactenc=0,srate=-19,starget=-19,pidrate=-19,pref=-10,ppos=-8,bi=0,ball=-100,vball=1,bref=0,line=0,mask=00,bu=0,bd=0,oled=3C
+[    250] t=71181,state=1,mode=1,fault=0,seq=0,vl=0,vr=0,pwl=0,pwr=0,actenc=-9,dactenc=0,srate=0,starget=0,pidrate=0,pref=-9,ppos=-8,bi=0,ball=-99,vball=4,bref=0,line=0,mask=00,bu=0,bd=0,oled=3C
+[    344] t=71281,state=1,mode=1,fault=0,seq=0,vl=0,vr=0,pwl=0,pwr=0,actenc=-9,dactenc=0,srate=-19,starget=-19,pidrate=-18,pref=-11,ppos=-9,bi=0,ball=-99,vball=1,bref=0,line=0,mask=00,bu=0,bd=0,oled=3C
+[    454] t=71381,state=1,mode=1,fault=0,seq=0,vl=0,vr=0,pwl=0,pwr=0,actenc=-12,dactenc=0,srate=-19,starget=-19,pidrate=-19,pref=-12,ppos=-10,bi=-1,ball=-99,vball=0,bref=0,line=0,mask=00,bu=0,bd=0,oled=3C
+[    547] t=71481,state=1,mode=1,fault=0,seq=0,vl=0,vr=0,pwl=0,pwr=0,actenc=-12,dactenc=0,srate=-19,starget=-19,pidrate=-19,pref=-13,ppos=-11,bi=-1,ball=-99,vball=0,bref=0,line=0,mask=00,bu=0,bd=0,oled=3C
+[    657] t=71581,state=1,mode=1,fault=0,seq=0,vl=0,vr=0,pwl=0,pwr=0,actenc=-12,dactenc=0,srate=-19,starget=-19,pidrate=-18,pref=-13,ppos=-12,bi=-1,ball=-99,vball=0,bref=0,line=0,mask=00,bu=0,bd=0,oled=3C

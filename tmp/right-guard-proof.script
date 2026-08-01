@@ -1,0 +1,12 @@
+bench on
+wait 300
+run -100 100
+wait 500
+status
+wait 500
+catch off
+limit rate 100
+gain ball 1.2 0.5 6 -1
+wait 300
+status
+wait 300

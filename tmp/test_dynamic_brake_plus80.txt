@@ -1,0 +1,9 @@
+gain ball 1.0 0 0.5 -1
+gain accel 0.2
+limit pwm 30
+ball 80
+stream on 100
+wait 8000
+stream off
+status
+stop

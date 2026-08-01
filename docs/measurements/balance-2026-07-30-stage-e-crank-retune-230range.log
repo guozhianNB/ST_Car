@@ -1,0 +1,78 @@
+2026-07-30T23:51:45.310 > bench on
+2026-07-30T23:51:45.317 < OK bench active; chassis disabled; PC13 is emergency stop
+2026-07-30T23:51:51.288 > status
+2026-07-30T23:51:51.322 < BENCH t=21833 mode=idle fault=none stream=0 rate=100 seq=0 seqms=0 pwm=0 count=0 delta=0 sa=1 fresh=1 sage=1 sacal=1 rangeok=0 per=1155 high=615 duty=0.532958 raw=191.865 ang=-0.032 aref=0.000 vision=0 vfresh=0 vage=749 vframe=78 ball=-43.00 vel=20.16 bref=0.00 akp=300.000 aki=0.000 akd=0.000 bkp=0.00500 bkd=0.00000 bsign=1 plim=120 alim=2.00 scale=360.000 zero=191.917 sasign=1
+2026-07-30T23:52:00.626 > zero
+2026-07-30T23:52:00.631 < OK beam encoder zeroed at manually confirmed safe center
+2026-07-30T23:52:08.337 > pulse 150 100
+2026-07-30T23:52:08.337 < OK raw pulse pwm=150 ms=100; PC13 stops immediately
+2026-07-30T23:52:08.444 < OK pulse complete; outputs stopped
+2026-07-30T23:52:14.074 > status
+2026-07-30T23:52:14.099 < BENCH t=44613 mode=idle fault=none stream=0 rate=100 seq=0 seqms=0 pwm=0 count=61 delta=0 sa=1 fresh=1 sage=1 sacal=1 rangeok=0 per=1155 high=617 duty=0.534431 raw=192.395 ang=0.478 aref=0.000 vision=0 vfresh=0 vage=1389 vframe=240 ball=-53.00 vel=2.40 bref=0.00 akp=300.000 aki=0.000 akd=0.000 bkp=0.00500 bkd=0.00000 bsign=1 plim=120 alim=2.00 scale=360.000 zero=191.917 sasign=1
+2026-07-30T23:52:22.241 > pulse 150 100
+2026-07-30T23:52:22.248 < OK raw pulse pwm=150 ms=100; PC13 stops immediately
+2026-07-30T23:52:22.345 < OK pulse complete; outputs stopped
+2026-07-30T23:52:28.700 > status
+2026-07-30T23:52:28.735 < BENCH t=59234 mode=idle fault=none stream=0 rate=100 seq=0 seqms=0 pwm=0 count=112 delta=0 sa=1 fresh=1 sage=0 sacal=1 rangeok=0 per=1154 high=619 duty=0.535869 raw=192.913 ang=0.976 aref=0.000 vision=1 vfresh=1 vage=60 vframe=357 ball=-52.00 vel=-1.98 bref=0.00 akp=300.000 aki=0.000 akd=0.000 bkp=0.00500 bkd=0.00000 bsign=1 plim=120 alim=2.00 scale=360.000 zero=191.917 sasign=1
+2026-07-30T23:52:36.347 > pulse 150 100
+2026-07-30T23:52:36.353 < OK raw pulse pwm=150 ms=100; PC13 stops immediately
+2026-07-30T23:52:36.451 < OK pulse complete; outputs stopped
+2026-07-30T23:52:44.750 > status
+2026-07-30T23:52:44.785 < BENCH t=75280 mode=idle fault=none stream=0 rate=100 seq=0 seqms=0 pwm=0 count=164 delta=0 sa=1 fresh=1 sage=0 sacal=1 rangeok=0 per=1155 high=620 duty=0.537329 raw=193.438 ang=1.526 aref=0.000 vision=0 vfresh=1 vage=130 vframe=484 ball=-54.00 vel=-5.48 bref=0.00 akp=300.000 aki=0.000 akd=0.000 bkp=0.00500 bkd=0.00000 bsign=1 plim=120 alim=2.00 scale=360.000 zero=191.917 sasign=1
+2026-07-30T23:52:52.761 > pulse 150 100
+2026-07-30T23:52:52.770 < OK raw pulse pwm=150 ms=100; PC13 stops immediately
+2026-07-30T23:52:52.868 < OK pulse complete; outputs stopped
+2026-07-30T23:52:57.952 > status
+2026-07-30T23:52:57.988 < BENCH t=88482 mode=idle fault=none stream=0 rate=100 seq=0 seqms=0 pwm=0 count=215 delta=0 sa=1 fresh=1 sage=1 sacal=1 rangeok=0 per=1154 high=622 duty=0.539115 raw=194.081 ang=2.082 aref=0.000 vision=0 vfresh=1 vage=200 vframe=589 ball=-55.00 vel=-3.35 bref=0.00 akp=300.000 aki=0.000 akd=0.000 bkp=0.00500 bkd=0.00000 bsign=1 plim=120 alim=2.00 scale=360.000 zero=191.917 sasign=1
+2026-07-30T23:53:10.085 > pulse -150 100
+2026-07-30T23:53:10.091 < OK raw pulse pwm=-150 ms=100; PC13 stops immediately
+2026-07-30T23:53:10.190 < OK pulse complete; outputs stopped
+2026-07-30T23:53:17.855 > status
+2026-07-30T23:53:17.890 < BENCH t=108383 mode=idle fault=none stream=0 rate=100 seq=0 seqms=0 pwm=0 count=95 delta=0 sa=1 fresh=1 sage=1 sacal=1 rangeok=0 per=1154 high=618 duty=0.535089 raw=192.632 ang=0.778 aref=0.000 vision=0 vfresh=0 vage=2832 vframe=753 ball=-54.00 vel=0.65 bref=0.00 akp=300.000 aki=0.000 akd=0.000 bkp=0.00500 bkd=0.00000 bsign=1 plim=120 alim=2.00 scale=360.000 zero=191.917 sasign=1
+2026-07-30T23:53:26.224 > pulse -150 100
+2026-07-30T23:53:26.231 < OK raw pulse pwm=-150 ms=100; PC13 stops immediately
+2026-07-30T23:53:26.329 < OK pulse complete; outputs stopped
+2026-07-30T23:53:32.024 > status
+2026-07-30T23:53:32.056 < BENCH t=122552 mode=idle fault=none stream=0 rate=100 seq=0 seqms=0 pwm=0 count=-35 delta=0 sa=1 fresh=1 sage=1 sacal=1 rangeok=0 per=1154 high=613 duty=0.531450 raw=191.322 ang=-0.477 aref=0.000 vision=1 vfresh=1 vage=2 vframe=924 ball=89.00 vel=-2.15 bref=0.00 akp=300.000 aki=0.000 akd=0.000 bkp=0.00500 bkd=0.00000 bsign=1 plim=120 alim=2.00 scale=360.000 zero=191.917 sasign=1
+2026-07-30T23:53:39.478 > pulse -150 100
+2026-07-30T23:53:39.478 < OK raw pulse pwm=-150 ms=100; PC13 stops immediately
+2026-07-30T23:53:39.577 < OK pulse complete; outputs stopped
+2026-07-30T23:53:44.933 > status
+2026-07-30T23:53:44.959 < BENCH t=135456 mode=idle fault=none stream=0 rate=100 seq=0 seqms=0 pwm=0 count=-165 delta=0 sa=1 fresh=1 sage=1 sacal=1 rangeok=0 per=1154 high=610 duty=0.528372 raw=190.214 ang=-1.648 aref=0.000 vision=1 vfresh=0 vage=206 vframe=1026 ball=89.00 vel=1.52 bref=0.00 akp=300.000 aki=0.000 akd=0.000 bkp=0.00500 bkd=0.00000 bsign=1 plim=120 alim=2.00 scale=360.000 zero=191.917 sasign=1
+2026-07-30T23:53:51.421 > pulse -150 30
+2026-07-30T23:53:51.427 < OK raw pulse pwm=-150 ms=30; PC13 stops immediately
+2026-07-30T23:53:51.456 < OK pulse complete; outputs stopped
+2026-07-30T23:53:59.949 > status
+2026-07-30T23:53:59.984 < BENCH t=150468 mode=idle fault=none stream=0 rate=100 seq=0 seqms=0 pwm=0 count=-191 delta=0 sa=1 fresh=1 sage=0 sacal=1 rangeok=0 per=1154 high=609 duty=0.527807 raw=190.010 ang=-1.917 aref=0.000 vision=1 vfresh=1 vage=191 vframe=1160 ball=90.00 vel=0.04 bref=0.00 akp=300.000 aki=0.000 akd=0.000 bkp=0.00500 bkd=0.00000 bsign=1 plim=120 alim=2.00 scale=360.000 zero=191.917 sasign=1
+2026-07-30T23:54:10.519 > pulse -150 20
+2026-07-30T23:54:10.526 < OK raw pulse pwm=-150 ms=20; PC13 stops immediately
+2026-07-30T23:54:10.544 < OK pulse complete; outputs stopped
+2026-07-30T23:54:18.235 > status
+2026-07-30T23:54:18.272 < BENCH t=168750 mode=idle fault=none stream=0 rate=100 seq=0 seqms=0 pwm=0 count=-191 delta=0 sa=1 fresh=1 sage=0 sacal=1 rangeok=0 per=1155 high=609 duty=0.527848 raw=190.025 ang=-1.889 aref=0.000 vision=1 vfresh=1 vage=85 vframe=1322 ball=86.00 vel=-2.83 bref=0.00 akp=300.000 aki=0.000 akd=0.000 bkp=0.00500 bkd=0.00000 bsign=1 plim=120 alim=2.00 scale=360.000 zero=191.917 sasign=1
+2026-07-30T23:54:26.549 > pulse -150 30
+2026-07-30T23:54:26.566 < OK raw pulse pwm=-150 ms=30; PC13 stops immediately
+2026-07-30T23:54:26.592 < OK pulse complete; outputs stopped
+2026-07-30T23:54:32.054 > status
+2026-07-30T23:54:32.090 < BENCH t=182566 mode=idle fault=none stream=0 rate=100 seq=0 seqms=0 pwm=0 count=-200 delta=0 sa=1 fresh=1 sage=0 sacal=1 rangeok=0 per=1154 high=609 duty=0.527633 raw=189.948 ang=-1.997 aref=0.000 vision=1 vfresh=1 vage=27 vframe=1447 ball=93.00 vel=3.84 bref=0.00 akp=300.000 aki=0.000 akd=0.000 bkp=0.00500 bkd=0.00000 bsign=1 plim=120 alim=2.00 scale=360.000 zero=191.917 sasign=1
+2026-07-30T23:55:17.082 > pulse 150 100
+2026-07-30T23:55:17.088 < OK raw pulse pwm=150 ms=100; PC13 stops immediately
+2026-07-30T23:55:17.177 < OK pulse complete; outputs stopped
+2026-07-30T23:55:27.569 > status
+2026-07-30T23:55:27.607 < BENCH t=238064 mode=idle fault=none stream=0 rate=100 seq=0 seqms=0 pwm=0 count=-156 delta=0 sa=1 fresh=1 sage=0 sacal=1 rangeok=0 per=1155 high=610 duty=0.528540 raw=190.275 ang=-1.580 aref=0.000 vision=1 vfresh=0 vage=53562 vframe=1464 ball=90.00 vel=0.98 bref=0.00 akp=300.000 aki=0.000 akd=0.000 bkp=0.00500 bkd=0.00000 bsign=1 plim=120 alim=2.00 scale=360.000 zero=191.917 sasign=1
+2026-07-30T23:55:34.323 > pulse 150 100
+2026-07-30T23:55:34.330 < OK raw pulse pwm=150 ms=100; PC13 stops immediately
+2026-07-30T23:55:34.428 < OK pulse complete; outputs stopped
+2026-07-30T23:55:42.291 > status
+2026-07-30T23:55:42.322 < BENCH t=252781 mode=idle fault=none stream=0 rate=100 seq=0 seqms=0 pwm=0 count=-96 delta=0 sa=1 fresh=1 sage=0 sacal=1 rangeok=0 per=1154 high=612 duty=0.529972 raw=190.790 ang=-1.018 aref=0.000 vision=1 vfresh=0 vage=68279 vframe=1464 ball=90.00 vel=0.98 bref=0.00 akp=300.000 aki=0.000 akd=0.000 bkp=0.00500 bkd=0.00000 bsign=1 plim=120 alim=2.00 scale=360.000 zero=191.917 sasign=1
+2026-07-30T23:55:50.032 > pulse 150 100
+2026-07-30T23:55:50.038 < OK raw pulse pwm=150 ms=100; PC13 stops immediately
+2026-07-30T23:55:50.137 < OK pulse complete; outputs stopped
+2026-07-30T23:55:57.142 > status
+2026-07-30T23:55:57.184 < BENCH t=267634 mode=idle fault=none stream=0 rate=100 seq=0 seqms=0 pwm=0 count=-43 delta=0 sa=1 fresh=1 sage=1 sacal=1 rangeok=0 per=1154 high=614 duty=0.531716 raw=191.418 ang=-0.514 aref=0.000 vision=1 vfresh=0 vage=83132 vframe=1464 ball=90.00 vel=0.98 bref=0.00 akp=300.000 aki=0.000 akd=0.000 bkp=0.00500 bkd=0.00000 bsign=1 plim=120 alim=2.00 scale=360.000 zero=191.917 sasign=1
+2026-07-30T23:56:03.196 > pulse 150 100
+2026-07-30T23:56:03.201 < OK raw pulse pwm=150 ms=100; PC13 stops immediately
+2026-07-30T23:56:03.301 < OK pulse complete; outputs stopped
+2026-07-30T23:56:12.031 > status
+2026-07-30T23:56:12.076 < BENCH t=282522 mode=idle fault=none stream=0 rate=100 seq=0 seqms=0 pwm=0 count=13 delta=0 sa=1 fresh=1 sage=1 sacal=1 rangeok=0 per=1154 high=615 duty=0.532975 raw=191.871 ang=-0.015 aref=0.000 vision=1 vfresh=0 vage=98020 vframe=1464 ball=90.00 vel=0.98 bref=0.00 akp=300.000 aki=0.000 akd=0.000 bkp=0.00500 bkd=0.00000 bsign=1 plim=120 alim=2.00 scale=360.000 zero=191.917 sasign=1
+2026-07-30T23:56:25.233 > stop
+2026-07-30T23:56:25.236 < OK outputs stopped

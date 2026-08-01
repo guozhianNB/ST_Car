@@ -1,0 +1,6 @@
+[      0] >>> status
+[     32] STATUS mode=1 fault=none p60=0 dp60=0 pwm=0 cpwm=0 uimp=-77350 upos=0 uneg=595 ball=-111.68 vball=-0.21 aball=0.0 bref=0.00 pid=0.0 apid=0.0 integ=0.0 vision=1 current=1 vframe=16992 vs=1 vage=74 vpage=74 vdt=33 vmax=6728 vacc=16577 vrej=0 seq=0 elapsed=0 oled=3C
+[    641] >>> stop
+[    641] OK stopped
+[   1266] >>> status
+[   1297] STATUS mode=1 fault=none p60=0 dp60=0 pwm=0 cpwm=0 uimp=-77350 upos=0 uneg=595 ball=-111.65 vball=0.03 aball=0.0 bref=0.00 pid=0.0 apid=0.0 integ=0.0 vision=1 current=1 vframe=17018 vs=1 vage=11 vpage=11 vdt=22 vmax=6728 vacc=16603 vrej=0 seq=0 elapsed=0 oled=3C

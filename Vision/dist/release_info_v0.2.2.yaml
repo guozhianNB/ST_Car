@@ -1,0 +1,18 @@
+app_info:
+  author: makerY
+  desc: Opposite-side calibrated MaixCAM2 ball position (image-left negative)
+  desc[zh]: 对侧机位标定，小球位置以画面左侧为负并通过串口输出
+  files:
+    app.yaml: app.yaml
+    cv.py: cv.py
+    main.py: main.py
+  icon: ''
+  id: st_car_ball_vision
+  name: ST Car Ball Vision
+  name[zh]: 小球平衡视觉
+  version: 0.2.2
+date: '2026-07-31 12:33:27'
+filename: st_car_ball_vision_v0.2.2.zip
+filesize: 22241
+path: D:\makerY\ST_Car\Vision\dist\st_car_ball_vision_v0.2.2.zip
+sha256sum: edd69a41ffee699cf5e5d8e95020994a20fb66b895b6f46d7234ed7acb986428

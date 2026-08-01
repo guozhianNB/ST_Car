@@ -1,0 +1,2 @@
+[      0] >>> status
+[     32] STATUS mode=1 fault=none p60=666 dp60=0 pwm=0 ball=-125.00 vball=0.00 aball=0.0 bref=-80.00 pid=-54.0 apid=0.0 integ=-0.0 vision=1 current=1 vframe=12765 vs=1 vage=68 vpage=68 vdt=34 vmax=446612 vacc=4698 vrej=0 seq=0 elapsed=0 oled=3C

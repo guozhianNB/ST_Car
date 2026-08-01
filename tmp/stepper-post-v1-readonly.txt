@@ -1,0 +1,5 @@
+bench on
+stream on 50
+wait 1500
+stream off
+status

@@ -1,0 +1,13 @@
+bench on
+stop
+zero
+diag reset
+stream on 20
+wait 500
+pulse -130 100
+wait 110
+pulse 0 500
+wait 800
+status
+stop
+stream off

@@ -17,11 +17,13 @@ add_executable(ST_Car
     Core/Src/stm32g4xx_hal_msp.c
     Core/Src/system_stm32g4xx.c
     Core/Src/motor.c
+    Core/Src/stepper.c
     Core/Src/encoder.c
     Core/Src/pid.c
-    Core/Src/sa100.c
     Core/Src/vision_uart.c
     Core/Src/line_sensor.c
+    Core/Src/button.c
+    Core/Src/oled_display.c
     Core/Src/control_loops.c
     Core/Src/safety_monitor.c
     Core/Src/telemetry.c

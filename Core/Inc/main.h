@@ -18,16 +18,19 @@ void Error_Handler(void);
 #define MOTOR_R_IN1_GPIO_Port        GPIOC
 #define MOTOR_R_IN2_Pin              GPIO_PIN_3
 #define MOTOR_R_IN2_GPIO_Port        GPIOC
-#define MOTOR_BEAM_IN1_Pin           GPIO_PIN_4
-#define MOTOR_BEAM_IN1_GPIO_Port     GPIOC
-#define MOTOR_BEAM_IN2_Pin           GPIO_PIN_5
-#define MOTOR_BEAM_IN2_GPIO_Port     GPIOC
+#define STEPPER_DIR_Pin              GPIO_PIN_4
+#define STEPPER_DIR_GPIO_Port        GPIOC
+#define STEPPER_EN_Pin               GPIO_PIN_5
+#define STEPPER_EN_GPIO_Port         GPIOC
 
-/* Two TB6612 boards are enabled separately and default to disabled. */
+/* The remaining wheel TB6612 is disabled by default. */
 #define CHASSIS_STBY_Pin             GPIO_PIN_0
 #define CHASSIS_STBY_GPIO_Port       GPIOB
-#define BEAM_STBY_Pin                GPIO_PIN_1
-#define BEAM_STBY_GPIO_Port          GPIOB
+/* Retired beam-driver controls stay hard-low as a migration safety lock. */
+#define LEGACY_BEAM_STBY_Pin         GPIO_PIN_1
+#define LEGACY_BEAM_STBY_GPIO_Port   GPIOB
+#define LEGACY_BEAM_PWM_Pin          GPIO_PIN_10
+#define LEGACY_BEAM_PWM_GPIO_Port    GPIOA
 
 /* Eight digital line sensors, ordered from the far left to the far right. */
 #define LINE_0_Pin                   GPIO_PIN_10
@@ -47,13 +50,16 @@ void Error_Handler(void);
 #define LINE_7_Pin                   GPIO_PIN_12
 #define LINE_7_GPIO_Port             GPIOC
 
-/* NUCLEO PC13 button is active high; MODE is active low. */
+/* External panel buttons are active low and use internal pull-ups. */
+#define LEVEL_UP_BUTTON_Pin         GPIO_PIN_4
+#define LEVEL_UP_BUTTON_GPIO_Port   GPIOA
+#define LEVEL_DOWN_BUTTON_Pin       GPIO_PIN_15
+#define LEVEL_DOWN_BUTTON_GPIO_Port GPIOA
+
+/* NUCLEO PC13 button remains an active-high emergency/compatibility key. */
 #define START_BUTTON_Pin             GPIO_PIN_13
 #define START_BUTTON_GPIO_Port       GPIOC
 #define START_BUTTON_EXTI_IRQn       EXTI15_10_IRQn
-#define MODE_BUTTON_Pin              GPIO_PIN_4
-#define MODE_BUTTON_GPIO_Port        GPIOA
-#define MODE_BUTTON_EXTI_IRQn        EXTI4_IRQn
 /* NUCLEO LD2, active high. */
 #define STATUS_LED_Pin               GPIO_PIN_5
 #define STATUS_LED_GPIO_Port         GPIOA

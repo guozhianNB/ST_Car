@@ -1,0 +1,42 @@
+CMakeFiles/ST_Car.dir/Core/Src/usart.c.obj: \
+ D:/makerY/ST_Car/Core/Src/usart.c D:/makerY/ST_Car/Core/Inc/usart.h \
+ D:/makerY/ST_Car/Core/Inc/main.h \
+ D:/makerY/ST_Car/Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal.h \
+ D:/makerY/ST_Car/Core/Inc/stm32g4xx_hal_conf.h \
+ D:/makerY/ST_Car/Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_rcc.h \
+ D:/makerY/ST_Car/Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_def.h \
+ D:/makerY/ST_Car/Drivers/CMSIS/Device/ST/STM32G4xx/Include/stm32g4xx.h \
+ D:/makerY/ST_Car/Drivers/CMSIS/Device/ST/STM32G4xx/Include/stm32g491xx.h \
+ D:/makerY/ST_Car/Drivers/CMSIS/Include/core_cm4.h \
+ D:/Program/STM32CubeCLT_1.22.0/GNU-tools-for-STM32/bin/../lib/gcc/arm-none-eabi/14.3.1/include/stdint.h \
+ D:/Program/STM32CubeCLT_1.22.0/GNU-tools-for-STM32/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/include/stdint.h \
+ D:/Program/STM32CubeCLT_1.22.0/GNU-tools-for-STM32/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/include/machine/_default_types.h \
+ D:/Program/STM32CubeCLT_1.22.0/GNU-tools-for-STM32/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/include/sys/features.h \
+ D:/Program/STM32CubeCLT_1.22.0/GNU-tools-for-STM32/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/include/_newlib_version.h \
+ D:/Program/STM32CubeCLT_1.22.0/GNU-tools-for-STM32/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/include/sys/_intsup.h \
+ D:/Program/STM32CubeCLT_1.22.0/GNU-tools-for-STM32/bin/../lib/gcc/arm-none-eabi/14.3.1/../../../../arm-none-eabi/include/sys/_stdint.h \
+ D:/makerY/ST_Car/Drivers/CMSIS/Include/cmsis_version.h \
+ D:/makerY/ST_Car/Drivers/CMSIS/Include/cmsis_compiler.h \
+ D:/makerY/ST_Car/Drivers/CMSIS/Include/cmsis_gcc.h \
+ D:/makerY/ST_Car/Drivers/CMSIS/Include/mpu_armv7.h \
+ D:/makerY/ST_Car/Drivers/CMSIS/Device/ST/STM32G4xx/Include/system_stm32g4xx.h \
+ D:/makerY/ST_Car/Drivers/STM32G4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h \
+ D:/Program/STM32CubeCLT_1.22.0/GNU-tools-for-STM32/bin/../lib/gcc/arm-none-eabi/14.3.1/include/stddef.h \
+ D:/makerY/ST_Car/Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_rcc_ex.h \
+ D:/makerY/ST_Car/Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_gpio.h \
+ D:/makerY/ST_Car/Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_gpio_ex.h \
+ D:/makerY/ST_Car/Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_dma.h \
+ D:/makerY/ST_Car/Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_dma_ex.h \
+ D:/makerY/ST_Car/Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_cortex.h \
+ D:/makerY/ST_Car/Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_exti.h \
+ D:/makerY/ST_Car/Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_flash.h \
+ D:/makerY/ST_Car/Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_flash_ex.h \
+ D:/makerY/ST_Car/Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_flash_ramfunc.h \
+ D:/makerY/ST_Car/Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_i2c.h \
+ D:/makerY/ST_Car/Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_i2c_ex.h \
+ D:/makerY/ST_Car/Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_pwr.h \
+ D:/makerY/ST_Car/Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_pwr_ex.h \
+ D:/makerY/ST_Car/Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_tim.h \
+ D:/makerY/ST_Car/Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_tim_ex.h \
+ D:/makerY/ST_Car/Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart.h \
+ D:/makerY/ST_Car/Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_uart_ex.h

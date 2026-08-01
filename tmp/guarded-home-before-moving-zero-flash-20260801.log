@@ -1,0 +1,373 @@
+[     16] >>> bench on
+[    109] >>> stop
+[    202] >>> status
+[    202] OK stepper visual-only bench active; command pose preserved
+[    202] OK stopped
+[    218] STATUS mode=1 fault=none enc=896 denc=0 sreq=0 sapplied=0 crate=0 uimp=0 upos=0 uneg=0 ball=61.59 vball=-0.49 aball=0.0 bref=0.00 pid=0.0 pref=710.4 ppos=710.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41387 vs=1 vage=23 vpage=23 vdt=33 vmax=334 vacc=40879 vrej=0 seq=0 elapsed=0 oled=3C
+[    218] >>> run -100 100
+[    391] >>> status
+[    391] OK run rate=-100 steps/s ms=100
+[    391] OK run complete
+[    407] STATUS mode=1 fault=none enc=899 denc=1 sreq=0 sapplied=0 crate=0 uimp=-9500 upos=0 uneg=95 ball=61.42 vball=-2.89 aball=0.0 bref=0.00 pid=0.0 pref=700.9 ppos=700.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41393 vs=1 vage=10 vpage=10 vdt=33 vmax=334 vacc=40885 vrej=0 seq=0 elapsed=0 oled=3C
+[    407] >>> run -100 100
+[    593] >>> status
+[    593] OK run rate=-100 steps/s ms=100
+[    593] OK run complete
+[    609] STATUS mode=1 fault=none enc=892 denc=0 sreq=0 sapplied=0 crate=0 uimp=-19000 upos=0 uneg=190 ball=57.14 vball=-20.52 aball=0.0 bref=0.00 pid=0.0 pref=691.4 ppos=691.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41399 vs=1 vage=12 vpage=12 vdt=33 vmax=334 vacc=40891 vrej=0 seq=0 elapsed=0 oled=3C
+[    609] >>> run -100 100
+[    782] >>> status
+[    782] OK run rate=-100 steps/s ms=100
+[    782] OK run complete
+[    797] STATUS mode=1 fault=none enc=878 denc=0 sreq=0 sapplied=0 crate=0 uimp=-28500 upos=0 uneg=285 ball=49.00 vball=-38.07 aball=0.0 bref=0.00 pid=0.0 pref=681.9 ppos=681.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41405 vs=1 vage=0 vpage=0 vdt=33 vmax=334 vacc=40897 vrej=0 seq=0 elapsed=0 oled=3C
+[    797] >>> run -100 100
+[    968] >>> status
+[    968] OK run rate=-100 steps/s ms=100
+[    968] OK run complete
+[    984] STATUS mode=1 fault=none enc=866 denc=0 sreq=0 sapplied=0 crate=0 uimp=-38000 upos=0 uneg=380 ball=39.76 vball=-54.53 aball=0.0 bref=0.00 pid=0.0 pref=672.4 ppos=672.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41410 vs=1 vage=20 vpage=20 vdt=34 vmax=334 vacc=40902 vrej=0 seq=0 elapsed=0 oled=3C
+[    984] >>> run -100 100
+[   1172] >>> status
+[   1172] OK run rate=-100 steps/s ms=100
+[   1172] OK run complete
+[   1188] STATUS mode=1 fault=none enc=853 denc=0 sreq=0 sapplied=0 crate=0 uimp=-47500 upos=0 uneg=475 ball=28.90 vball=-53.43 aball=0.0 bref=0.00 pid=0.0 pref=662.9 ppos=662.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41416 vs=1 vage=21 vpage=21 vdt=34 vmax=334 vacc=40908 vrej=0 seq=0 elapsed=0 oled=3C
+[   1188] >>> run -100 100
+[   1359] >>> status
+[   1359] OK run rate=-100 steps/s ms=100
+[   1359] OK run complete
+[   1375] STATUS mode=1 fault=none enc=838 denc=0 sreq=0 sapplied=0 crate=0 uimp=-57000 upos=0 uneg=570 ball=16.36 vball=-60.91 aball=0.0 bref=0.00 pid=0.0 pref=653.4 ppos=653.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41422 vs=1 vage=10 vpage=10 vdt=33 vmax=334 vacc=40914 vrej=0 seq=0 elapsed=0 oled=3C
+[   1375] >>> run -100 100
+[   1563] >>> status
+[   1563] OK run rate=-100 steps/s ms=100
+[   1563] OK run complete
+[   1577] STATUS mode=1 fault=none enc=821 denc=0 sreq=0 sapplied=0 crate=0 uimp=-66500 upos=0 uneg=665 ball=10.52 vball=-52.41 aball=0.0 bref=0.00 pid=0.0 pref=643.9 ppos=643.9 apid=0.0 integ=0.0 vision=1 current=0 vframe=41428 vs=0 vage=77 vpage=13 vdt=35 vmax=334 vacc=40917 vrej=0 seq=0 elapsed=0 oled=3C
+[   1577] >>> run -100 100
+[   1750] >>> status
+[   1750] OK run rate=-100 steps/s ms=100
+[   1750] OK run complete
+[   1766] STATUS mode=1 fault=none enc=815 denc=0 sreq=0 sapplied=0 crate=0 uimp=-76000 upos=0 uneg=760 ball=-1.67 vball=-52.67 aball=0.0 bref=0.00 pid=0.0 pref=634.4 ppos=634.4 apid=0.0 integ=0.0 vision=1 current=0 vframe=41434 vs=0 vage=33 vpage=2 vdt=101 vmax=334 vacc=40919 vrej=0 seq=0 elapsed=0 oled=3C
+[   1766] >>> run -100 100
+[   1938] >>> status
+[   1938] OK run rate=-100 steps/s ms=100
+[   1938] OK run complete
+[   1952] STATUS mode=1 fault=none enc=803 denc=0 sreq=0 sapplied=0 crate=0 uimp=-85500 upos=0 uneg=855 ball=-8.15 vball=-42.94 aball=0.0 bref=0.00 pid=0.0 pref=624.9 ppos=624.9 apid=0.0 integ=0.0 vision=1 current=0 vframe=41439 vs=0 vage=56 vpage=25 vdt=67 vmax=334 vacc=40922 vrej=0 seq=0 elapsed=0 oled=3C
+[   1952] >>> run -100 100
+[   2125] >>> status
+[   2125] OK run rate=-100 steps/s ms=100
+[   2125] OK run complete
+[   2157] STATUS mode=1 fault=none enc=791 denc=0 sreq=0 sapplied=0 crate=0 uimp=-95000 upos=0 uneg=950 ball=-14.18 vball=-22.05 aball=0.0 bref=0.00 pid=0.0 pref=615.4 ppos=615.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41445 vs=1 vage=12 vpage=12 vdt=33 vmax=334 vacc=40927 vrej=0 seq=0 elapsed=0 oled=3C
+[   2157] >>> run -100 100
+[   2313] >>> status
+[   2313] OK run rate=-100 steps/s ms=100
+[   2313] OK run complete
+[   2343] STATUS mode=1 fault=none enc=777 denc=0 sreq=0 sapplied=0 crate=0 uimp=-104500 upos=0 uneg=1045 ball=-15.66 vball=-11.27 aball=0.0 bref=0.00 pid=0.0 pref=605.9 ppos=605.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41450 vs=1 vage=31 vpage=31 vdt=34 vmax=334 vacc=40932 vrej=0 seq=0 elapsed=0 oled=3C
+[   2343] >>> run -100 100
+[   2516] >>> status
+[   2516] OK run rate=-100 steps/s ms=100
+[   2516] OK run complete
+[   2532] STATUS mode=1 fault=none enc=764 denc=0 sreq=0 sapplied=0 crate=0 uimp=-114000 upos=0 uneg=1140 ball=-15.30 vball=4.01 aball=0.0 bref=0.00 pid=0.0 pref=596.4 ppos=596.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41456 vs=1 vage=32 vpage=32 vdt=33 vmax=334 vacc=40938 vrej=0 seq=0 elapsed=0 oled=3C
+[   2532] >>> run -100 100
+[   2702] >>> status
+[   2702] OK run rate=-100 steps/s ms=100
+[   2702] OK run complete
+[   2718] STATUS mode=1 fault=none enc=750 denc=0 sreq=0 sapplied=0 crate=0 uimp=-123500 upos=0 uneg=1235 ball=-12.23 vball=15.42 aball=0.0 bref=0.00 pid=0.0 pref=586.9 ppos=586.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41462 vs=1 vage=19 vpage=19 vdt=34 vmax=334 vacc=40944 vrej=0 seq=0 elapsed=0 oled=3C
+[   2718] >>> run -100 100
+[   2891] >>> status
+[   2891] OK run rate=-100 steps/s ms=100
+[   2891] OK run complete
+[   2907] STATUS mode=1 fault=none enc=736 denc=0 sreq=0 sapplied=0 crate=0 uimp=-133000 upos=0 uneg=1330 ball=-6.63 vball=28.05 aball=0.0 bref=0.00 pid=0.0 pref=577.4 ppos=577.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41468 vs=1 vage=8 vpage=8 vdt=32 vmax=334 vacc=40949 vrej=0 seq=0 elapsed=0 oled=3C
+[   2907] >>> run -100 100
+[   3093] >>> status
+[   3093] OK run rate=-100 steps/s ms=100
+[   3093] OK run complete
+[   3109] STATUS mode=1 fault=none enc=727 denc=0 sreq=0 sapplied=0 crate=0 uimp=-142500 upos=0 uneg=1425 ball=1.21 vball=43.24 aball=0.0 bref=0.00 pid=0.0 pref=567.9 ppos=567.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41474 vs=1 vage=11 vpage=11 vdt=33 vmax=334 vacc=40954 vrej=0 seq=0 elapsed=0 oled=3C
+[   3109] >>> run -100 100
+[   3282] >>> status
+[   3282] OK run rate=-100 steps/s ms=100
+[   3282] OK run complete
+[   3297] STATUS mode=1 fault=none enc=714 denc=0 sreq=0 sapplied=0 crate=0 uimp=-152000 upos=0 uneg=1520 ball=9.98 vball=55.86 aball=0.0 bref=0.00 pid=0.0 pref=558.4 ppos=558.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41479 vs=1 vage=33 vpage=33 vdt=33 vmax=334 vacc=40958 vrej=0 seq=0 elapsed=0 oled=3C
+[   3297] >>> run -100 100
+[   3468] >>> status
+[   3468] OK run rate=-100 steps/s ms=100
+[   3468] OK run complete
+[   3484] STATUS mode=1 fault=none enc=701 denc=0 sreq=0 sapplied=0 crate=0 uimp=-161500 upos=0 uneg=1615 ball=23.29 vball=65.70 aball=0.0 bref=0.00 pid=0.0 pref=548.9 ppos=548.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41485 vs=1 vage=21 vpage=21 vdt=34 vmax=334 vacc=40964 vrej=0 seq=0 elapsed=0 oled=3C
+[   3484] >>> run -100 100
+[   3672] >>> status
+[   3672] OK run rate=-100 steps/s ms=100
+[   3672] OK run complete
+[   3688] STATUS mode=1 fault=none enc=688 denc=0 sreq=0 sapplied=0 crate=0 uimp=-171000 upos=0 uneg=1710 ball=41.63 vball=86.66 aball=0.0 bref=0.00 pid=0.0 pref=539.4 ppos=539.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41492 vs=1 vage=7 vpage=7 vdt=36 vmax=334 vacc=40971 vrej=0 seq=0 elapsed=0 oled=3C
+[   3688] >>> run -100 100
+[   3875] >>> status
+[   3875] OK run rate=-100 steps/s ms=100
+[   3875] OK run complete
+[   3891] STATUS mode=1 fault=none enc=673 denc=0 sreq=0 sapplied=0 crate=0 uimp=-180500 upos=0 uneg=1805 ball=60.47 vball=95.13 aball=0.0 bref=0.00 pid=0.0 pref=529.9 ppos=529.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41498 vs=1 vage=11 vpage=11 vdt=33 vmax=334 vacc=40977 vrej=0 seq=0 elapsed=0 oled=3C
+[   3891] >>> run -100 100
+[   4063] >>> status
+[   4063] OK run rate=-100 steps/s ms=100
+[   4063] OK run complete
+[   4077] STATUS mode=1 fault=none enc=657 denc=0 sreq=0 sapplied=0 crate=0 uimp=-190000 upos=0 uneg=1900 ball=76.87 vball=106.69 aball=0.0 bref=0.00 pid=0.0 pref=520.4 ppos=520.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41503 vs=1 vage=33 vpage=33 vdt=33 vmax=334 vacc=40982 vrej=0 seq=0 elapsed=0 oled=3C
+[   4077] >>> run -100 100
+[   4250] >>> status
+[   4250] OK run rate=-100 steps/s ms=100
+[   4250] OK run complete
+[   4266] STATUS mode=1 fault=none enc=651 denc=0 sreq=0 sapplied=0 crate=0 uimp=-199500 upos=0 uneg=1995 ball=98.01 vball=112.88 aball=0.0 bref=0.00 pid=0.0 pref=510.9 ppos=510.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41509 vs=1 vage=20 vpage=20 vdt=33 vmax=334 vacc=40988 vrej=0 seq=0 elapsed=0 oled=3C
+[   4266] >>> run -100 100
+[   4452] >>> status
+[   4452] OK run rate=-100 steps/s ms=100
+[   4452] OK run complete
+[   4468] STATUS mode=1 fault=none enc=638 denc=0 sreq=0 sapplied=0 crate=0 uimp=-209000 upos=0 uneg=2090 ball=119.04 vball=104.59 aball=0.0 bref=0.00 pid=0.0 pref=501.4 ppos=501.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41515 vs=1 vage=20 vpage=20 vdt=34 vmax=334 vacc=40994 vrej=0 seq=0 elapsed=0 oled=3C
+[   4468] >>> run -100 100
+[   4641] >>> status
+[   4641] OK run rate=-100 steps/s ms=100
+[   4641] OK run complete
+[   4657] STATUS mode=1 fault=none enc=627 denc=0 sreq=0 sapplied=0 crate=0 uimp=-218500 upos=0 uneg=2185 ball=113.27 vball=-17.53 aball=0.0 bref=0.00 pid=0.0 pref=491.9 ppos=491.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41521 vs=1 vage=9 vpage=9 vdt=33 vmax=334 vacc=41000 vrej=0 seq=0 elapsed=0 oled=3C
+[   4657] >>> run -100 100
+[   4827] >>> status
+[   4827] OK run rate=-100 steps/s ms=100
+[   4827] OK run complete
+[   4859] STATUS mode=1 fault=none enc=613 denc=0 sreq=0 sapplied=0 crate=0 uimp=-228000 upos=0 uneg=2280 ball=111.81 vball=-2.96 aball=0.0 bref=0.00 pid=0.0 pref=482.4 ppos=482.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41527 vs=1 vage=10 vpage=10 vdt=33 vmax=334 vacc=41006 vrej=0 seq=0 elapsed=0 oled=3C
+[   4859] >>> run -100 100
+[   5016] >>> status
+[   5016] OK run rate=-100 steps/s ms=100
+[   5016] OK run complete
+[   5047] STATUS mode=1 fault=none enc=600 denc=0 sreq=0 sapplied=0 crate=0 uimp=-237500 upos=0 uneg=2375 ball=113.35 vball=9.41 aball=0.0 bref=0.00 pid=0.0 pref=472.9 ppos=472.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41532 vs=1 vage=32 vpage=32 vdt=34 vmax=334 vacc=41011 vrej=0 seq=0 elapsed=0 oled=3C
+[   5047] >>> run -100 100
+[   5202] >>> status
+[   5202] OK run rate=-100 steps/s ms=100
+[   5202] OK run complete
+[   5234] STATUS mode=1 fault=none enc=586 denc=0 sreq=0 sapplied=0 crate=0 uimp=-247000 upos=0 uneg=2470 ball=117.19 vball=19.96 aball=0.0 bref=0.00 pid=0.0 pref=463.4 ppos=463.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41538 vs=1 vage=19 vpage=19 vdt=33 vmax=334 vacc=41017 vrej=0 seq=0 elapsed=0 oled=3C
+[   5234] >>> run -100 100
+[   5391] >>> status
+[   5391] OK run rate=-100 steps/s ms=100
+[   5391] OK run complete
+[   5422] STATUS mode=1 fault=none enc=574 denc=0 sreq=0 sapplied=0 crate=0 uimp=-256500 upos=0 uneg=2565 ball=117.45 vball=-4.16 aball=0.0 bref=0.00 pid=0.0 pref=453.9 ppos=453.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41544 vs=1 vage=6 vpage=6 vdt=33 vmax=334 vacc=41023 vrej=0 seq=0 elapsed=0 oled=3C
+[   5422] >>> run -100 100
+[   5593] >>> status
+[   5593] OK run rate=-100 steps/s ms=100
+[   5593] OK run complete
+[   5625] STATUS mode=1 fault=none enc=565 denc=0 sreq=0 sapplied=0 crate=0 uimp=-266000 upos=0 uneg=2660 ball=118.65 vball=4.26 aball=0.0 bref=0.00 pid=0.0 pref=444.4 ppos=444.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41550 vs=1 vage=8 vpage=8 vdt=33 vmax=334 vacc=41029 vrej=0 seq=0 elapsed=0 oled=3C
+[   5625] >>> run -100 100
+[   5782] >>> status
+[   5782] OK run rate=-100 steps/s ms=100
+[   5782] OK run complete
+[   5813] STATUS mode=1 fault=none enc=553 denc=0 sreq=0 sapplied=0 crate=0 uimp=-275500 upos=0 uneg=2755 ball=118.80 vball=1.44 aball=0.0 bref=0.00 pid=0.0 pref=434.9 ppos=434.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41555 vs=1 vage=29 vpage=29 vdt=33 vmax=334 vacc=41034 vrej=0 seq=0 elapsed=0 oled=3C
+[   5813] >>> run -100 100
+[   5984] >>> status
+[   5984] OK run rate=-100 steps/s ms=100
+[   5984] OK run complete
+[   6016] STATUS mode=1 fault=none enc=539 denc=0 sreq=0 sapplied=0 crate=0 uimp=-285000 upos=0 uneg=2850 ball=118.61 vball=-1.02 aball=0.0 bref=0.00 pid=0.0 pref=425.4 ppos=425.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41561 vs=1 vage=29 vpage=29 vdt=33 vmax=334 vacc=41040 vrej=0 seq=0 elapsed=0 oled=3C
+[   6016] >>> run -100 100
+[   6172] >>> status
+[   6172] OK run rate=-100 steps/s ms=100
+[   6172] OK run complete
+[   6202] STATUS mode=1 fault=none enc=528 denc=0 sreq=0 sapplied=0 crate=0 uimp=-294500 upos=0 uneg=2945 ball=118.43 vball=-0.56 aball=0.0 bref=0.00 pid=0.0 pref=415.9 ppos=415.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41567 vs=1 vage=20 vpage=20 vdt=33 vmax=334 vacc=41046 vrej=0 seq=0 elapsed=0 oled=3C
+[   6202] >>> run -100 100
+[   6375] >>> status
+[   6375] OK run rate=-100 steps/s ms=100
+[   6375] OK run complete
+[   6407] STATUS mode=1 fault=none enc=513 denc=0 sreq=0 sapplied=0 crate=0 uimp=-304000 upos=0 uneg=3040 ball=118.26 vball=-1.15 aball=0.0 bref=0.00 pid=0.0 pref=406.4 ppos=406.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41573 vs=1 vage=20 vpage=20 vdt=34 vmax=334 vacc=41052 vrej=0 seq=0 elapsed=0 oled=3C
+[   6407] >>> run -100 100
+[   6577] >>> status
+[   6577] OK run rate=-100 steps/s ms=100
+[   6577] OK run complete
+[   6609] STATUS mode=1 fault=none enc=500 denc=0 sreq=0 sapplied=0 crate=0 uimp=-313500 upos=0 uneg=3135 ball=117.50 vball=-2.86 aball=0.0 bref=0.00 pid=0.0 pref=396.9 ppos=396.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41579 vs=1 vage=22 vpage=22 vdt=34 vmax=334 vacc=41058 vrej=0 seq=0 elapsed=0 oled=3C
+[   6609] >>> run -100 100
+[   6782] >>> status
+[   6782] OK run rate=-100 steps/s ms=100
+[   6782] OK run complete
+[   6813] STATUS mode=1 fault=none enc=492 denc=0 sreq=0 sapplied=0 crate=0 uimp=-323000 upos=0 uneg=3230 ball=118.05 vball=0.16 aball=0.0 bref=0.00 pid=0.0 pref=387.4 ppos=387.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41585 vs=1 vage=24 vpage=24 vdt=33 vmax=334 vacc=41064 vrej=0 seq=0 elapsed=0 oled=3C
+[   6813] >>> run -100 100
+[   6984] >>> status
+[   6984] OK run rate=-100 steps/s ms=100
+[   6984] OK run complete
+[   7016] STATUS mode=1 fault=none enc=479 denc=0 sreq=0 sapplied=0 crate=0 uimp=-332500 upos=0 uneg=3325 ball=117.49 vball=-0.21 aball=0.0 bref=0.00 pid=0.0 pref=377.9 ppos=377.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41591 vs=1 vage=28 vpage=28 vdt=33 vmax=334 vacc=41070 vrej=0 seq=0 elapsed=0 oled=3C
+[   7016] >>> run -100 100
+[   7172] >>> status
+[   7172] OK run rate=-100 steps/s ms=100
+[   7172] OK run complete
+[   7202] STATUS mode=1 fault=none enc=468 denc=0 sreq=0 sapplied=0 crate=0 uimp=-342000 upos=0 uneg=3420 ball=117.19 vball=-2.73 aball=0.0 bref=0.00 pid=0.0 pref=368.4 ppos=368.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41597 vs=1 vage=10 vpage=10 vdt=37 vmax=334 vacc=41076 vrej=0 seq=0 elapsed=0 oled=3C
+[   7202] >>> run -100 100
+[   7375] >>> status
+[   7375] OK run rate=-100 steps/s ms=100
+[   7375] OK run complete
+[   7407] STATUS mode=1 fault=none enc=454 denc=0 sreq=0 sapplied=0 crate=0 uimp=-351500 upos=0 uneg=3515 ball=117.52 vball=0.93 aball=0.0 bref=0.00 pid=0.0 pref=358.9 ppos=358.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41603 vs=1 vage=30 vpage=30 vdt=27 vmax=334 vacc=41082 vrej=0 seq=0 elapsed=0 oled=3C
+[   7407] >>> run -100 100
+[   7577] >>> status
+[   7577] OK run rate=-100 steps/s ms=100
+[   7577] OK run complete
+[   7609] STATUS mode=1 fault=none enc=441 denc=0 sreq=0 sapplied=0 crate=0 uimp=-361000 upos=0 uneg=3610 ball=117.47 vball=-0.06 aball=0.0 bref=0.00 pid=0.0 pref=349.4 ppos=349.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41610 vs=1 vage=4 vpage=4 vdt=33 vmax=334 vacc=41089 vrej=0 seq=0 elapsed=0 oled=3C
+[   7609] >>> run -100 100
+[   7766] >>> status
+[   7766] OK run rate=-100 steps/s ms=100
+[   7766] OK run complete
+[   7797] STATUS mode=1 fault=none enc=428 denc=0 sreq=0 sapplied=0 crate=0 uimp=-370500 upos=0 uneg=3705 ball=116.79 vball=-4.32 aball=0.0 bref=0.00 pid=0.0 pref=339.9 ppos=339.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41615 vs=1 vage=25 vpage=25 vdt=34 vmax=334 vacc=41094 vrej=0 seq=0 elapsed=0 oled=3C
+[   7797] >>> run -100 100
+[   7952] >>> status
+[   7952] OK run rate=-100 steps/s ms=100
+[   7952] OK run complete
+[   7984] STATUS mode=1 fault=none enc=414 denc=0 sreq=0 sapplied=0 crate=0 uimp=-380000 upos=0 uneg=3800 ball=116.72 vball=-0.74 aball=0.0 bref=0.00 pid=0.0 pref=330.4 ppos=330.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41621 vs=1 vage=29 vpage=29 vdt=32 vmax=334 vacc=41100 vrej=0 seq=0 elapsed=0 oled=3C
+[   7984] >>> run -100 100
+[   8157] >>> status
+[   8157] OK run rate=-100 steps/s ms=100
+[   8157] OK run complete
+[   8188] STATUS mode=1 fault=none enc=405 denc=0 sreq=0 sapplied=0 crate=0 uimp=-389500 upos=0 uneg=3895 ball=116.50 vball=0.07 aball=0.0 bref=0.00 pid=0.0 pref=320.9 ppos=320.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41627 vs=1 vage=29 vpage=29 vdt=33 vmax=334 vacc=41106 vrej=0 seq=0 elapsed=0 oled=3C
+[   8188] >>> run -100 100
+[   8343] >>> status
+[   8343] OK run rate=-100 steps/s ms=100
+[   8343] OK run complete
+[   8375] STATUS mode=1 fault=none enc=393 denc=0 sreq=0 sapplied=0 crate=0 uimp=-399000 upos=0 uneg=3990 ball=116.58 vball=0.24 aball=0.0 bref=0.00 pid=0.0 pref=311.4 ppos=311.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41633 vs=1 vage=18 vpage=18 vdt=33 vmax=334 vacc=41112 vrej=0 seq=0 elapsed=0 oled=3C
+[   8375] >>> run -100 100
+[   8532] >>> status
+[   8532] OK run rate=-100 steps/s ms=100
+[   8532] OK run complete
+[   8563] STATUS mode=1 fault=none enc=380 denc=0 sreq=0 sapplied=0 crate=0 uimp=-408500 upos=0 uneg=4085 ball=116.51 vball=-0.64 aball=0.0 bref=0.00 pid=0.0 pref=301.9 ppos=301.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41639 vs=1 vage=5 vpage=5 vdt=34 vmax=334 vacc=41118 vrej=0 seq=0 elapsed=0 oled=3C
+[   8563] >>> run -100 100
+[   8734] >>> status
+[   8734] OK run rate=-100 steps/s ms=100
+[   8734] OK run complete
+[   8766] STATUS mode=1 fault=none enc=366 denc=0 sreq=0 sapplied=0 crate=0 uimp=-418000 upos=0 uneg=4180 ball=116.07 vball=-0.97 aball=0.0 bref=0.00 pid=0.0 pref=292.4 ppos=292.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41645 vs=1 vage=9 vpage=9 vdt=33 vmax=334 vacc=41124 vrej=0 seq=0 elapsed=0 oled=3C
+[   8766] >>> run -100 100
+[   8922] >>> status
+[   8922] OK run rate=-100 steps/s ms=100
+[   8922] OK run complete
+[   8952] STATUS mode=1 fault=none enc=351 denc=0 sreq=0 sapplied=0 crate=0 uimp=-427500 upos=0 uneg=4275 ball=115.64 vball=-1.98 aball=0.0 bref=0.00 pid=0.0 pref=282.9 ppos=282.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41650 vs=1 vage=30 vpage=30 vdt=34 vmax=334 vacc=41129 vrej=0 seq=0 elapsed=0 oled=3C
+[   8952] >>> run -100 100
+[   9109] >>> status
+[   9109] OK run rate=-100 steps/s ms=100
+[   9109] OK run complete
+[   9141] STATUS mode=1 fault=none enc=337 denc=0 sreq=0 sapplied=0 crate=0 uimp=-437000 upos=0 uneg=4370 ball=115.68 vball=-0.03 aball=0.0 bref=0.00 pid=0.0 pref=273.4 ppos=273.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41656 vs=1 vage=18 vpage=18 vdt=33 vmax=334 vacc=41135 vrej=0 seq=0 elapsed=0 oled=3C
+[   9141] >>> run -100 100
+[   9313] >>> status
+[   9313] OK run rate=-100 steps/s ms=100
+[   9313] OK run complete
+[   9327] STATUS mode=1 fault=none enc=327 denc=0 sreq=0 sapplied=0 crate=0 uimp=-446500 upos=0 uneg=4465 ball=115.65 vball=-0.70 aball=0.0 bref=0.00 pid=0.0 pref=263.9 ppos=263.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41662 vs=1 vage=16 vpage=16 vdt=34 vmax=334 vacc=41141 vrej=0 seq=0 elapsed=0 oled=3C
+[   9327] >>> run -100 100
+[   9500] >>> status
+[   9500] OK run rate=-100 steps/s ms=100
+[   9500] OK run complete
+[   9532] STATUS mode=1 fault=none enc=316 denc=0 sreq=0 sapplied=0 crate=0 uimp=-456000 upos=0 uneg=4560 ball=115.22 vball=-1.09 aball=0.0 bref=0.00 pid=0.0 pref=254.4 ppos=254.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41668 vs=1 vage=4 vpage=4 vdt=34 vmax=334 vacc=41147 vrej=0 seq=0 elapsed=0 oled=3C
+[   9532] >>> run -100 100
+[   9688] >>> status
+[   9688] OK run rate=-100 steps/s ms=100
+[   9688] OK run complete
+[   9718] STATUS mode=1 fault=none enc=304 denc=0 sreq=0 sapplied=0 crate=0 uimp=-465500 upos=0 uneg=4655 ball=115.16 vball=-0.31 aball=0.0 bref=0.00 pid=0.0 pref=244.9 ppos=244.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41673 vs=1 vage=28 vpage=28 vdt=33 vmax=334 vacc=41152 vrej=0 seq=0 elapsed=0 oled=3C
+[   9718] >>> run -100 100
+[   9875] >>> status
+[   9875] OK run rate=-100 steps/s ms=100
+[   9875] OK run complete
+[   9907] STATUS mode=1 fault=none enc=289 denc=0 sreq=0 sapplied=0 crate=0 uimp=-475000 upos=0 uneg=4750 ball=115.13 vball=-0.18 aball=0.0 bref=0.00 pid=0.0 pref=235.4 ppos=235.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41679 vs=1 vage=14 vpage=14 vdt=33 vmax=334 vacc=41158 vrej=0 seq=0 elapsed=0 oled=3C
+[   9907] >>> run -100 100
+[  10077] >>> status
+[  10077] OK run rate=-100 steps/s ms=100
+[  10077] OK run complete
+[  10109] STATUS mode=1 fault=none enc=276 denc=0 sreq=0 sapplied=0 crate=0 uimp=-484500 upos=0 uneg=4845 ball=114.77 vball=-1.20 aball=0.0 bref=0.00 pid=0.0 pref=225.9 ppos=225.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41685 vs=1 vage=13 vpage=13 vdt=34 vmax=334 vacc=41164 vrej=0 seq=0 elapsed=0 oled=3C
+[  10109] >>> run -100 100
+[  10266] >>> status
+[  10266] OK run rate=-100 steps/s ms=100
+[  10266] OK run complete
+[  10297] STATUS mode=1 fault=none enc=264 denc=0 sreq=0 sapplied=0 crate=0 uimp=-494000 upos=0 uneg=4940 ball=114.40 vball=-0.79 aball=0.0 bref=0.00 pid=0.0 pref=216.4 ppos=216.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41691 vs=1 vage=3 vpage=3 vdt=33 vmax=334 vacc=41170 vrej=0 seq=0 elapsed=0 oled=3C
+[  10297] >>> run -100 100
+[  10468] >>> status
+[  10468] OK run rate=-100 steps/s ms=100
+[  10468] OK run complete
+[  10484] STATUS mode=1 fault=none enc=248 denc=0 sreq=0 sapplied=0 crate=0 uimp=-503500 upos=0 uneg=5035 ball=114.33 vball=-0.73 aball=0.0 bref=0.00 pid=0.0 pref=206.9 ppos=206.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41697 vs=1 vage=5 vpage=5 vdt=34 vmax=334 vacc=41176 vrej=0 seq=0 elapsed=0 oled=3C
+[  10484] >>> run -100 100
+[  10672] >>> status
+[  10672] OK run rate=-100 steps/s ms=100
+[  10672] OK run complete
+[  10688] STATUS mode=1 fault=none enc=239 denc=0 sreq=0 sapplied=0 crate=0 uimp=-513000 upos=0 uneg=5130 ball=114.42 vball=0.14 aball=0.0 bref=0.00 pid=0.0 pref=197.4 ppos=197.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41703 vs=1 vage=6 vpage=6 vdt=32 vmax=334 vacc=41182 vrej=0 seq=0 elapsed=0 oled=3C
+[  10688] >>> run -100 100
+[  10859] >>> status
+[  10859] OK run rate=-100 steps/s ms=100
+[  10859] OK run complete
+[  10891] STATUS mode=1 fault=none enc=225 denc=0 sreq=0 sapplied=0 crate=0 uimp=-522500 upos=0 uneg=5225 ball=113.57 vball=-3.95 aball=0.0 bref=0.00 pid=0.0 pref=187.9 ppos=187.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41709 vs=1 vage=6 vpage=6 vdt=33 vmax=334 vacc=41188 vrej=0 seq=0 elapsed=0 oled=3C
+[  10891] >>> run -100 100
+[  11047] >>> status
+[  11047] OK run rate=-100 steps/s ms=100
+[  11047] OK run complete
+[  11077] STATUS mode=1 fault=none enc=213 denc=0 sreq=0 sapplied=0 crate=0 uimp=-532000 upos=0 uneg=5320 ball=113.37 vball=-1.97 aball=0.0 bref=0.00 pid=0.0 pref=178.4 ppos=178.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41714 vs=1 vage=28 vpage=28 vdt=33 vmax=334 vacc=41193 vrej=0 seq=0 elapsed=0 oled=3C
+[  11077] >>> run -100 100
+[  11250] >>> status
+[  11250] OK run rate=-100 steps/s ms=100
+[  11250] OK run complete
+[  11282] STATUS mode=1 fault=none enc=200 denc=0 sreq=0 sapplied=0 crate=0 uimp=-541500 upos=0 uneg=5415 ball=113.31 vball=-0.45 aball=0.0 bref=0.00 pid=0.0 pref=168.9 ppos=168.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41720 vs=1 vage=31 vpage=31 vdt=31 vmax=334 vacc=41199 vrej=0 seq=0 elapsed=0 oled=3C
+[  11282] >>> run -100 100
+[  11438] >>> status
+[  11438] OK run rate=-100 steps/s ms=100
+[  11438] OK run complete
+[  11468] STATUS mode=1 fault=none enc=186 denc=0 sreq=0 sapplied=0 crate=0 uimp=-551000 upos=0 uneg=5510 ball=113.03 vball=-1.30 aball=0.0 bref=0.00 pid=0.0 pref=159.4 ppos=159.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41726 vs=1 vage=20 vpage=20 vdt=33 vmax=334 vacc=41205 vrej=0 seq=0 elapsed=0 oled=3C
+[  11468] >>> run -100 100
+[  11641] >>> status
+[  11641] OK run rate=-100 steps/s ms=100
+[  11641] OK run complete
+[  11672] STATUS mode=1 fault=none enc=172 denc=0 sreq=0 sapplied=0 crate=0 uimp=-560500 upos=0 uneg=5605 ball=112.57 vball=-2.00 aball=0.0 bref=0.00 pid=0.0 pref=149.9 ppos=149.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41732 vs=1 vage=22 vpage=22 vdt=32 vmax=334 vacc=41211 vrej=0 seq=0 elapsed=0 oled=3C
+[  11672] >>> run -100 100
+[  11827] >>> status
+[  11827] OK run rate=-100 steps/s ms=100
+[  11827] OK run complete
+[  11859] STATUS mode=1 fault=none enc=161 denc=0 sreq=0 sapplied=0 crate=0 uimp=-570000 upos=0 uneg=5700 ball=112.61 vball=-0.07 aball=0.0 bref=0.00 pid=0.0 pref=140.4 ppos=140.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41738 vs=1 vage=10 vpage=10 vdt=35 vmax=334 vacc=41217 vrej=0 seq=0 elapsed=0 oled=3C
+[  11859] >>> run -100 100
+[  12032] >>> status
+[  12032] OK run rate=-100 steps/s ms=100
+[  12032] OK run complete
+[  12047] STATUS mode=1 fault=none enc=149 denc=0 sreq=0 sapplied=0 crate=0 uimp=-579500 upos=0 uneg=5795 ball=112.57 vball=-0.28 aball=0.0 bref=0.00 pid=0.0 pref=130.9 ppos=130.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41743 vs=1 vage=32 vpage=32 vdt=34 vmax=334 vacc=41222 vrej=0 seq=0 elapsed=0 oled=3C
+[  12047] >>> run -100 100
+[  12218] >>> status
+[  12218] OK run rate=-100 steps/s ms=100
+[  12218] OK run complete
+[  12234] STATUS mode=1 fault=none enc=137 denc=0 sreq=0 sapplied=0 crate=0 uimp=-589000 upos=0 uneg=5890 ball=112.13 vball=-3.68 aball=0.0 bref=0.00 pid=0.0 pref=121.4 ppos=121.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41749 vs=1 vage=23 vpage=23 vdt=34 vmax=334 vacc=41228 vrej=0 seq=0 elapsed=0 oled=3C
+[  12234] >>> run -100 100
+[  12407] >>> status
+[  12407] OK run rate=-100 steps/s ms=100
+[  12407] OK run complete
+[  12422] STATUS mode=1 fault=none enc=124 denc=0 sreq=0 sapplied=0 crate=0 uimp=-598500 upos=0 uneg=5985 ball=111.91 vball=-2.01 aball=0.0 bref=0.00 pid=0.0 pref=111.9 ppos=111.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41761 vs=1 vage=12 vpage=12 vdt=33 vmax=334 vacc=41240 vrej=0 seq=0 elapsed=0 oled=3C
+[  12422] >>> run -100 100
+[  12609] >>> status
+[  12609] OK run rate=-100 steps/s ms=100
+[  12609] OK run complete
+[  12625] STATUS mode=1 fault=none enc=111 denc=0 sreq=0 sapplied=0 crate=0 uimp=-608000 upos=0 uneg=6080 ball=111.76 vball=-0.16 aball=0.0 bref=0.00 pid=0.0 pref=102.4 ppos=102.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41767 vs=1 vage=14 vpage=14 vdt=34 vmax=334 vacc=41246 vrej=0 seq=0 elapsed=0 oled=3C
+[  12625] >>> run -100 100
+[  12797] >>> status
+[  12797] OK run rate=-100 steps/s ms=100
+[  12797] OK run complete
+[  12827] STATUS mode=1 fault=none enc=98 denc=0 sreq=0 sapplied=0 crate=0 uimp=-617500 upos=0 uneg=6175 ball=111.35 vball=-2.24 aball=0.0 bref=0.00 pid=0.0 pref=92.9 ppos=92.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41773 vs=1 vage=4 vpage=4 vdt=34 vmax=334 vacc=41252 vrej=0 seq=0 elapsed=0 oled=3C
+[  12827] >>> run -100 100
+[  12984] >>> status
+[  12984] OK run rate=-100 steps/s ms=100
+[  12984] OK run complete
+[  13016] STATUS mode=1 fault=none enc=85 denc=0 sreq=0 sapplied=0 crate=0 uimp=-627000 upos=0 uneg=6270 ball=110.91 vball=-2.67 aball=0.0 bref=0.00 pid=0.0 pref=83.4 ppos=83.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41778 vs=1 vage=21 vpage=21 vdt=34 vmax=334 vacc=41257 vrej=0 seq=0 elapsed=0 oled=3C
+[  13016] >>> run -100 100
+[  13172] >>> status
+[  13172] OK run rate=-100 steps/s ms=100
+[  13172] OK run complete
+[  13202] STATUS mode=1 fault=none enc=75 denc=0 sreq=0 sapplied=0 crate=0 uimp=-636500 upos=0 uneg=6365 ball=110.85 vball=-1.09 aball=0.0 bref=0.00 pid=0.0 pref=73.9 ppos=73.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41784 vs=1 vage=14 vpage=14 vdt=33 vmax=334 vacc=41263 vrej=0 seq=0 elapsed=0 oled=3C
+[  13202] >>> run -100 100
+[  13375] >>> status
+[  13375] OK run rate=-100 steps/s ms=100
+[  13375] OK run complete
+[  13407] STATUS mode=1 fault=none enc=63 denc=0 sreq=0 sapplied=0 crate=0 uimp=-646000 upos=0 uneg=6460 ball=110.95 vball=0.06 aball=0.0 bref=0.00 pid=0.0 pref=64.4 ppos=64.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41790 vs=1 vage=16 vpage=16 vdt=33 vmax=334 vacc=41269 vrej=0 seq=0 elapsed=0 oled=3C
+[  13407] >>> run -100 100
+[  13577] >>> status
+[  13577] OK run rate=-100 steps/s ms=100
+[  13577] OK run complete
+[  13593] STATUS mode=1 fault=none enc=52 denc=0 sreq=0 sapplied=0 crate=0 uimp=-655500 upos=0 uneg=6555 ball=110.76 vball=-0.67 aball=0.0 bref=0.00 pid=0.0 pref=54.9 ppos=54.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41796 vs=1 vage=18 vpage=18 vdt=33 vmax=334 vacc=41275 vrej=0 seq=0 elapsed=0 oled=3C
+[  13593] >>> run -100 100
+[  13766] >>> status
+[  13766] OK run rate=-100 steps/s ms=100
+[  13766] OK run complete
+[  13797] STATUS mode=1 fault=none enc=38 denc=0 sreq=0 sapplied=0 crate=0 uimp=-665000 upos=0 uneg=6650 ball=110.38 vball=-2.84 aball=0.0 bref=0.00 pid=0.0 pref=45.4 ppos=45.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41802 vs=1 vage=16 vpage=16 vdt=34 vmax=334 vacc=41281 vrej=0 seq=0 elapsed=0 oled=3C
+[  13797] >>> run -100 100
+[  13968] >>> status
+[  13968] OK run rate=-100 steps/s ms=100
+[  13968] OK run complete
+[  14000] STATUS mode=1 fault=none enc=23 denc=0 sreq=0 sapplied=0 crate=0 uimp=-674500 upos=0 uneg=6745 ball=110.11 vball=-2.60 aball=0.0 bref=0.00 pid=0.0 pref=35.9 ppos=35.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41808 vs=1 vage=15 vpage=15 vdt=34 vmax=334 vacc=41287 vrej=0 seq=0 elapsed=0 oled=3C
+[  14000] >>> run -100 100
+[  14157] >>> status
+[  14157] OK run rate=-100 steps/s ms=100
+[  14157] OK run complete
+[  14188] STATUS mode=1 fault=none enc=11 denc=0 sreq=0 sapplied=0 crate=0 uimp=-684000 upos=0 uneg=6840 ball=110.06 vball=0.00 aball=0.0 bref=0.00 pid=0.0 pref=26.4 ppos=26.4 apid=0.0 integ=0.0 vision=1 current=1 vframe=41814 vs=1 vage=3 vpage=3 vdt=33 vmax=334 vacc=41293 vrej=0 seq=0 elapsed=0 oled=3C
+[  14188] >>> run -100 100
+[  14343] >>> status
+[  14343] OK run rate=-100 steps/s ms=100
+[  14343] OK run complete
+[  14375] STATUS mode=1 fault=none enc=0 denc=0 sreq=0 sapplied=0 crate=0 uimp=-691500 upos=0 uneg=6915 ball=110.08 vball=0.07 aball=0.0 bref=0.00 pid=0.0 pref=18.9 ppos=18.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=41819 vs=1 vage=26 vpage=26 vdt=33 vmax=334 vacc=41298 vrej=0 seq=0 elapsed=0 oled=3C
+[  14375] RESULT reached calibrated guard enc=0
+[  14375] >>> stop

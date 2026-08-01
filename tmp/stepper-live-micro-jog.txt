@@ -1,0 +1,9 @@
+stream on 20
+status
+run 100 50
+wait 250
+run -100 50
+wait 250
+stream off
+status
+stop

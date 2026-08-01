@@ -1,0 +1,17 @@
+[Unit]
+Description=ST_Car calibrated ball vision
+After=local-fs.target
+Conflicts=launcher.service
+Before=launcher.service
+
+[Service]
+Type=simple
+WorkingDirectory=/maixapp/apps/st_car_ball_vision
+ExecStart=/usr/bin/python3 -u /maixapp/apps/st_car_ball_vision/main.py
+Restart=on-failure
+RestartSec=2
+Environment=PYTHONUNBUFFERED=1
+Environment=LD_LIBRARY_PATH=/usr/local/lib:/usr/lib:/opt/lib:/opt/usr/lib:/soc/lib
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,2 @@
+[      0] >>> status
+[     31] STATUS mode=1 fault=none enc=-467 denc=0 sreq=0 sapplied=0 crate=0 uimp=-69880 upos=2690 uneg=2640 ball=-19.91 vball=0.43 aball=0.0 bref=0.00 pid=0.0 pref=-69.9 ppos=-69.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=2449 vs=1 vage=27 vpage=27 vdt=33 vmax=193 vacc=2446 vrej=0 seq=0 elapsed=0 oled=3C

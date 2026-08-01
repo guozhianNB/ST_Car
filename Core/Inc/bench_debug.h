@@ -7,8 +7,7 @@
 typedef enum {
   BENCH_MODE_OFF = 0,
   BENCH_MODE_IDLE,
-  BENCH_MODE_PULSE,
-  BENCH_MODE_ANGLE,
+  BENCH_MODE_RUN,
   BENCH_MODE_BALL,
   BENCH_MODE_BALL_SEQUENCE,
   BENCH_MODE_FAULT
@@ -17,9 +16,6 @@ typedef enum {
 typedef enum {
   BENCH_FAULT_NONE = 0,
   BENCH_FAULT_ESTOP,
-  BENCH_FAULT_SA100_TIMEOUT,
-  BENCH_FAULT_ANGLE_LIMIT,
-  BENCH_FAULT_ENCODER_LIMIT,
   BENCH_FAULT_STALL,
   BENCH_FAULT_VISION_TIMEOUT,
   BENCH_FAULT_SEQUENCE_TIMEOUT
@@ -28,18 +24,13 @@ typedef enum {
 typedef struct {
   BenchMode mode;
   BenchFault fault;
-  int16_t pulse_pwm;
-  float angle_target_deg;
+  int32_t run_rate_steps_s;
   float ball_target_mm;
-  float angle_kp;
-  float angle_ki;
-  float angle_kd;
   float ball_kp;
+  float ball_ki;
   float ball_kd;
   float ball_sign;
-  float pwm_limit;
-  float angle_limit_deg;
-  bool sa_calibration_confirmed;
+  float rate_limit_steps_s;
   bool stream_enabled;
   uint32_t stream_period_ms;
   uint8_t sequence_stage;

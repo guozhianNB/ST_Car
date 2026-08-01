@@ -15,9 +15,9 @@ void DebugMon_Handler(void);
 void PendSV_Handler(void);
 void SysTick_Handler(void);
 void DMA1_Channel1_IRQHandler(void);
-void EXTI4_IRQHandler(void);
+void I2C1_EV_IRQHandler(void);
+void I2C1_ER_IRQHandler(void);
 void EXTI15_10_IRQHandler(void);
-void TIM1_BRK_TIM15_IRQHandler(void);
 void UART4_IRQHandler(void);
 void LPUART1_IRQHandler(void);
 

@@ -1,0 +1,5 @@
+[      0] >>> run 100 100
+[      0] OK run rate=100 steps/s ms=100
+[     94] OK run complete
+[   1156] >>> status
+[   1188] STATUS mode=1 fault=none enc=-195 denc=0 sreq=0 sapplied=0 crate=0 uimp=-133000 upos=375 uneg=1705 ball=119.71 vball=-2.45 aball=0.0 bref=0.00 pid=0.0 pref=-135.9 ppos=-135.9 apid=0.0 integ=0.0 vision=1 current=1 vframe=8973 vs=1 vage=15 vpage=15 vdt=33 vmax=67 vacc=8970 vrej=0 seq=0 elapsed=0 oled=3C

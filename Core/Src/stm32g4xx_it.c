@@ -1,6 +1,6 @@
 #include "main.h"
 #include "stm32g4xx_it.h"
-#include "tim.h"
+#include "i2c.h"
 #include "usart.h"
 
 void NMI_Handler(void) { while (1) {} }
@@ -22,19 +22,19 @@ void DMA1_Channel1_IRQHandler(void)
   HAL_DMA_IRQHandler(&hdma_uart4_rx);
 }
 
-void EXTI4_IRQHandler(void)
+void I2C1_EV_IRQHandler(void)
 {
-  HAL_GPIO_EXTI_IRQHandler(MODE_BUTTON_Pin);
+  HAL_I2C_EV_IRQHandler(&hi2c1);
+}
+
+void I2C1_ER_IRQHandler(void)
+{
+  HAL_I2C_ER_IRQHandler(&hi2c1);
 }
 
 void EXTI15_10_IRQHandler(void)
 {
   HAL_GPIO_EXTI_IRQHandler(START_BUTTON_Pin);
-}
-
-void TIM1_BRK_TIM15_IRQHandler(void)
-{
-  HAL_TIM_IRQHandler(&htim15);
 }
 
 void UART4_IRQHandler(void)

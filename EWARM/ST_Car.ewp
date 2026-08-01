@@ -1109,19 +1109,25 @@
           <name>$PROJ_DIR$/../Core/Src/motor.c</name>
         </file>
         <file>
+          <name>$PROJ_DIR$/../Core/Src/stepper.c</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$/../Core/Src/encoder.c</name>
         </file>
         <file>
           <name>$PROJ_DIR$/../Core/Src/pid.c</name>
         </file>
         <file>
-          <name>$PROJ_DIR$/../Core/Src/sa100.c</name>
-        </file>
-        <file>
           <name>$PROJ_DIR$/../Core/Src/vision_uart.c</name>
         </file>
         <file>
           <name>$PROJ_DIR$/../Core/Src/line_sensor.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../Core/Src/button.c</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$/../Core/Src/oled_display.c</name>
         </file>
         <file>
           <name>$PROJ_DIR$/../Core/Src/control_loops.c</name>

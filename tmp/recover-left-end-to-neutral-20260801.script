@@ -1,0 +1,26 @@
+bench on
+stop
+stream on 100
+run -100 100
+wait 120
+run -100 100
+wait 120
+run -100 100
+wait 120
+run -100 100
+wait 120
+run -100 100
+wait 120
+run -100 100
+wait 120
+run -100 100
+wait 120
+run -100 100
+wait 120
+run -100 100
+wait 120
+run -100 100
+stop
+wait 1500
+status
+stream off

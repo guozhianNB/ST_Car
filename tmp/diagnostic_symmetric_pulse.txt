@@ -1,0 +1,16 @@
+bench on
+stop
+zero
+stream on 20
+wait 300
+pulse 130 25
+wait 30
+pulse 0 200
+wait 300
+pulse -130 25
+wait 30
+pulse 0 200
+wait 700
+stream off
+status
+stop

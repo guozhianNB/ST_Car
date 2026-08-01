@@ -1,0 +1,9 @@
+stop
+zero
+status
+run 50 40
+status
+run -50 40
+status
+stop
+status

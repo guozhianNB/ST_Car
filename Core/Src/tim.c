@@ -1,4 +1,5 @@
 #include "tim.h"
+#include "app_config.h"
 
 TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
@@ -69,7 +70,6 @@ void MX_TIM1_Init(void)
   pwm.OCNIdleState = TIM_OCNIDLESTATE_RESET;
   if (HAL_TIM_PWM_ConfigChannel(&htim1, &pwm, TIM_CHANNEL_1) != HAL_OK) Error_Handler();
   if (HAL_TIM_PWM_ConfigChannel(&htim1, &pwm, TIM_CHANNEL_2) != HAL_OK) Error_Handler();
-  if (HAL_TIM_PWM_ConfigChannel(&htim1, &pwm, TIM_CHANNEL_3) != HAL_OK) Error_Handler();
 
   break_dead_time.OffStateRunMode = TIM_OSSR_DISABLE;
   break_dead_time.OffStateIDLEMode = TIM_OSSI_DISABLE;
@@ -105,38 +105,35 @@ void MX_TIM4_Init(void)
 
 void MX_TIM15_Init(void)
 {
-  TIM_SlaveConfigTypeDef slave = {0};
-  TIM_IC_InitTypeDef input = {0};
   TIM_MasterConfigTypeDef master = {0};
+  TIM_OC_InitTypeDef pwm = {0};
 
   htim15.Instance = TIM15;
-  htim15.Init.Prescaler = 16; /* 0.1 us capture tick at 170 MHz. */
+  htim15.Init.Prescaler =
+    (APP_STEPPER_TIMER_CLOCK_HZ / APP_STEPPER_TIMER_TICK_HZ) - 1U;
   htim15.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim15.Init.Period = 0xFFFFU;
+  htim15.Init.Period =
+    (APP_STEPPER_TIMER_TICK_HZ / APP_STEPPER_MIN_RATE_STEPS_S) - 1U;
   htim15.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim15.Init.RepetitionCounter = 0;
   htim15.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_IC_Init(&htim15) != HAL_OK) Error_Handler();
-
-  slave.SlaveMode = TIM_SLAVEMODE_RESET;
-  slave.InputTrigger = TIM_TS_TI1FP1;
-  slave.TriggerPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
-  slave.TriggerPrescaler = TIM_ICPSC_DIV1;
-  slave.TriggerFilter = 2;
-  if (HAL_TIM_SlaveConfigSynchro(&htim15, &slave) != HAL_OK) Error_Handler();
-
-  input.ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
-  input.ICSelection = TIM_ICSELECTION_DIRECTTI;
-  input.ICPrescaler = TIM_ICPSC_DIV1;
-  input.ICFilter = 2;
-  if (HAL_TIM_IC_ConfigChannel(&htim15, &input, TIM_CHANNEL_1) != HAL_OK) Error_Handler();
-  input.ICPolarity = TIM_INPUTCHANNELPOLARITY_FALLING;
-  input.ICSelection = TIM_ICSELECTION_INDIRECTTI;
-  if (HAL_TIM_IC_ConfigChannel(&htim15, &input, TIM_CHANNEL_2) != HAL_OK) Error_Handler();
+  if (HAL_TIM_PWM_Init(&htim15) != HAL_OK) Error_Handler();
 
   master.MasterOutputTrigger = TIM_TRGO_RESET;
   master.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   if (HAL_TIMEx_MasterConfigSynchronization(&htim15, &master) != HAL_OK) Error_Handler();
+
+  pwm.OCMode = TIM_OCMODE_PWM1;
+  pwm.Pulse = 0U;
+  pwm.OCPolarity = TIM_OCPOLARITY_HIGH;
+  pwm.OCNPolarity = TIM_OCNPOLARITY_HIGH;
+  pwm.OCFastMode = TIM_OCFAST_DISABLE;
+  pwm.OCIdleState = TIM_OCIDLESTATE_RESET;
+  pwm.OCNIdleState = TIM_OCNIDLESTATE_RESET;
+  if (HAL_TIM_PWM_ConfigChannel(&htim15, &pwm, TIM_CHANNEL_1) != HAL_OK) {
+    Error_Handler();
+  }
+  HAL_TIM_MspPostInit(&htim15);
 }
 
 void HAL_TIM_Encoder_MspInit(TIM_HandleTypeDef *htim)
@@ -172,20 +169,10 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim)
   if (htim->Instance == TIM1) __HAL_RCC_TIM1_CLK_ENABLE();
 }
 
-void HAL_TIM_IC_MspInit(TIM_HandleTypeDef *htim)
+void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef *htim)
 {
-  GPIO_InitTypeDef gpio = {0};
   if (htim->Instance == TIM15) {
     __HAL_RCC_TIM15_CLK_ENABLE();
-    __HAL_RCC_GPIOB_CLK_ENABLE();
-    gpio.Pin = GPIO_PIN_14;
-    gpio.Mode = GPIO_MODE_AF_PP;
-    gpio.Pull = GPIO_NOPULL;
-    gpio.Speed = GPIO_SPEED_FREQ_LOW;
-    gpio.Alternate = GPIO_AF1_TIM15;
-    HAL_GPIO_Init(GPIOB, &gpio);
-    HAL_NVIC_SetPriority(TIM1_BRK_TIM15_IRQn, 1, 0);
-    HAL_NVIC_EnableIRQ(TIM1_BRK_TIM15_IRQn);
   }
 }
 
@@ -194,11 +181,19 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim)
   GPIO_InitTypeDef gpio = {0};
   if (htim->Instance == TIM1) {
     __HAL_RCC_GPIOA_CLK_ENABLE();
-    gpio.Pin = GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10;
+    gpio.Pin = GPIO_PIN_8 | GPIO_PIN_9;
     gpio.Mode = GPIO_MODE_AF_PP;
     gpio.Pull = GPIO_NOPULL;
     gpio.Speed = GPIO_SPEED_FREQ_LOW;
     gpio.Alternate = GPIO_AF6_TIM1;
     HAL_GPIO_Init(GPIOA, &gpio);
+  } else if (htim->Instance == TIM15) {
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    gpio.Pin = GPIO_PIN_14;
+    gpio.Mode = GPIO_MODE_AF_PP;
+    gpio.Pull = GPIO_PULLDOWN;
+    gpio.Speed = GPIO_SPEED_FREQ_HIGH;
+    gpio.Alternate = GPIO_AF1_TIM15;
+    HAL_GPIO_Init(GPIOB, &gpio);
   }
 }

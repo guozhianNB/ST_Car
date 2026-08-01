@@ -1,0 +1,12 @@
+[      0] >>> bench on
+[      0] OK stepper visual-only bench active; command pose preserved
+[    125] >>> stop
+[    125] OK stopped
+[    250] >>> diag reset
+[    250] OK actuator diagnostics reset
+[    375] >>> run -100 100
+[    375] OK run rate=-100 steps/s ms=100
+[    468] O
+[    484] K run complete
+[    718] >>> status
+[    734] STATUS mode=1 fault=none enc=0 denc=0 sreq=0 sapplied=0 crate=0 uimp=0 upos=0 uneg=0 ball=110.04 vball=-0.06 aball=0.0 bref=0.00 pid=0.0 pref=0.0 ppos=0.0 apid=0.0 integ=0.0 vision=1 current=1 vframe=860 vs=1 vage=27 vpage=27 vdt=34 vmax=50 vacc=860 vrej=0 seq=0 elapsed=0 oled=3C

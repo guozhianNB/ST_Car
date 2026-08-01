@@ -1,0 +1,14 @@
+[      0] >>> bench on
+[     16] OK stepper visual-only bench active; command pose preserved
+[    125] >>> stop
+[    125] OK stopped
+[    250] >>> catch off
+[    250] OK static release catch off
+[    375] >>> gain ball 3.0 0.0 5.0 -1
+[    391] OK ball gains kp=3.000 ki=0.000 kd=5.000 sign=-1
+[    500] >>> gain accel 0.0
+[    516] OK ball acceleration gain ka=0.000
+[    625] >>> limit rate 250
+[    641] OK ball rate limit=250 steps/s
+[    750] >>> status
+[    782] STATUS mode=1 fault=none enc=936 denc=0 sreq=0 sapplied=0 crate=0 uimp=0 upos=0 uneg=0 ball=30.69 vball=0.90 aball=0.0 bref=0.00 pid=0.0 pref=714.3 ppos=714.3 apid=0.0 integ=0.0 vision=1 current=1 vframe=20721 vs=1 vage=18 vpage=18 vdt=34 vmax=334 vacc=20562 vrej=0 seq=0 elapsed=0 oled=3C

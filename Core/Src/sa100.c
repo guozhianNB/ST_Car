@@ -72,6 +72,26 @@ void SA100_GetCalibration(float *duty_to_deg, float *horizontal_raw_deg,
   if (primask == 0U) __enable_irq();
 }
 
+float SA100_AdjustHorizontalRaw(float delta_deg, float maximum_offset_deg)
+{
+  uint32_t primask;
+  float low = APP_SA100_HORIZONTAL_RAW_DEG - maximum_offset_deg;
+  float high = APP_SA100_HORIZONTAL_RAW_DEG + maximum_offset_deg;
+  float next;
+  if (maximum_offset_deg < 0.0f) return calibration_horizontal_raw_deg;
+  primask = __get_PRIMASK();
+  __disable_irq();
+  next = calibration_horizontal_raw_deg + delta_deg;
+  if (next < low) next = low;
+  if (next > high) next = high;
+  calibration_horizontal_raw_deg = next;
+  sample.beam_angle_deg =
+    (filtered_raw_deg - calibration_horizontal_raw_deg) *
+    calibration_angle_sign;
+  if (primask == 0U) __enable_irq();
+  return next;
+}
+
 void SA100_CaptureCallback(void)
 {
   uint32_t period_ticks = HAL_TIM_ReadCapturedValue(&htim15, TIM_CHANNEL_1);

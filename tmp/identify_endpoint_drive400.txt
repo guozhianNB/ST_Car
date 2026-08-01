@@ -1,0 +1,7 @@
+stop
+stream on 20
+pulse 130 400
+wait 550
+status
+stream off
+stop

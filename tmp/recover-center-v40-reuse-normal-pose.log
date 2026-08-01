@@ -1,0 +1,20 @@
+[      0] >>> bench on
+[      0] OK stepper visual-only bench active; command pose preserved
+[    625] >>> clear
+[    625] OK fault cleared
+[   1233] >>> diag off
+[   1250] ERR unknown command; use help
+[   1875] >>> gain ball 1.2 2.0 2.0 -1
+[   1875] OK ball gains kp=1.200 ki=2.000 kd=2.000 sign=-1
+[   2500] >>> gain accel 0
+[   2500] OK ball acceleration gain ka=0.000
+[   3108] >>> limit rate 400
+[   3125] OK ball rate limit=400 steps/s
+[   3733] >>> stream 50
+[   3733] ERR unknown command; use help
+[   4358] >>> ball 0
+[   4375] OK visual step-rate ball target=0.00 mm
+[  15031] >>> status
+[  15061] STATUS mode=3 fault=none enc=62 denc=-1 sreq=-142 sapplied=-142 crate=-142 uimp=107235 upos=6625 uneg=3130 ball=-69.71 vball=-2.21 aball=-13.5 bref=0.00 pid=-142.1 pref=16.1 ppos=30.3 apid=-0.0 integ=-55.5 vision=1 current=1 vframe=23033 vs=1 vage=1 vpage=1 vdt=33 vmax=266 vacc=23003 vrej=0 seq=0 elapsed=0 oled=3C
+[  15670] >>> stop
+[  15670] OK stopped

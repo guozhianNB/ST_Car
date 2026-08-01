@@ -1,5 +1,6 @@
 #include "main.h"
 #include "app.h"
+#include "app_config.h"
 #include "dma.h"
 #include "gpio.h"
 #include "i2c.h"
@@ -62,7 +63,13 @@ void Error_Handler(void)
 {
   __disable_irq();
   HAL_GPIO_WritePin(CHASSIS_STBY_GPIO_Port, CHASSIS_STBY_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(BEAM_STBY_GPIO_Port, BEAM_STBY_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(STEPPER_EN_GPIO_Port, STEPPER_EN_Pin,
+                    APP_STEPPER_ENABLE_ACTIVE_HIGH ? GPIO_PIN_RESET
+                                                   : GPIO_PIN_SET);
+  HAL_GPIO_WritePin(LEGACY_BEAM_STBY_GPIO_Port, LEGACY_BEAM_STBY_Pin,
+                    GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(LEGACY_BEAM_PWM_GPIO_Port, LEGACY_BEAM_PWM_Pin,
+                    GPIO_PIN_RESET);
   while (1) {}
 }
 

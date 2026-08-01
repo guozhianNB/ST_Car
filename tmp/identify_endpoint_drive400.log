@@ -1,0 +1,48 @@
+[      0] >>> stop
+[      0] OK stopped
+[     61] >>> stream on 20
+[     61] OK stream on 20 ms
+[    108] STATUS mode=1 fault=none p60=36 dp60=0 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7363 vs=1 vage=26 vpa
+[    108] >>> pulse 130 400
+[    108] ge=26 vdt=28 vmax=297 vacc=7328 vrej=0 seq=0 elapsed=0 oled=3C
+[    125] STATUS mode=2 fault=none p60=36 dp60=0 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7364 vs=1 vage=13 vpage=13 vdt=33 vmax=297 vacc=7329 vrej=0 seq=0 elapsed=0 oled=3C
+[    141] STATUS mode=2 fault=none p60=37 dp60=1 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7364 vs=1 vage=33 vpage=33 vdt=33 vmax=297 vacc=7329 vrej=0 seq=0 elapsed=0 oled=3C
+[    156] STATUS mode=2 f
+[    172] ault=none p60=41 dp60=1 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7364 vs=1 vage=53 vpage=53 vdt=33 vmax=297 vacc=7329 vrej=0 seq=0 elapsed=0 oled=3C
+[    186] STATUS mode=2 fault=none p60=49 dp60=2 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7364 vs=1 vage=73 vpage=73 vdt=33 vmax=297 vacc=7329 vrej=0 seq=0 elapsed=0 oled=3C
+[    202] STATUS mode=2 fault=none p60=58 dp60=3 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7364 vs=1 vage=93 vpage=93 vdt=33 vmax=297 vacc=7329 vrej=0 seq=0 elapsed=0 oled=3C
+[    233] STATUS mode=2 fault=none p60=68 dp60=3 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7365 vs=1 vage=12 vpage=12 vdt=101 vmax=297 vacc=7330 vrej=0 seq=0 elapsed=0 oled=3C
+[    250] STATUS mode=2 fault=none p60=80 dp60=3 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7365 vs=1 vage=32 vpage=32 vdt=101 vmax=297 vacc=7330 vrej=0 seq=0 elapsed=0 oled=3C
+[    266] STATUS mode=2 fault=none p60=92 dp60=2 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7366 vs=1 vage=19 vpage=19 vdt=33 vmax=297 vacc=7331 vrej=0 seq=0 elapsed=0 oled=3C
+[    297] STATUS mode=2 fault=none p60=105 dp60=3 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7367 vs=1 vage=4 vpage=4 vdt=35 vmax=297 vacc=7332 vrej=0 seq=0 elapsed=0 oled=3C
+[    311] STATUS mode=2 fault=none p60=118 dp60=3 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7367 vs=1 vage=24 vpage=24 vdt=35 vmax=297 vacc=7332 vrej=0 seq=0 elapsed=0 oled=3C
+[    327] STATUS mode=2 fault=none p60=131 dp60=3 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7367 vs=1 vage=44 vpage=44 vdt=35 vmax=297 vacc=7332 vrej=0 seq=0 elapsed=0 oled=3C
+[    343] STATUS mode=2 fault=none p60=145 dp60=3 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7367 vs=1 vage=64 vpage=64 vdt=35 vmax=297 vacc=7332 vrej=0 seq=0 elapsed=0 oled=3C
+[    375] STATUS mode=2 fault=none p60=158 dp60=3 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7367 vs=1 vage=84 vpage=84 vdt=35 vmax=297 vacc=7332 vrej=0 seq=0 elapsed=0 oled=3C
+[    391] STATUS mode=2 fault=none p60=172 dp60=3 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7367 vs=1 vage=104 vpage=104 vdt=35 vmax=297 vacc=7332 vrej=0 seq=0 elapsed=0 oled=3C
+[    406] STATUS mode=2 fault=none p60=186 dp60=4 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7368 vs=1 vage=18 vpage=18 vdt=106 vmax=297 vacc=7333 vrej=0 seq=0 elapsed=0 oled=3C
+[    436] STATUS mode=2 fault=none p60=200 dp60=4 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7369 vs=1 vage=9 vpage=9 vdt=29 vmax=297 vacc=7334 vrej=0 seq=0 elapsed=0 oled=3C
+[    452] STATUS mode=2 fault=none p60=213 dp60=3 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7369 vs=1 vage=29 vpage=29 vdt=29 vmax=297 vacc=7334 vrej=0 seq=0 elapsed=0 oled=3C
+[    468] STATUS mode=2 fault=none p60=227 dp60=3 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7370 vs=1 vage=17 vpage=17 vdt=32 vmax=297 vacc=7335 vrej=0 seq=0 elapsed=0 oled=3C
+[    500] STATUS mode=2 fault=none p60=242 dp60=4 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7370 vs=1 vage=37 vpage=37 vdt=32 vmax=297 vacc=7335 vrej=0 seq=0 elapsed=0 oled=3C
+[    516] STATUS mode=2 fault=none p60=256 dp60=4 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7370 vs=1 vage=57 vpage=57 vdt=32 vmax=297 vacc=7335 vrej=0 seq=0 elapsed=0 oled=3C
+[    531] STATUS mode=1 fault=none p60=269 dp60=3 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7370 vs=1 vage=77 vpage=77 vdt=32 vmax=297 vacc=7335 vrej=0 seq=0 elapsed=0 oled=3C
+[    547] STATUS mode=1 fault=none p60=282 dp60=3 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7370 vs=1 vage=97 vpage=97 vdt=32 vmax=297 vacc=7335 vrej=0 seq=0 elapsed=0 oled=3C
+[    577] STATUS mode=1 fault=none p60=292 dp60=2 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7371 vs=1 vage=15 vpage=15 vdt=102 vmax=297 vacc=7336 vrej=0 seq=0 elapsed=0 oled=3C
+[    593] STATUS mode=1 fault=none p60=301 dp60=2 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7372 vs=1 vage=5 vpage=5 vdt=30 vmax=297 vacc=7337 vrej=0 seq=0 elapsed=0 oled=3C
+[    608] STATUS mode=1 fault=none p60=308 dp60=1 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7372 vs=1 vage=25 vpage=25 vdt=30 vmax=297 vacc=7337 vrej=0 seq=0 elapsed=0 oled=3C
+[    641] STATUS mode=1 fault=none p60=313 dp60=2 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7373 vs=1 vage=12 vpage=12 vdt=33 vmax=297 vacc=7338 vrej=0 seq=0 elapsed=0 oled=3C
+[    656] STATUS mode=1 fault=none p60=315 dp60=0 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7373 vs=1 vage=32 vpage=32 vdt=33 vmax=297 vacc=7338 vrej=0 seq=0 elapsed=0 oled=3C
+[    672] STATUS mode=1 fault=none p60=315 dp60=0 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7373 vs=1 vage=52 vpage=52 vdt=33 vmax=297 vacc=7338 vrej=0 seq=0 elapsed=0 oled=3C
+[    702] STATUS mode=1 fault=none p60=313 dp60=0 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7373 vs=1 vage=72 vpage=72 vdt=33 vmax=297 vacc=7338 vrej=0 seq=0 elapsed=0 oled=3C
+[    718] STATUS mode=1 fault=none p60=312 dp60=0 pwm=0 ball=125.00 vball=-0.00 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7373 vs=1 vage=92 vpage=9
+[    718] >>> status
+[    718] 2 vdt=33 vmax=297 vacc=7338 vrej=0 seq=0 elapsed=0 oled=3C
+[    733] STATUS mode=1 fault=none p60=312 dp60=0 pwm=0 ball=122.41 vball=-18.07 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7374 vs=1 vage=15 vpage=15 vdt=102 vmax=297 vacc=7339 vrej=0 seq=0 elapsed=0 oled=3C
+[    750] STATUS mode=1 fault=none p60=312 dp60=0 pwm=0 ball=122.41 vball=-18.07 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7374 vs=1 vage=30 vpage=30 vdt=102 vmax=297 vacc=7339 vrej=0 seq=0 elapsed=0 oled=3C
+[    766] STATUS m
+[    766] >>> stream off
+[    781] ode=1 fault=none p60=312 dp60=0 pwm=0 ball=117.45 vball=-81.61 aball=-19.9 bref=50.00 pid=0.1 apid=-19.9 integ=-0.0 vision=1 current=1 vframe=7375 vs=1 vage=18 vpage=18 vdt=32 vmax=297 vacc=7340 vrej=0 seq=0 elapsed=0 oled=3C
+[    781] OK stream off
+[    843] >>> stop
+[    843] OK stopped

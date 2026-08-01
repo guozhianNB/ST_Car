@@ -1,11 +1,13 @@
 #include "app.h"
 #include "app_config.h"
 #include "bench_debug.h"
+#include "button.h"
 #include "control_loops.h"
 #include "encoder.h"
 #include "line_sensor.h"
 #include "motor.h"
-#include "sa100.h"
+#include "oled_display.h"
+#include "stepper.h"
 #include "telemetry.h"
 #include "tim.h"
 #include "usart.h"
@@ -14,13 +16,13 @@
 
 static AppStatus app;
 static volatile uint8_t start_event;
-static volatile uint8_t mode_event;
 static uint32_t last_button_ms;
 static uint32_t run_start_ms;
 static uint32_t stage_start_ms;
 static uint32_t settle_start_ms;
+static uint32_t settle_last_measurement_ms;
+static uint32_t settle_accumulated_ms;
 static uint32_t cross_start_ms;
-static uint32_t fault_start_ms;
 static uint32_t fast_tick_ms;
 static uint32_t line_tick_ms;
 static uint32_t state_tick_ms;
@@ -32,7 +34,11 @@ static bool lap_armed;
 static bool passing_finish_line;
 static int64_t finish_left_start;
 static int64_t finish_right_start;
-static bool fault_leveling;
+static uint32_t centering_start_ms;
+static uint32_t centering_last_measurement_ms;
+static uint32_t centering_accumulated_ms;
+static bool centering_control_active;
+static bool centering_fine_active;
 static float moving_target_mm = 50.0f;
 
 static bool ModeNeedsLine(AppMode mode)
@@ -44,12 +50,13 @@ static bool ModeNeedsLine(AppMode mode)
 static bool ModeNeedsBall(AppMode mode)
 {
   return mode == APP_MODE_STATIC_BALL || mode == APP_MODE_MOVING_CENTER_AB ||
-         mode == APP_MODE_MOVING_CENTER_LAP || mode == APP_MODE_MOVING_TARGET;
+         mode == APP_MODE_MOVING_CENTER_LAP || mode == APP_MODE_MOVING_TARGET ||
+         mode == APP_MODE_HOLD_CURRENT;
 }
 
-static bool ModeNeedsBeam(AppMode mode)
+static bool ModeNeedsActuator(AppMode mode)
 {
-  return ModeNeedsBall(mode) || mode == APP_MODE_ANGLE_TEST;
+  return ModeNeedsBall(mode);
 }
 
 static float WheelTravelMm(EncoderId id, int64_t start_count)
@@ -64,47 +71,52 @@ static void App_Stop(AppRunState end_state)
 {
   ControlLoops_EnableChassis(false);
   ControlLoops_EnableBall(false);
-  ControlLoops_EnableBeam(false);
+  ControlLoops_EnableActuator(false);
   app.state = end_state;
   HAL_GPIO_WritePin(STATUS_LED_GPIO_Port, STATUS_LED_Pin,
                     (end_state == APP_STATE_FINISHED) ? GPIO_PIN_SET : GPIO_PIN_RESET);
+}
+
+static void App_FinishStaticBallHold(void)
+{
+  /* Freeze the scored time but keep the final -50 mm balance target active.
+     The finished-state branch continues all actuator/vision safety checks until
+     the operator presses the start button again or a fault is detected. */
+  ControlLoops_EnableChassis(false);
+  app.state = APP_STATE_FINISHED;
+  HAL_GPIO_WritePin(STATUS_LED_GPIO_Port, STATUS_LED_Pin, GPIO_PIN_SET);
 }
 
 static void App_Standby(void)
 {
   Motor_EmergencyStop();
   ControlLoops_Reset();
+  ControlLoops_SetBallGains(APP_BALL_KP, APP_BALL_KI, APP_BALL_KD,
+                            APP_BALL_CONTROL_SIGN);
+  ControlLoops_SetStepperRateLimit(APP_BALL_RATE_LIMIT_STEPS_S);
   app.state = APP_STATE_STANDBY;
   app.fault = FAULT_NONE;
   app.run_time_ms = 0;
   app.stage = 0;
   settle_start_ms = 0;
-  fault_leveling = false;
+  settle_last_measurement_ms = 0U;
+  settle_accumulated_ms = 0U;
+  centering_last_measurement_ms = 0U;
+  centering_accumulated_ms = 0U;
+  centering_control_active = false;
+  centering_fine_active = false;
   HAL_GPIO_WritePin(STATUS_LED_GPIO_Port, STATUS_LED_Pin, GPIO_PIN_RESET);
 }
 
 static void App_EnterFault(FaultCode fault, uint32_t now_ms)
 {
+  (void)now_ms;
   if (fault == FAULT_NONE || app.state == APP_STATE_FAULT) return;
   app.fault = fault;
   app.state = APP_STATE_FAULT;
-  fault_start_ms = now_ms;
   ControlLoops_EnableChassis(false);
   ControlLoops_EnableBall(false);
-
-  /* Level only when feedback and travel limits remain trustworthy. */
-  fault_leveling = SA100_IsFresh(now_ms) &&
-                   fault != FAULT_BEAM_ANGLE_LIMIT &&
-                   fault != FAULT_BEAM_ENCODER_LIMIT &&
-                   fault != FAULT_BEAM_STALL &&
-                   fault != FAULT_SA100_TIMEOUT &&
-                   fault != FAULT_STARTUP_CHECK;
-  if (fault_leveling) {
-    ControlLoops_SetDirectBeamTarget(0.0f);
-    ControlLoops_EnableBeam(true);
-  } else {
-    ControlLoops_EnableBeam(false);
-  }
+  ControlLoops_EnableActuator(false);
   HAL_GPIO_WritePin(STATUS_LED_GPIO_Port, STATUS_LED_Pin, GPIO_PIN_SET);
 }
 
@@ -112,29 +124,30 @@ static void App_Start(uint32_t now_ms)
 {
   const EncoderSample *left = Encoder_Get(ENCODER_LEFT);
   const EncoderSample *right = Encoder_Get(ENCODER_RIGHT);
-  Sa100Sample angle = {0};
   VisionBallSample ball = {0};
-  float expected_start_mm = (app.selected_mode == APP_MODE_MOVING_TARGET)
+  float expected_start_mm = ((app.selected_mode == APP_MODE_MOVING_TARGET) ||
+                             (app.selected_mode == APP_MODE_HOLD_CURRENT))
                             ? moving_target_mm : 0.0f;
-  (void)SA100_GetSnapshot(&angle);
-  (void)VisionUART_GetSnapshot(&ball);
+  bool current_ball = VisionUART_GetCurrentMeasurement(
+    &ball, now_ms, APP_VISION_COAST_MS);
   LineSensor_Update();
   if ((ModeNeedsLine(app.selected_mode) && !LineSensor_Get()->line_found) ||
-      (ModeNeedsBeam(app.selected_mode) &&
-       ((!APP_BEAM_RANGE_VERIFIED) || (!APP_SA100_CALIBRATION_VERIFIED) ||
-        !SA100_IsFresh(now_ms) || fabsf(angle.beam_angle_deg) > 0.5f)) ||
       (ModeNeedsBall(app.selected_mode) &&
-       (!VisionUART_IsFresh(now_ms) ||
+       (!current_ball ||
         fabsf(ball.position_mm - expected_start_mm) > APP_BALL_START_TOLERANCE_MM))) {
     App_EnterFault(FAULT_STARTUP_CHECK, now_ms);
     return;
   }
-  if (ModeNeedsBeam(app.selected_mode)) Encoder_Reset(ENCODER_BEAM);
+  ControlLoops_SetBallGains(APP_BALL_KP, APP_BALL_KI, APP_BALL_KD,
+                            APP_BALL_CONTROL_SIGN);
+  ControlLoops_SetStepperRateLimit(APP_BALL_RATE_LIMIT_STEPS_S);
   ControlLoops_Reset();
   SafetyMonitor_Begin(now_ms);
   run_start_ms = now_ms;
   stage_start_ms = now_ms;
   settle_start_ms = 0;
+  settle_last_measurement_ms = 0U;
+  settle_accumulated_ms = 0U;
   cross_start_ms = 0;
   app.fault = FAULT_NONE;
   app.stage = 0;
@@ -151,61 +164,101 @@ static void App_Start(uint32_t now_ms)
     ControlLoops_SetBaseSpeed(APP_CHASSIS_BASE_SPEED_MM_S);
     ControlLoops_EnableChassis(true);
   }
-  if (ModeNeedsBeam(app.selected_mode)) {
-    ControlLoops_SetDirectBeamTarget(0.0f);
-    ControlLoops_EnableBeam(true);
+  if (ModeNeedsActuator(app.selected_mode)) {
+    ControlLoops_EnableActuator(true);
   }
   if (ModeNeedsBall(app.selected_mode)) {
     if (app.selected_mode == APP_MODE_STATIC_BALL) app.commanded_ball_target_mm = 50.0f;
-    else if (app.selected_mode == APP_MODE_MOVING_TARGET)
+    else if ((app.selected_mode == APP_MODE_MOVING_TARGET) ||
+             (app.selected_mode == APP_MODE_HOLD_CURRENT))
       app.commanded_ball_target_mm = moving_target_mm;
     ControlLoops_SetBallTarget(app.commanded_ball_target_mm);
     ControlLoops_EnableBall(true);
+    if (app.selected_mode == APP_MODE_STATIC_BALL) {
+      ControlLoops_StartBallSequence(now_ms);
+    }
   }
 }
 
 static bool BallSettled(uint32_t now_ms)
 {
   VisionBallSample ball = {0};
-  (void)VisionUART_GetSnapshot(&ball);
-  if (!VisionUART_IsFresh(now_ms) ||
+  if (!VisionUART_GetCurrentMeasurement(&ball, now_ms,
+                                        APP_VISION_COAST_MS) ||
       fabsf(ball.position_mm - app.commanded_ball_target_mm) > APP_BALL_SETTLE_ERROR_MM ||
       fabsf(ball.speed_mm_s) > APP_BALL_SETTLE_SPEED_MM_S) {
     settle_start_ms = 0;
+    settle_last_measurement_ms = 0U;
+    settle_accumulated_ms = 0U;
     return false;
   }
-  if (settle_start_ms == 0U) settle_start_ms = now_ms;
-  return (now_ms - settle_start_ms) >= APP_BALL_SETTLE_TIME_MS;
+  if (ball.timestamp_ms != settle_last_measurement_ms) {
+    if (settle_last_measurement_ms == 0U) {
+      settle_start_ms = ball.timestamp_ms;
+    } else {
+      uint32_t interval_ms = ball.timestamp_ms - settle_last_measurement_ms;
+      if (interval_ms > APP_VISION_CONTROL_HOLD_MS) {
+        settle_start_ms = ball.timestamp_ms;
+        settle_accumulated_ms = 0U;
+      } else {
+        settle_accumulated_ms += interval_ms;
+      }
+    }
+    settle_last_measurement_ms = ball.timestamp_ms;
+  }
+  return settle_accumulated_ms >= APP_BALL_SETTLE_TIME_MS;
 }
 
 static void UpdateStaticBall(uint32_t now_ms)
 {
+  const ControlStatus *control = ControlLoops_GetStatus();
+  VisionBallSample ball = {0};
   if ((now_ms - run_start_ms) > APP_STATIC_STAGE_TIMEOUT_MS) {
     App_EnterFault(FAULT_STAGE_TIMEOUT, now_ms);
     return;
   }
-  if (!BallSettled(now_ms)) return;
-  settle_start_ms = 0;
-  stage_start_ms = now_ms;
+  if ((app.stage == 0U) &&
+      (control->ball_sequence_stage !=
+       CONTROL_BALL_SEQUENCE_POSITIVE_CONTROL)) {
+    settle_start_ms = 0U;
+    settle_last_measurement_ms = 0U;
+    settle_accumulated_ms = 0U;
+    return;
+  }
+  if ((app.stage == 1U) &&
+      (control->ball_sequence_stage !=
+       CONTROL_BALL_SEQUENCE_NEGATIVE_CONTROL)) {
+    settle_start_ms = 0U;
+    settle_last_measurement_ms = 0U;
+    settle_accumulated_ms = 0U;
+    return;
+  }
   if (app.stage == 0U) {
+    /* Requirement 3 says the ball reaches +50 mm and then reverses; only the
+       final -50 mm point must remain stable.  Reverse on the first true frame
+       inside the +/-10 mm scoring window instead of wasting 250 ms and all
+       ball speed at the intermediate point. */
+    if (!VisionUART_GetCurrentMeasurement(&ball, now_ms,
+                                          APP_VISION_COAST_MS) ||
+        fabsf(ball.position_mm - APP_BALL_SEQUENCE_GOAL_MM) >
+          APP_BALL_SETTLE_ERROR_MM) {
+      return;
+    }
+    settle_start_ms = 0U;
+    settle_last_measurement_ms = 0U;
+    settle_accumulated_ms = 0U;
+    stage_start_ms = now_ms;
     app.stage = 1U;
     app.commanded_ball_target_mm = -50.0f;
-    ControlLoops_SetBallTarget(app.commanded_ball_target_mm);
+    ControlLoops_StartBallSequenceNegative(now_ms);
   } else {
-    App_Stop(APP_STATE_FINISHED);
-  }
-}
-
-static void UpdateAngleTest(uint32_t now_ms)
-{
-  static const float targets[] = {0.0f, 1.0f, -1.0f, 2.0f, -2.0f, 0.0f};
-  if ((now_ms - stage_start_ms) < 1000U) return;
-  stage_start_ms = now_ms;
-  ++app.stage;
-  if (app.stage >= (sizeof(targets) / sizeof(targets[0]))) {
-    App_Stop(APP_STATE_FINISHED);
-  } else {
-    ControlLoops_SetDirectBeamTarget(targets[app.stage]);
+    if (!BallSettled(now_ms)) return;
+    settle_start_ms = 0U;
+    settle_last_measurement_ms = 0U;
+    settle_accumulated_ms = 0U;
+    stage_start_ms = now_ms;
+    ControlLoops_FinishBallSequenceHold();
+    App_FinishStaticBallHold();
   }
 }
 
@@ -256,18 +309,6 @@ static void UpdateAB(void)
   }
 }
 
-static void UpdateFault(uint32_t now_ms)
-{
-  Sa100Sample angle = {0};
-  (void)SA100_GetSnapshot(&angle);
-  if (!fault_leveling) return;
-  if (!SA100_IsFresh(now_ms) || fabsf(angle.beam_angle_deg) < 0.3f ||
-      (now_ms - fault_start_ms) >= 1000U) {
-    ControlLoops_EnableBeam(false);
-    fault_leveling = false;
-  }
-}
-
 static void UpdateState(uint32_t now_ms)
 {
   FaultCode fault;
@@ -275,36 +316,139 @@ static void UpdateState(uint32_t now_ms)
     if (!passing_finish_line) app.run_time_ms = now_ms - run_start_ms;
     fault = SafetyMonitor_Update(now_ms, ModeNeedsLine(app.selected_mode),
                                  ModeNeedsBall(app.selected_mode),
-                                 ModeNeedsBeam(app.selected_mode));
+                                 ModeNeedsActuator(app.selected_mode));
     if (fault != FAULT_NONE) {
       App_EnterFault(fault, now_ms);
       return;
     }
     if (app.selected_mode == APP_MODE_STATIC_BALL) UpdateStaticBall(now_ms);
-    else if (app.selected_mode == APP_MODE_ANGLE_TEST) UpdateAngleTest(now_ms);
     else if (app.selected_mode == APP_MODE_MOVING_CENTER_AB) UpdateAB();
     else if (ModeNeedsLine(app.selected_mode)) UpdateLap(now_ms);
-  } else if (app.state == APP_STATE_FAULT) {
-    UpdateFault(now_ms);
+  } else if (app.state == APP_STATE_CENTERING) {
+    VisionBallSample ball = {0};
+    bool current = VisionUART_GetCurrentMeasurement(
+      &ball, now_ms, APP_VISION_COAST_MS);
+    if ((now_ms - centering_start_ms) >
+        APP_REQUIREMENT3_CENTER_TIMEOUT_MS) {
+      App_EnterFault(FAULT_STARTUP_CHECK, now_ms);
+      return;
+    }
+    if (!centering_control_active) {
+      if (!current) return;
+      ControlLoops_Reset();
+      ControlLoops_SetBallGains(APP_BALL_KP, APP_BALL_KI,
+                                APP_REQUIREMENT3_CENTER_KD,
+                                APP_BALL_CONTROL_SIGN);
+      /* Recovery may begin with a large learned tube pose.  The 2000-step/s
+         release catch used for ordinary setpoint changes overshoots center in
+         that condition, so centering stays on the normal 400-step/s shaper. */
+      ControlLoops_EnableStaticReleaseCatch(false);
+      ControlLoops_SetStepperRateLimit(APP_BALL_RATE_LIMIT_STEPS_S);
+      ControlLoops_SetBallTarget(0.0f);
+      ControlLoops_EnableActuator(true);
+      ControlLoops_EnableBall(true);
+      SafetyMonitor_Begin(now_ms);
+      centering_control_active = true;
+    }
+    fault = SafetyMonitor_Update(now_ms, false, true, true);
+    if (fault != FAULT_NONE) {
+      App_EnterFault(fault, now_ms);
+      return;
+    }
+    if (!centering_fine_active &&
+        (fabsf(ball.position_mm) <= APP_REQUIREMENT3_FINE_ENTER_MM)) {
+      ControlLoops_SetBallGains(APP_BALL_KP, APP_REQUIREMENT3_FINE_KI,
+                                APP_REQUIREMENT3_FINE_KD,
+                                APP_BALL_CONTROL_SIGN);
+      ControlLoops_EnableStaticReleaseCatch(false);
+      ControlLoops_SetStepperRateLimit(
+        APP_REQUIREMENT3_FINE_RATE_STEPS_S);
+      centering_fine_active = true;
+    } else if (centering_fine_active &&
+               (fabsf(ball.position_mm) >=
+                APP_REQUIREMENT3_FINE_EXIT_MM)) {
+      ControlLoops_SetBallGains(APP_BALL_KP, APP_BALL_KI,
+                                APP_REQUIREMENT3_CENTER_KD,
+                                APP_BALL_CONTROL_SIGN);
+      ControlLoops_EnableStaticReleaseCatch(false);
+      ControlLoops_SetStepperRateLimit(APP_BALL_RATE_LIMIT_STEPS_S);
+      centering_fine_active = false;
+    }
+    if (!current ||
+        (fabsf(ball.position_mm) > APP_REQUIREMENT3_CENTER_ERROR_MM) ||
+        (fabsf(ball.speed_mm_s) > APP_REQUIREMENT3_CENTER_SPEED_MM_S)) {
+      centering_last_measurement_ms = 0U;
+      centering_accumulated_ms = 0U;
+      return;
+    }
+    if (ball.timestamp_ms != centering_last_measurement_ms) {
+      if (centering_last_measurement_ms != 0U) {
+        uint32_t interval_ms =
+          ball.timestamp_ms - centering_last_measurement_ms;
+        if (interval_ms > APP_VISION_CONTROL_HOLD_MS) {
+          centering_accumulated_ms = 0U;
+        } else {
+          centering_accumulated_ms += interval_ms;
+        }
+      }
+      centering_last_measurement_ms = ball.timestamp_ms;
+    }
+    if (centering_accumulated_ms >= APP_REQUIREMENT3_CENTER_SETTLE_MS) {
+      ControlLoops_EnableBall(false);
+      ControlLoops_EnableActuator(false);
+      app.state = APP_STATE_STANDBY;
+      App_Start(now_ms);
+    }
+  } else if ((app.state == APP_STATE_FINISHED) &&
+             (app.selected_mode == APP_MODE_STATIC_BALL)) {
+    /* Requirement 3 explicitly requires remaining stable at -50 mm after the
+       timed transfer.  Do not drop safety monitoring while holding. */
+    fault = SafetyMonitor_Update(now_ms, false, true, true);
+    if (fault != FAULT_NONE) App_EnterFault(fault, now_ms);
   }
+}
+
+static void StartRequirement3Centering(uint32_t now_ms)
+{
+  App_Standby();
+  app.selected_mode = APP_MODE_STATIC_BALL;
+  app.state = APP_STATE_CENTERING;
+  app.commanded_ball_target_mm = 0.0f;
+  centering_start_ms = now_ms;
+  centering_last_measurement_ms = 0U;
+  centering_accumulated_ms = 0U;
+  centering_control_active = false;
+  centering_fine_active = false;
+}
+
+void App_RequestRequirement3(void)
+{
+  uint32_t now_ms = HAL_GetTick();
+  if ((app.state == APP_STATE_CENTERING) ||
+      (app.state == APP_STATE_RUNNING)) {
+    App_Standby();
+    return;
+  }
+  StartRequirement3Centering(now_ms);
 }
 
 static void ProcessEvents(uint32_t now_ms)
 {
   if ((now_ms - last_button_ms) < 60U) return;
-  if (mode_event) {
-    mode_event = 0;
-    last_button_ms = now_ms;
-    if (app.state == APP_STATE_STANDBY) {
-      app.selected_mode = (AppMode)(((unsigned)app.selected_mode + 1U) % APP_MODE_COUNT);
-    }
-  }
   if (start_event) {
     start_event = 0;
     last_button_ms = now_ms;
-    if (app.state == APP_STATE_STANDBY) App_Start(now_ms);
-    else if (app.state == APP_STATE_RUNNING) App_Stop(APP_STATE_FINISHED);
-    else App_Standby();
+    App_RequestRequirement3();
+  }
+}
+
+static void ProcessPanelButtons(uint32_t now_ms)
+{
+  ButtonEvent up = Button_TakeEvent(BUTTON_LEVEL_UP);
+  ButtonEvent down = Button_TakeEvent(BUTTON_LEVEL_DOWN);
+  if ((up == BUTTON_EVENT_SHORT) || (down == BUTTON_EVENT_SHORT)) {
+    last_button_ms = now_ms;
+    App_RequestRequirement3();
   }
 }
 
@@ -312,13 +456,15 @@ void App_Init(void)
 {
   uint32_t now = HAL_GetTick();
   Motor_Init();
+  Stepper_Init();
   Encoder_Init();
-  SA100_Init();
   VisionUART_Init();
+  Button_Init(now);
   LineSensor_Update();
   ControlLoops_Init();
+  OledDisplay_Init(now);
   SafetyMonitor_Begin(now);
-  app.selected_mode = APP_MODE_LINE_ONLY;
+  app.selected_mode = APP_MODE_STATIC_BALL;
   fast_tick_ms = now;
   line_tick_ms = now;
   state_tick_ms = now;
@@ -332,7 +478,13 @@ void App_Run(void)
 {
   uint32_t now = HAL_GetTick();
   VisionUART_Service();
-  if (BenchDebug_Run(now)) return;
+  Button_Update(now);
+  OledDisplay_Service(now);
+  if (BenchDebug_Run(now)) {
+    Button_DiscardEvents();
+    return;
+  }
+  ProcessPanelButtons(now);
   ProcessEvents(now);
 
   if ((now - fast_tick_ms) >= APP_CONTROL_FAST_MS) {
@@ -384,14 +536,6 @@ void HAL_GPIO_EXTI_Callback(uint16_t pin)
   if (pin == START_BUTTON_Pin) {
     if (BenchDebug_IsActive()) BenchDebug_RequestEmergencyStop();
     else start_event = 1;
-  }
-  else if (pin == MODE_BUTTON_Pin) mode_event = 1;
-}
-
-void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
-{
-  if ((htim->Instance == TIM15) && (htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1)) {
-    SA100_CaptureCallback();
   }
 }
 

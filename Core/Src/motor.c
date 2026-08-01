@@ -19,10 +19,7 @@ static const MotorHardware motor_hw[MOTOR_COUNT] = {
    APP_MOTOR_LEFT_MIN_PWM, APP_MOTOR_CHASSIS_MAX_PWM},
   {MOTOR_R_IN1_GPIO_Port, MOTOR_R_IN1_Pin, MOTOR_R_IN2_GPIO_Port,
    MOTOR_R_IN2_Pin, TIM_CHANNEL_2, APP_MOTOR_RIGHT_SIGN,
-   APP_MOTOR_RIGHT_MIN_PWM, APP_MOTOR_CHASSIS_MAX_PWM},
-  {MOTOR_BEAM_IN1_GPIO_Port, MOTOR_BEAM_IN1_Pin, MOTOR_BEAM_IN2_GPIO_Port,
-   MOTOR_BEAM_IN2_Pin, TIM_CHANNEL_3, APP_MOTOR_BEAM_SIGN,
-   APP_MOTOR_BEAM_MIN_PWM, APP_MOTOR_BEAM_MAX_PWM}
+   APP_MOTOR_RIGHT_MIN_PWM, APP_MOTOR_CHASSIS_MAX_PWM}
 };
 
 static int16_t motor_command[MOTOR_COUNT];
@@ -38,7 +35,6 @@ void Motor_Init(void)
 {
   if (HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1) != HAL_OK) Error_Handler();
   if (HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2) != HAL_OK) Error_Handler();
-  if (HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3) != HAL_OK) Error_Handler();
   Motor_EmergencyStop();
 }
 
@@ -49,13 +45,6 @@ void Motor_EnableChassis(bool enable)
     Motor_Coast(MOTOR_RIGHT);
   }
   HAL_GPIO_WritePin(CHASSIS_STBY_GPIO_Port, CHASSIS_STBY_Pin,
-                    enable ? GPIO_PIN_SET : GPIO_PIN_RESET);
-}
-
-void Motor_EnableBeam(bool enable)
-{
-  if (!enable) Motor_Coast(MOTOR_BEAM);
-  HAL_GPIO_WritePin(BEAM_STBY_GPIO_Port, BEAM_STBY_Pin,
                     enable ? GPIO_PIN_SET : GPIO_PIN_RESET);
 }
 
@@ -96,21 +85,6 @@ void Motor_Set(MotorId id, int16_t command)
   ApplyCommand(id, command, true, -1);
 }
 
-void Motor_SetLimited(MotorId id, int16_t command, int16_t limit)
-{
-  ApplyCommand(id, command, true, limit);
-}
-
-void Motor_SetRaw(MotorId id, int16_t command)
-{
-  ApplyCommand(id, command, false, -1);
-}
-
-void Motor_SetRawLimited(MotorId id, int16_t command, int16_t limit)
-{
-  ApplyCommand(id, command, false, limit);
-}
-
 int16_t Motor_GetCommand(MotorId id)
 {
   return ((unsigned)id < MOTOR_COUNT) ? motor_command[id] : 0;
@@ -142,9 +116,11 @@ void Motor_EmergencyStop(void)
 {
   Motor_Coast(MOTOR_LEFT);
   Motor_Coast(MOTOR_RIGHT);
-  Motor_Coast(MOTOR_BEAM);
   HAL_GPIO_WritePin(CHASSIS_STBY_GPIO_Port, CHASSIS_STBY_Pin, GPIO_PIN_RESET);
-  HAL_GPIO_WritePin(BEAM_STBY_GPIO_Port, BEAM_STBY_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(LEGACY_BEAM_STBY_GPIO_Port, LEGACY_BEAM_STBY_Pin,
+                    GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(LEGACY_BEAM_PWM_GPIO_Port, LEGACY_BEAM_PWM_Pin,
+                    GPIO_PIN_RESET);
 }
 
 void Motor_SetSpeed(int speed_left, int speed_right)

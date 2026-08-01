@@ -1,0 +1,8 @@
+bench on
+stop
+diag reset
+stream on 20
+wait 2000
+stream off
+status
+stop

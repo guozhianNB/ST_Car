@@ -10,12 +10,13 @@ typedef enum {
   APP_MODE_MOVING_CENTER_AB,
   APP_MODE_MOVING_CENTER_LAP,
   APP_MODE_MOVING_TARGET,
-  APP_MODE_ANGLE_TEST,
+  APP_MODE_HOLD_CURRENT,
   APP_MODE_COUNT
 } AppMode;
 
 typedef enum {
   APP_STATE_STANDBY = 0,
+  APP_STATE_CENTERING,
   APP_STATE_RUNNING,
   APP_STATE_FINISHED,
   APP_STATE_FAULT
@@ -32,6 +33,8 @@ typedef struct {
 
 void App_Init(void);
 void App_Run(void);
+/* Diagnostic injection uses the same request path as every physical button. */
+void App_RequestRequirement3(void);
 void App_SelectMode(AppMode mode);
 void App_SetMovingTarget(float target_mm);
 const AppStatus *App_GetStatus(void);

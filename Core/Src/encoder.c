@@ -14,7 +14,7 @@ typedef struct {
 static EncoderHardware encoder_hw[ENCODER_COUNT] = {
   {&htim2, 0, APP_ENCODER_LEFT_CPR, APP_ENCODER_LEFT_SIGN, 32},
   {&htim3, 0, APP_ENCODER_RIGHT_CPR, APP_ENCODER_RIGHT_SIGN, 16},
-  {&htim4, 0, APP_ENCODER_BEAM_CPR, APP_ENCODER_BEAM_SIGN, 16}
+  {&htim4, 0, APP_ENCODER_ACTUATOR_CPR, APP_ENCODER_ACTUATOR_SIGN, 16}
 };
 static EncoderSample encoder_sample[ENCODER_COUNT];
 
@@ -47,7 +47,7 @@ void Encoder_Update(uint32_t dt_ms)
     encoder_hw[i].previous = current;
     encoder_sample[i].delta_count = delta;
     encoder_sample[i].total_count += delta;
-    if (i == ENCODER_BEAM) {
+    if (i == ENCODER_ACTUATOR) {
       encoder_sample[i].speed_mm_s = 0.0f;
     } else {
       encoder_sample[i].speed_mm_s = ((float)delta * circumference_mm * 1000.0f) /

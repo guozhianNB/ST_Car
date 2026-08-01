@@ -1,0 +1,22 @@
+[      0] >>> status
+[     30] STATUS mode=0 fault=none p60=0 dp60=0 pwm=0 ball=-45.84 vball=-1.26 aball=0.0 bref=0.00 pid=0.0 apid=0.0 integ=0.0 vision=1 current=1 vframe=320 vs=1 vage=22 vpage=22 vdt=35 vmax=124 vacc=320 vrej=0 seq=0 elapsed=0 oled=3C
+[    327] >>> gain ball 1.2 0 1.7 -1
+[    343] OK ball gains kp=1.200 ki=0.000 kd=1.700 sign=-1
+[    639] >>> gain accel 0.8
+[    655] OK ball acceleration gain ka=0.800
+[    952] >>> limit pwm 60
+[    952] OK beam PWM limit=60
+[   1264] >>> mode target
+[   1264] ERR unknown command; use help
+[   1577] >>> target -60
+[   1577] ERR unknown command; use help
+[   1889] >>> start
+[   1889] ERR unknown command; use help
+[   2202] >>> stream on
+[   2202] OK stream on 100 ms
+[  12561] >>> stream off
+[  12577] OK stream off
+[  12875] >>> status
+[  12905] STATUS mode=0 fault=none p60=0 dp60=0 pwm=0 ball=-45.83 vball=0.09 aball=0.0 bref=0.00 pid=0.0 apid=0.0 integ=0.0 vision=1 current=1 vframe=573 vs=1 vage=53 vpage=53 vdt=35 vmax=155 vacc=573 vrej=0 seq=0 elapsed=0 oled=3C
+[  13202] >>> stop
+[  13202] OK stopped

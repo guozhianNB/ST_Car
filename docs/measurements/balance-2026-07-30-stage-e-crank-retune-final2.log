@@ -1,0 +1,53 @@
+2026-07-31T00:16:54.819 > bench on
+2026-07-31T00:16:54.819 > status
+2026-07-31T00:16:54.819 > angle 0
+2026-07-31T00:16:54.819 < OK bench active; chassis disabled; PC13 is emergency stop
+2026-07-31T00:16:54.862 < BENCH t=22618 mode=idle fault=none stream=0 rate=100 seq=0 seqms=0 pwm=0 count=0 delta=0 sa=1 fresh=1 sage=0 sacal=1 rangeok=1 per=1155 high=616 duty=0.533379 raw=192.017 ang=0.177 aref=0.000 vision=0 vfresh=0 vage=5633 vframe=678 ball=-11.00 vel=14.70 bref=0.00 akp=300.000 aki=0.000 akd=0.000 bkp=0.00500 bkd=0.00000 bsign=1 plim=150 alim=2.00 scale=360.000 zero=191.917 sasign=1
+2026-07-31T00:17:05.591 > status
+2026-07-31T00:17:05.624 < BENCH t=33385 mode=angle fault=none stream=0 rate=100 seq=0 seqms=0 pwm=0 count=-17 delta=0 sa=1 fresh=1 sage=1 sacal=1 rangeok=1 per=1155 high=615 duty=0.532906 raw=191.846 ang=-0.012 aref=0.000 vision=0 vfresh=1 vage=100 vframe=941 ball=60.00 vel=87.31 bref=0.00 akp=300.000 aki=0.000 akd=0.000 bkp=0.00500 bkd=0.00000 bsign=1 plim=150 alim=2.00 scale=360.000 zero=191.917 sasign=1
+2026-07-31T00:17:12.833 > angle 2
+2026-07-31T00:17:12.836 < OK angle loop target=2.000 deg; auto-stop=30000 ms
+2026-07-31T00:17:31.648 > status
+2026-07-31T00:17:31.691 < BENCH t=59451 mode=angle fault=none stream=0 rate=100 seq=0 seqms=0 pwm=0 count=183 delta=0 sa=1 fresh=1 sage=0 sacal=1 rangeok=1 per=1155 high=622 duty=0.538701 raw=193.932 ang=2.012 aref=2.000 vision=0 vfresh=0 vage=3223 vframe=1465 ball=32.00 vel=47.73 bref=0.00 akp=300.000 aki=0.000 akd=0.000 bkp=0.00500 bkd=0.00000 bsign=1 plim=150 alim=2.00 scale=360.000 zero=191.917 sasign=1
+2026-07-31T00:17:38.730 > angle -2
+2026-07-31T00:17:38.735 < OK angle loop target=-2.000 deg; auto-stop=30000 ms
+2026-07-31T00:17:40.387 < ERR bench fault=encoder_limit; use 'stop' then inspect hardware
+2026-07-31T00:17:51.295 > status
+2026-07-31T00:17:51.332 < BENCH t=79095 mode=fault fault=encoder_limit stream=0 rate=100 seq=0 seqms=0 pwm=0 count=-241 delta=0 sa=1 fresh=1 sage=1 sacal=1 rangeok=1 per=1155 high=609 duty=0.527665 raw=189.959 ang=-2.057 aref=-2.000 vision=1 vfresh=1 vage=12 vframe=1791 ball=-15.00 vel=-13.43 bref=0.00 akp=300.000 aki=0.000 akd=0.000 bkp=0.00500 bkd=0.00000 bsign=1 plim=150 alim=2.00 scale=360.000 zero=191.917 sasign=1
+2026-07-31T00:18:07.185 > stop
+2026-07-31T00:18:07.185 > pulse 150 50
+2026-07-31T00:18:07.189 < OK outputs stopped
+2026-07-31T00:18:07.193 < OK raw pulse pwm=150 ms=50; PC13 stops immediately
+2026-07-31T00:18:07.241 < OK pulse complete; outputs stopped
+2026-07-31T00:18:11.799 > status
+2026-07-31T00:18:11.799 > angle 0
+2026-07-31T00:18:11.831 < BENCH t=99597 mode=idle fault=none stream=0 rate=100 seq=0 seqms=0 pwm=0 count=-207 delta=0 sa=1 fresh=1 sage=0 sacal=1 rangeok=1 per=1155 high=610 duty=0.528576 raw=190.287 ang=-1.730 aref=-2.000 vision=1 vfresh=1 vage=24 vframe=2188 ball=-1.00 vel=-3.21 bref=0.00 akp=300.000 aki=0.000 akd=0.000 bkp=0.00500 bkd=0.00000 bsign=1 plim=150 alim=2.00 scale=360.000 zero=191.917 sasign=1
+2026-07-31T00:18:21.397 > status
+2026-07-31T00:18:21.434 < BENCH t=109195 mode=idle fault=none stream=0 rate=100 seq=0 seqms=0 pwm=0 count=-207 delta=0 sa=1 fresh=1 sage=0 sacal=1 rangeok=1 per=1155 high=610 duty=0.528088 raw=190.112 ang=-1.732 aref=-2.000 vision=0 vfresh=1 vage=179 vframe=2383 ball=-51.00 vel=-13.69 bref=0.00 akp=300.000 aki=0.000 akd=0.000 bkp=0.00500 bkd=0.00000 bsign=1 plim=150 alim=2.00 scale=360.000 zero=191.917 sasign=1
+2026-07-31T00:18:28.575 > angle 0
+2026-07-31T00:18:28.581 < OK angle loop target=0.000 deg; auto-stop=30000 ms
+2026-07-31T00:18:39.117 > status
+2026-07-31T00:18:39.151 < BENCH t=126921 mode=angle fault=none stream=0 rate=100 seq=0 seqms=0 pwm=0 count=-25 delta=0 sa=1 fresh=1 sage=1 sacal=1 rangeok=1 per=1155 high=616 duty=0.532993 raw=191.877 ang=-0.061 aref=0.000 vision=1 vfresh=1 vage=16 vframe=2767 ball=7.00 vel=63.47 bref=0.00 akp=300.000 aki=0.000 akd=0.000 bkp=0.00500 bkd=0.00000 bsign=1 plim=150 alim=2.00 scale=360.000 zero=191.917 sasign=1
+2026-07-31T00:18:44.557 > stop
+2026-07-31T00:18:44.557 > zero
+2026-07-31T00:18:44.557 > status
+2026-07-31T00:18:44.557 < OK outputs stopped
+2026-07-31T00:18:44.568 < OK beam encoder zeroed at manually confirmed safe center
+2026-07-31T00:18:51.509 > status
+2026-07-31T00:18:51.531 < BENCH t=139305 mode=idle fault=none stream=0 rate=100 seq=0 seqms=0 pwm=0 count=0 delta=0 sa=1 fresh=1 sage=0 sacal=1 rangeok=1 per=1155 high=616 duty=0.533345 raw=192.004 ang=0.025 aref=0.000 vision=1 vfresh=1 vage=47 vframe=3010 ball=27.00 vel=12.47 bref=0.00 akp=300.000 aki=0.000 akd=0.000 bkp=0.00500 bkd=0.00000 bsign=1 plim=150 alim=2.00 scale=360.000 zero=191.917 sasign=1
+2026-07-31T00:18:56.697 > angle 2
+2026-07-31T00:18:56.703 < OK angle loop target=2.000 deg; auto-stop=30000 ms
+2026-07-31T00:19:10.495 > status
+2026-07-31T00:19:10.529 < BENCH t=158287 mode=angle fault=none stream=0 rate=100 seq=0 seqms=0 pwm=0 count=200 delta=0 sa=1 fresh=1 sage=1 sacal=1 rangeok=1 per=1155 high=622 duty=0.538502 raw=193.861 ang=1.956 aref=2.000 vision=0 vfresh=0 vage=675 vframe=3392 ball=-42.00 vel=1.47 bref=0.00 akp=300.000 aki=0.000 akd=0.000 bkp=0.00500 bkd=0.00000 bsign=1 plim=150 alim=2.00 scale=360.000 zero=191.917 sasign=1
+2026-07-31T00:19:17.283 > angle -2
+2026-07-31T00:19:17.290 < OK angle loop target=-2.000 deg; auto-stop=30000 ms
+2026-07-31T00:19:26.482 > status
+2026-07-31T00:19:26.525 < BENCH t=174278 mode=angle fault=none stream=0 rate=100 seq=0 seqms=0 pwm=0 count=-200 delta=0 sa=1 fresh=1 sage=1 sacal=1 rangeok=1 per=1155 high=609 duty=0.527496 raw=189.899 ang=-2.020 aref=-2.000 vision=0 vfresh=1 vage=153 vframe=3671 ball=-44.00 vel=7.48 bref=0.00 akp=300.000 aki=0.000 akd=0.000 bkp=0.00500 bkd=0.00000 bsign=1 plim=150 alim=2.00 scale=360.000 zero=191.917 sasign=1
+2026-07-31T00:19:33.455 > angle 0
+2026-07-31T00:19:33.461 < OK angle loop target=0.000 deg; auto-stop=30000 ms
+2026-07-31T00:19:42.026 > status
+2026-07-31T00:19:42.026 > stop
+2026-07-31T00:19:42.057 < BENCH t=189811 mode=angle fault=none stream=0 rate=100 seq=0 seqms=0 pwm=0 count=1 delta=0 sa=1 fresh=1 sage=0 sacal=1 rangeok=1 per=1155 high=615 duty=0.532906 raw=191.846 ang=-0.031 aref=0.000 vision=1 vfresh=1 vage=42 vframe=3984 ball=-56.00 vel=2.86 bref=0.00 akp=300.000 aki=0.000 akd=0.000 bkp=0.00500 bkd=0.00000 bsign=1 plim=150 alim=2.00 scale=360.000 zero=191.917 sasign=1
+2026-07-31T00:19:56.773 > stop
+2026-07-31T00:19:56.773 < OK outputs stopped
+2026-07-31T00:20:05.730 < OK outputs stopped

@@ -1,0 +1,7 @@
+bench on
+stop
+catch off
+gain ball 3.0 0.0 5.0 -1
+gain accel 0.0
+limit rate 250
+status

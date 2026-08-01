@@ -6,7 +6,7 @@
 typedef enum {
   ENCODER_LEFT = 0,
   ENCODER_RIGHT,
-  ENCODER_BEAM,
+  ENCODER_ACTUATOR,
   ENCODER_COUNT
 } EncoderId;
 

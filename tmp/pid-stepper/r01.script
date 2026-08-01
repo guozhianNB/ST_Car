@@ -1,0 +1,12 @@
+stop
+clear
+diag reset
+gain ball 3.0 1.5 6.5 -1
+gain accel 0.0
+limit rate 400
+stream on 20
+ball 0
+wait 12000
+status
+stop
+stream off
